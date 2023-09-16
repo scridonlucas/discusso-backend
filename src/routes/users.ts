@@ -6,4 +6,5 @@ usersRouter.get('/', (_req, res) => {
   res.send('pong');
 });
 
+usersRouter.post('/', (req, res) => {});
 export default usersRouter;
