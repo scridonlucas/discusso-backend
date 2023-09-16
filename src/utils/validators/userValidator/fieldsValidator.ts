@@ -1,4 +1,5 @@
-import { isString } from '../typeValidators';
+import { isString, isGender, isDate } from '../typeValidators';
+import { Gender } from '../../../../types';
 
 export const parseName = (name: unknown): string => {
   if (!isString(name)) {
@@ -28,4 +29,45 @@ export const parseUsername = (username: unknown): string => {
     );
   }
   return username;
+};
+
+export const parseEmail = (email: unknown): string => {
+  if (!isString(email)) {
+    throw new Error('Incorrect email type');
+  }
+  if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
+    throw new Error('Invalid email address format');
+  }
+  return email;
+};
+
+export const parseGender = (gender: unknown): Gender => {
+  if (!isString(gender) || !isGender(gender)) {
+    throw new Error('Incorrect gender type/format');
+  }
+  return gender;
+};
+
+export const parseBirthDate = (birthDate: unknown): string => {
+  if (!isString(birthDate) || !isDate(birthDate)) {
+    throw new Error('Incorrect date format');
+  }
+  return birthDate;
+};
+
+export const parsePassword = (password: unknown): string => {
+  if (!isString(password)) {
+    throw new Error('Incorrect password type');
+  }
+  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+    throw new Error(
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    );
+  }
+  if (password.length < 8 || password.length > 16) {
+    throw new Error(
+      'Password should be between 8 and 16 characters in length."'
+    );
+  }
+  return password;
 };

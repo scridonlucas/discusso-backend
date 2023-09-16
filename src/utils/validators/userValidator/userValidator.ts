@@ -1,6 +1,13 @@
 import { NewUser } from '../../../../types';
 
-import { parseName, parseUsername } from './fieldsValidator';
+import {
+  parseName,
+  parseUsername,
+  parseEmail,
+  parseGender,
+  parseBirthDate,
+  parsePassword,
+} from './fieldsValidator';
 
 const toNewUserEntry = (object: unknown): NewUser => {
   if (!object || typeof object !== 'object') {
@@ -21,11 +28,11 @@ const toNewUserEntry = (object: unknown): NewUser => {
       firstName: parseName(object.firstName),
       lastName: parseName(object.lastName),
       username: parseUsername(object.username),
-      email: 's',
-      gender: 'male',
-      birthDate: 's',
-      password: 'sa',
-      confirmPassword: 'sa',
+      email: parseEmail(object.email),
+      gender: parseGender(object.gender),
+      birthDate: parseBirthDate(object.birthDate),
+      password: parsePassword(object.password),
+      confirmPassword: parsePassword(object.confirmPassword),
     };
     return newUser;
   }

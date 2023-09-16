@@ -9,4 +9,4 @@ export interface NewUser {
   confirmPassword: string;
 }
 
-type Gender = 'male' | 'female' | 'other';
+export type Gender = 'male' | 'female' | 'other';
