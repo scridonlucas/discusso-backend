@@ -8,7 +8,9 @@ Backend server for an social media application built using Express and Typescrip
 
 ## Knowledge
 
-- under construction
+- Setting up an Express project with Typescript
+- Proofing requests coming from external sources by ensuring they the correct type.
+- Validating the fields before posting the requests.
 
 ## Tools
 

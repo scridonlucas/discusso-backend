@@ -24,6 +24,13 @@ const toNewUserEntry = (object: unknown): NewUser => {
     'password' in object &&
     'confirmPassword' in object
   ) {
+    const password = parsePassword(object.password);
+    const confirmPassword = parsePassword(object.confirmPassword);
+
+    if (password !== confirmPassword) {
+      throw new Error('Passwords do not match.');
+    }
+
     const newUser: NewUser = {
       firstName: parseName(object.firstName),
       lastName: parseName(object.lastName),
@@ -31,9 +38,9 @@ const toNewUserEntry = (object: unknown): NewUser => {
       email: parseEmail(object.email),
       gender: parseGender(object.gender),
       birthDate: parseBirthDate(object.birthDate),
-      password: parsePassword(object.password),
-      confirmPassword: parsePassword(object.confirmPassword),
+      password: password,
     };
+
     return newUser;
   }
   throw new Error('Some fields are missing!');
