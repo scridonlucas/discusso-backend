@@ -1,13 +1,6 @@
-import { NewUser } from '../../../../types';
+import { NewUser } from '../../../types/types';
 
-import {
-  parseName,
-  parseUsername,
-  parseEmail,
-  parseGender,
-  parseBirthDate,
-  parsePassword,
-} from './fieldsValidator';
+import fieldsValidator from './fieldsValidator';
 
 const toNewUserEntry = (object: unknown): NewUser => {
   if (!object || typeof object !== 'object') {
@@ -24,20 +17,22 @@ const toNewUserEntry = (object: unknown): NewUser => {
     'password' in object &&
     'confirmPassword' in object
   ) {
-    const password = parsePassword(object.password);
-    const confirmPassword = parsePassword(object.confirmPassword);
+    const password = fieldsValidator.parsePassword(object.password);
+    const confirmPassword = fieldsValidator.parsePassword(
+      object.confirmPassword
+    );
 
     if (password !== confirmPassword) {
       throw new Error('Passwords do not match.');
     }
 
     const newUser: NewUser = {
-      firstName: parseName(object.firstName),
-      lastName: parseName(object.lastName),
-      username: parseUsername(object.username),
-      email: parseEmail(object.email),
-      gender: parseGender(object.gender),
-      birthDate: parseBirthDate(object.birthDate),
+      firstName: fieldsValidator.parseName(object.firstName),
+      lastName: fieldsValidator.parseName(object.lastName),
+      username: fieldsValidator.parseUsername(object.username),
+      email: fieldsValidator.parseEmail(object.email),
+      gender: fieldsValidator.parseGender(object.gender),
+      birthDate: fieldsValidator.parseBirthDate(object.birthDate),
       password: password,
     };
 

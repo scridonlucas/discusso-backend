@@ -1,17 +1,17 @@
 import { Router } from 'express';
 import toNewUserEntry from '../utils/validators/userValidator/userValidator';
-import { NewUser } from '../../types';
-import { addUser, getUsers } from '../services/users';
+import { NewUser } from '../types/types';
+import usersService from '../services/usersService';
 const usersRouter = Router();
 
 usersRouter.get('/', (_req, res) => {
-  res.send(getUsers());
+  res.send(usersServicesgetUsers());
 });
 
 usersRouter.post('/', (req, res) => {
   try {
     const newUserEntry: NewUser = toNewUserEntry(req.body);
-    const addedUser = addUser(newUserEntry);
+    const addedUser = usersService.addUser(newUserEntry);
     res.json(addedUser);
   } catch (error: unknown) {
     if (error instanceof Error) {

@@ -1,8 +1,8 @@
-import { isString, isGender, isDate } from '../typeValidators';
-import { Gender } from '../../../../types';
+import { Gender } from '../../../types/types';
+import typeValidators from '../typeValidators';
 
-export const parseName = (name: unknown): string => {
-  if (!isString(name)) {
+const parseName = (name: unknown): string => {
+  if (!typeValidators.isString(name)) {
     throw new Error('Incorrect first name type');
   }
   if (!/^[A-Za-z]+$/.test(name)) {
@@ -16,8 +16,8 @@ export const parseName = (name: unknown): string => {
   return name;
 };
 
-export const parseUsername = (username: unknown): string => {
-  if (!isString(username)) {
+const parseUsername = (username: unknown): string => {
+  if (!typeValidators.isString(username)) {
     throw new Error('Incorrect username type');
   }
   if (!/^[a-zA-Z0-9]+$/.test(username)) {
@@ -31,8 +31,8 @@ export const parseUsername = (username: unknown): string => {
   return username;
 };
 
-export const parseEmail = (email: unknown): string => {
-  if (!isString(email)) {
+const parseEmail = (email: unknown): string => {
+  if (!typeValidators.isString(email)) {
     throw new Error('Incorrect email type');
   }
   if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
@@ -41,22 +41,25 @@ export const parseEmail = (email: unknown): string => {
   return email;
 };
 
-export const parseGender = (gender: unknown): Gender => {
-  if (!isString(gender) || !isGender(gender)) {
+const parseGender = (gender: unknown): Gender => {
+  if (!typeValidators.isString(gender) || !typeValidators.isGender(gender)) {
     throw new Error('Incorrect gender type/format');
   }
   return gender;
 };
 
-export const parseBirthDate = (birthDate: unknown): string => {
-  if (!isString(birthDate) || !isDate(birthDate)) {
+const parseBirthDate = (birthDate: unknown): string => {
+  if (
+    !typeValidators.isString(birthDate) ||
+    !typeValidators.isDate(birthDate)
+  ) {
     throw new Error('Incorrect date format');
   }
   return birthDate;
 };
 
-export const parsePassword = (password: unknown): string => {
-  if (!isString(password)) {
+const parsePassword = (password: unknown): string => {
+  if (!typeValidators.isString(password)) {
     throw new Error('Incorrect password type');
   }
   if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
@@ -70,4 +73,13 @@ export const parsePassword = (password: unknown): string => {
     );
   }
   return password;
+};
+
+export default {
+  parseName,
+  parseUsername,
+  parseEmail,
+  parseGender,
+  parseBirthDate,
+  parsePassword,
 };

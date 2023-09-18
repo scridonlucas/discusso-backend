@@ -1,13 +1,15 @@
-import { Gender } from '../../../types';
+import { Gender } from '../../types/types';
 
-export const isString = (text: unknown): text is string => {
+const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
 };
 
-export const isGender = (gender: string): gender is Gender => {
+const isGender = (gender: string): gender is Gender => {
   return ['Male', 'Female', 'Other'].includes(gender);
 };
 
-export const isDate = (date: string): boolean => {
+const isDate = (date: string): boolean => {
   return Boolean(Date.parse(date));
 };
+
+export default { isString, isGender, isDate };
