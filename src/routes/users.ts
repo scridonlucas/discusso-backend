@@ -5,7 +5,7 @@ import usersService from '../services/usersService';
 const usersRouter = Router();
 
 usersRouter.get('/', (_req, res) => {
-  res.send(usersServicesgetUsers());
+  res.send(usersService.getUsers());
 });
 
 usersRouter.post('/', (req, res) => {

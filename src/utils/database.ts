@@ -1,11 +1,8 @@
 import { Sequelize } from 'sequelize-typescript';
-import config from '../utils/config';
+import config from './config';
 
 const { DATABASE_URL } = config;
-const sequelize = new Sequelize(
-  DATABASE_URL ??
-    'postgres://txkryedz:KOYssVuxusTX7lV9aIMIzYnkQeMg3oDt@tai.db.elephantsql.com/txkryedz'
-);
+const sequelize = new Sequelize(DATABASE_URL);
 
 const dbConnect = async () => {
   try {
@@ -14,8 +11,9 @@ const dbConnect = async () => {
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log(`Unable to connect to the database: ${error.message}`);
+      return process.exit(1);
     }
   }
 };
 
-export default dbConnect;
+export default { sequelize, dbConnect };
