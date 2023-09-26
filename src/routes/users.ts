@@ -2,11 +2,12 @@ import { Router } from 'express';
 import toNewUserEntry from '../utils/validators/userValidator/userValidator';
 import { NewUser } from '../types/types';
 import usersService from '../services/usersService';
+import models from '../models/index';
+
+console.log(models.User);
 const usersRouter = Router();
 
-usersRouter.get('/', (_req, res) => {
-  res.send(usersService.getUsers());
-});
+usersRouter.get('/', async (_req, res) => {});
 
 usersRouter.post('/', (req, res) => {
   try {

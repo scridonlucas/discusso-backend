@@ -1,8 +1,12 @@
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize';
+
 import config from './config';
 
 const { DATABASE_URL } = config;
-const sequelize = new Sequelize(DATABASE_URL);
+console.log(DATABASE_URL);
+const sequelize = new Sequelize(
+  'postgres://txkryedz:KOYssVuxusTX7lV9aIMIzYnkQeMg3oDt@tai.db.elephantsql.com/txkryedz'
+);
 
 const dbConnect = async () => {
   try {

@@ -1,4 +1,4 @@
-import { Model, DataType } from 'sequelize-typescript';
+import { Model, DataTypes } from 'sequelize';
 import database from '../utils/database';
 
 const { sequelize } = database;
@@ -8,42 +8,42 @@ class User extends Model {}
 User.init(
   {
     id: {
-      type: DataType.TEXT,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
     firstName: {
-      type: DataType.TEXT,
+      type: DataTypes.TEXT,
       allowNull: false,
       validate: {
         is: /^[A-Za-z]+$/,
       },
     },
     lastName: {
-      type: DataType.TEXT,
+      type: DataTypes.TEXT,
       allowNull: false,
       validate: {
         is: /^[A-Za-z]+$/,
       },
     },
     username: {
-      type: DataType.TEXT,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     email: {
-      type: DataType.TEXT,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     gender: {
-      type: DataType.TEXT,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     birthDate: {
-      type: DataType.DATE,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     password: {
-      type: DataType.TEXT,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   },
@@ -53,3 +53,5 @@ User.init(
     modelName: 'user',
   }
 );
+
+export default User;
