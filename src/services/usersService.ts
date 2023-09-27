@@ -1,18 +1,22 @@
-import { NewUser, User } from '../types/types';
-const users: User[] = [];
+import 'express-async-errors';
+import { NewUser } from '../types/types';
+import models from '../models';
 
-const getUsers = (): User[] => {
+const { User } = models;
+
+const getUsers = async () => {
+  const users = await User.findAll();
   return users;
 };
-const addUser = (newUser: NewUser): User => {
-  const user: User = {
-    id: newUser.username,
+const addUser = async (newUser: NewUser) => {
+  const user = {
+    id: 1,
     ...newUser,
   };
-  users.push(user);
-  return user;
-};
+  const addedUser = await User.create(user);
 
+  return addedUser;
+};
 export default {
   getUsers,
   addUser,

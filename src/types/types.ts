@@ -9,8 +9,8 @@ export interface NewRegisteredUser {
   confirmPassword: string;
 }
 
-export interface User {
-  id: string;
+export interface BaseUser {
+  id: number;
   firstName: string;
   lastName: string;
   username: string;
@@ -20,6 +20,6 @@ export interface User {
   password: string;
 }
 
-export type NewUser = Omit<User, 'id'>;
+export type NewUser = Omit<BaseUser, 'id'>;
 
 export type Gender = 'male' | 'female' | 'other';
