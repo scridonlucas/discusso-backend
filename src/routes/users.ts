@@ -1,13 +1,17 @@
 import { Router } from 'express';
+import { RequestHandler } from 'express';
 import toNewUserEntry from '../utils/validators/userValidator/userValidator';
 import { NewUser } from '../types/types';
 import usersService from '../services/usersService';
 import models from '../models/index';
 
-console.log(models.User);
+const { User } = models;
 const usersRouter = Router();
 
-usersRouter.get('/', async (_req, res) => {});
+usersRouter.get('/', (async (_req, res) => {
+  const users = await User.findAll();
+  res.json(users);
+}) as RequestHandler);
 
 usersRouter.post('/', (req, res) => {
   try {
