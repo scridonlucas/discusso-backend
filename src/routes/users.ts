@@ -1,3 +1,4 @@
+import 'express-async-errors';
 import { Router } from 'express';
 import { RequestHandler } from 'express';
 import toNewUserEntry from '../utils/validators/userValidator/userValidator';
@@ -14,14 +15,8 @@ usersRouter.get('/', (async (_req, res) => {
 }) as RequestHandler);
 
 usersRouter.post('/', (req, res) => {
-  try {
-    const newUserEntry: NewUser = toNewUserEntry(req.body);
-    const addedUser = usersService.addUser(newUserEntry);
-    res.json(addedUser);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(400).send(error.message);
-    }
-  }
+  const newUserEntry: NewUser = toNewUserEntry(req.body);
+  const addedUser = usersService.addUser(newUserEntry);
+  res.json(addedUser);
 });
 export default usersRouter;
