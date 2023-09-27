@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
-
+import { BaseError, ValidationError } from 'sequelize';
 const unknownEndPoint = (
   _req: Request,
   res: Response,
@@ -16,19 +16,12 @@ const errorHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(error.name);
   console.error(error.message);
-
-  if (error.name === 'CastError') {
-    return res.status(400).send({ error: 'malformatted id' });
-  } else if (error.name === 'ValidationError') {
-    return res.status(400).json({ error: error.message });
-  } else if (error.name === 'JsonWebTokenError') {
-    return res.status(400).json({ error: error.message });
-  } else if (error.name === 'TokenExpiredError') {
-    return res.status(401).json({
-      error: 'token expired',
-    });
+  if (error instanceof ValidationError) {
+    return res.status(400).send({ error: 'Validation error!' });
+  }
+  if (error instanceof BaseError) {
+    return res.status(504).json({ error: error.message });
   }
 
   return next(error);

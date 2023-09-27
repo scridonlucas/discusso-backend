@@ -15,7 +15,11 @@ usersRouter.get('/', (async (_req, res) => {
 usersRouter.get('/:id', (async (req, res) => {
   const id = Number(req.params.id);
   const user = await usersService.getUser(id);
-  res.json(user);
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404).send({ error: 'User not found' });
+  }
 }) as RequestHandler);
 
 usersRouter.post('/', (async (req, res) => {
@@ -24,9 +28,14 @@ usersRouter.post('/', (async (req, res) => {
   res.json(addedUser);
 }) as RequestHandler);
 
-usersRouter.delete('/:id', (async (req, _res) => {
+usersRouter.delete('/:id', (async (req, res) => {
   const id = Number(req.params.id);
-  await usersService.deleteUser(id);
+  const deletedUser = await usersService.deleteUser(id);
+  if (deletedUser) {
+    res.status(204).end();
+  } else {
+    res.status(404).send({ error: 'User not found' });
+  }
 }) as RequestHandler);
 
 export default usersRouter;
