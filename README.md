@@ -15,13 +15,17 @@ Backend server for an social media application built using Express, Typescript a
 - Creating PostgreSQL models and setting up validations and constraints for them.
 - Using bcrypt library to hash passwords before storing them in a database.
 
+## Technologies
+
+- Express
+- Typescript
+- PostgreSQL
+- Sequelize
+
 ## Tools
 
 - Visual Studio Code
 - webpack
-- Express
-- PostgreSQL
-- Sequelize
 - Git and Github
 - npm
 

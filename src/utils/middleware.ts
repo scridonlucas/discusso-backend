@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { BaseError, ValidationError } from 'sequelize';
+
 const unknownEndPoint = (
   _req: Request,
   res: Response,

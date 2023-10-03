@@ -5,7 +5,7 @@ const isString = (text: unknown): text is string => {
 };
 
 const isGender = (gender: string): gender is Gender => {
-  return ['Male', 'Female', 'Other'].includes(gender);
+  return ['male', 'female', 'other'].includes(gender);
 };
 
 const isDate = (date: string): boolean => {

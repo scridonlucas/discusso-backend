@@ -18,7 +18,7 @@ usersRouter.get('/:id', (async (req, res) => {
   if (user) {
     res.json(user);
   } else {
-    res.status(404).send({ error: 'User not found' });
+    res.status(404).send({ error: 'User not found!' });
   }
 }) as RequestHandler);
 
@@ -34,7 +34,7 @@ usersRouter.delete('/:id', (async (req, res) => {
   if (deletedUser) {
     res.status(204).end();
   } else {
-    res.status(404).send({ error: 'User not found' });
+    res.status(404).send({ error: 'User not found!' });
   }
 }) as RequestHandler);
 
