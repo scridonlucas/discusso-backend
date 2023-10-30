@@ -18,7 +18,11 @@ const errorHandler: ErrorRequestHandler = (
   next: NextFunction
 ) => {
   console.error(error.message);
+  console.log(error.name);
   if (error instanceof ValidationError) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ error: error.message });
+    }
     return res.status(400).send({ error: 'Validation error!' });
   }
   if (error instanceof BaseError) {

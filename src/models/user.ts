@@ -29,12 +29,18 @@ User.init(
     username: {
       type: DataTypes.TEXT,
       allowNull: false,
-      unique: true,
+      unique: {
+        name: 'uniqueUsername',
+        msg: 'Sorry, the username is already taken. Please choose a different username.',
+      },
     },
     email: {
       type: DataTypes.TEXT,
       allowNull: false,
-      unique: true,
+      unique: {
+        name: 'uniqueEmail',
+        msg: 'This email address is already in use. Please use a different email address.',
+      },
       validate: {
         isEmail: true,
       },
