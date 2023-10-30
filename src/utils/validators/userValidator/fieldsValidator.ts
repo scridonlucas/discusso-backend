@@ -1,6 +1,5 @@
 import { Gender } from '../../../types/types';
 import typeValidators from '../typeValidators';
-
 const parseName = (name: unknown): string => {
   if (!typeValidators.isString(name)) {
     throw new Error('Incorrect first name type');
@@ -13,6 +12,7 @@ const parseName = (name: unknown): string => {
       'Both the first and last names should be between 3 and 30 characters in length."'
     );
   }
+
   return name;
 };
 
