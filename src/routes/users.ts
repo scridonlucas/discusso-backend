@@ -1,7 +1,7 @@
 import 'express-async-errors';
 import { Router } from 'express';
 import { RequestHandler } from 'express';
-import toNewUserEntry from '../utils/validators/userValidator/userValidator';
+import userValidator from '../utils/validators/userValidator';
 import { NewUser } from '../types/types';
 import usersService from '../services/usersService';
 
@@ -23,7 +23,7 @@ usersRouter.get('/:id', (async (req, res) => {
 }) as RequestHandler);
 
 usersRouter.post('/', (async (req, res) => {
-  const newUserEntry: NewUser = toNewUserEntry(req.body);
+  const newUserEntry: NewUser = userValidator.toNewUserEntry(req.body);
   const addedUser = await usersService.addUser(newUserEntry);
   res.json(addedUser);
 }) as RequestHandler);
