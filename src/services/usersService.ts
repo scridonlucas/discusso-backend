@@ -15,10 +15,19 @@ const getUser = async (id: number) => {
   return user;
 };
 
+const getUserByUsername = async (username: string) => {
+  const user = await User.findOne({ where: { username } });
+  return user;
+};
+
+const getUserByEmail = async (email: string) => {
+  const user = await User.findOne({ where: { email } });
+  return user;
+};
+
 const addUser = async (newUser: NewUser) => {
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(newUser.password, saltRounds);
-
   const user = {
     ...newUser,
     password: passwordHash,
@@ -42,6 +51,8 @@ const deleteUser = async (id: number) => {
 export default {
   getUsers,
   getUser,
+  getUserByUsername,
+  getUserByEmail,
   addUser,
   deleteUser,
 };

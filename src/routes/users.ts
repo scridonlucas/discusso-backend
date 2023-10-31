@@ -38,4 +38,24 @@ usersRouter.delete('/:id', (async (req, res) => {
   }
 }) as RequestHandler);
 
+usersRouter.get('/check-username/:username', (async (req, res) => {
+  const username = req.params.username;
+  const user = await usersService.getUserByUsername(username);
+  if (user) {
+    return res.json({ exists: true });
+  } else {
+    return res.json({ exists: false });
+  }
+}) as RequestHandler);
+
+usersRouter.get('/check-email/:email', (async (req, res) => {
+  const email = req.params.email;
+  const user = await usersService.getUserByEmail(email);
+  if (user) {
+    return res.json({ exists: true });
+  } else {
+    return res.json({ exists: false });
+  }
+}) as RequestHandler);
+
 export default usersRouter;
