@@ -8,8 +8,8 @@ const toNewLoginEntry = (object: unknown): LoginUser => {
 
   if ('email' in object && 'password' in object) {
     const newLoginEntry: LoginUser = {
-      email: loginFieldsValidator.loginValidator(object.email),
-      password: loginFieldsValidator.loginValidator(object.password),
+      email: loginFieldsValidator.emailValidator(object.email),
+      password: loginFieldsValidator.passwordValidator(object.password),
     };
     return newLoginEntry;
   }

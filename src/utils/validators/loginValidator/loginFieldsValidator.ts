@@ -1,6 +1,13 @@
 import typeValidators from '../typeValidators';
 
-const loginValidator = (input: unknown): string => {
+const emailValidator = (input: unknown): string => {
+  if (!typeValidators.isString(input)) {
+    throw new Error('Incorrect type');
+  }
+  return input;
+};
+
+const passwordValidator = (input: unknown): string => {
   if (!typeValidators.isString(input)) {
     throw new Error('Incorrect type');
   }
@@ -8,5 +15,6 @@ const loginValidator = (input: unknown): string => {
 };
 
 export default {
-  loginValidator,
+  emailValidator,
+  passwordValidator,
 };
