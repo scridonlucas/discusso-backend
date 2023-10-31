@@ -1,6 +1,6 @@
 import { NewUser } from '../../../types/types';
 
-import fieldsValidator from './fieldsValidator';
+import fieldsValidator from './userFieldsValidator';
 
 const toNewUserEntry = (object: unknown): NewUser => {
   if (!object || typeof object !== 'object') {

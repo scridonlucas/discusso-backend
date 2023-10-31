@@ -20,6 +20,11 @@ export interface BaseUser {
   password: string;
 }
 
+export interface LoginUser {
+  email: string;
+  password: string;
+}
+
 export type NewUser = Omit<BaseUser, 'id'>;
 
 export type Gender = 'male' | 'female' | 'other';
