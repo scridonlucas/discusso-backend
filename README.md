@@ -4,7 +4,7 @@ Backend server for an social media application built using Express, Typescript a
 
 ## Features
 
-- under construction
+- **User Registration**: Allow users to create new accounts and store their information in a PostgreSQL database.
 
 ## Knowledge
 
