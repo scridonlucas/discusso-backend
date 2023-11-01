@@ -6,6 +6,7 @@ import loginValidator from '../utils/validators/loginValidator';
 import { BaseUser, LoginUser } from '../types/types';
 import usersService from '../services/usersService';
 import loginService from '../services/loginService';
+import config from '../utils/config';
 
 const loginRouter = Router();
 
@@ -23,7 +24,7 @@ loginRouter.post('/', (async (req, res) => {
       id: user.id,
     };
 
-    const token = jwt.sign(userForToken, 'tokenpassword', {
+    const token = jwt.sign(userForToken, config.JWT, {
       expiresIn: 60 * 60,
     });
 
