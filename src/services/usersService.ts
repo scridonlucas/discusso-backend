@@ -1,6 +1,6 @@
 import 'express-async-errors';
 import bcrypt from 'bcrypt';
-import { NewUser } from '../types/types';
+import { BaseUser, NewUser } from '../types/types';
 import models from '../models';
 
 const { User } = models;
@@ -21,7 +21,11 @@ const getUserByUsername = async (username: string) => {
 };
 
 const getUserByEmail = async (email: string) => {
-  const user = await User.findOne({ where: { email } });
+  const response = await User.findOne({ where: { email } });
+  if (!response) {
+    return null;
+  }
+  const user: BaseUser = response.toJSON();
   return user;
 };
 
