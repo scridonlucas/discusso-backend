@@ -5,6 +5,7 @@ Backend server for an social media application built using Express, Typescript a
 ## Features
 
 - **User Registration**: Allow users to create new accounts and store their information in a PostgreSQL database.
+- **User Authentification**: Allow users to log into their account. We use JWT, a widely-accepted standard for secure authentication, to protect user accounts.
 
 ## Knowledge
 

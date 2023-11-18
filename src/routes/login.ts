@@ -28,7 +28,9 @@ loginRouter.post('/', (async (req, res) => {
       expiresIn: 60 * 60,
     });
 
-    res.status(200).send({ token, username: user.username, email: user.email });
+    res.cookie('token', token, { httpOnly: true });
+
+    res.status(200).send({ succes: true });
   }
   return res.status(401).json({ error: 'Invalid username or password!' });
 }) as RequestHandler);
