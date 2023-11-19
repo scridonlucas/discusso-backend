@@ -14,7 +14,6 @@ loginRouter.post('/', (async (req, res) => {
   const { email, password }: LoginUser = loginValidator.toNewLoginEntry(
     req.body
   );
-
   const user: BaseUser | null = await usersService.getUserByEmail(email);
   const passwordCorrect = await loginService.comparePasswords(user, password);
 

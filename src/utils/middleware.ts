@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { BaseError, ValidationError } from 'sequelize';
 
+const tokenExtractor = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {};
 const unknownEndPoint = (
   _req: Request,
   res: Response,

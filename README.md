@@ -16,6 +16,7 @@ Backend server for an social media application built using Express, Typescript a
 - Creating PostgreSQL models and setting up validations and constraints for them.
 - Using bcrypt library to hash passwords before storing them in a database.
 - Learning how to use JSON Web tokens for token-based authentification.
+- Using HTTP-only cookies to securely send the token.
 
 ## Technologies
 
