@@ -1,3 +1,3 @@
-import cookiesValidator from './cookiesValidator';
+import toNewCookie from './cookiesValidator';
 
-export default { cookiesValidator };
+export default { toNewCookie };

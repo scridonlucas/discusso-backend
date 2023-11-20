@@ -1,7 +1,7 @@
 import { Cookie } from '../../../types/types';
 import cookiesFieldsValidator from './cookiesFieldsValidator';
 
-const cookiesValidator = (object: unknown): Cookie => {
+const toNewCookie = (object: unknown): Cookie => {
   if (!object || typeof object !== 'object') {
     throw new Error('Missing token!');
   }
@@ -14,4 +14,4 @@ const cookiesValidator = (object: unknown): Cookie => {
   throw new Error('Some fields are missing');
 };
 
-export default cookiesValidator;
+export default toNewCookie;
