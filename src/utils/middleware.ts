@@ -1,16 +1,19 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+import { CustomRequest } from '../types/types';
+
 import { BaseError, ValidationError } from 'sequelize';
 import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
 
 const jwtExtractor = (
-  req: Request,
-  res: Response,
+  req: CustomRequest,
+  _res: Response,
   next: NextFunction
 ): void => {
   try {
     const cookies = cookiesValidator.toNewCookie(req.cookies);
-    const token: string = cookies.token;
+    req.token = cookies.token;
+    next();
   } catch (error) {
     next(error);
   }
@@ -52,4 +55,4 @@ const errorHandler: ErrorRequestHandler = (
   return next(error);
 };
 
-export default { unknownEndPoint, errorHandler };
+export default { unknownEndPoint, errorHandler, jwtExtractor };
