@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { CustomRequest } from '../types/types';
-
 import { BaseError, ValidationError } from 'sequelize';
+import jwt from 'jsonwebtoken';
+import config from './config';
 import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
 
@@ -26,7 +27,8 @@ const jwtVerify = (
 ): void => {
   if (req.token) {
     try {
-      const decodedToken;
+      const decodedToken = jwt.verify(req.token, config.JWT);
+
       next();
     } catch (error) {
       next(error);
