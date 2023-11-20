@@ -19,6 +19,23 @@ const jwtExtractor = (
   }
 };
 
+const jwtVerify = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (req.token) {
+    try {
+      const decodedToken;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    res.status(401).json({ error: 'No token found!' });
+  }
+};
+
 const unknownEndPoint = (
   _req: Request,
   res: Response,

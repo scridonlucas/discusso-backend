@@ -36,5 +36,5 @@ export interface Cookie {
 }
 
 export interface CustomRequest extends Request {
-  token: string;
+  token?: string;
 }
