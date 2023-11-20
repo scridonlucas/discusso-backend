@@ -28,3 +28,7 @@ export interface LoginUser {
 export type NewUser = Omit<BaseUser, 'id'>;
 
 export type Gender = 'male' | 'female' | 'other';
+
+export interface Cookie {
+  token: string;
+}

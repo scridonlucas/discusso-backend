@@ -2,11 +2,14 @@ import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { BaseError, ValidationError } from 'sequelize';
 import 'express-async-errors';
 
-const validateJWT = (
+const jwtExtractor = (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {};
+): void => {
+  const x: string = req.cookies['token'];
+  console.log(x);
+};
 
 const unknownEndPoint = (
   _req: Request,
