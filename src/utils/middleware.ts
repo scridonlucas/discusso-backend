@@ -1,14 +1,12 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { BaseError, ValidationError } from 'sequelize';
+import 'express-async-errors';
 
 const validateJWT = (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
-
-
-};
+): void => {};
 
 const unknownEndPoint = (
   _req: Request,
@@ -37,10 +35,11 @@ const errorHandler: ErrorRequestHandler = (
   if (error instanceof BaseError) {
     return res.status(504).json({ error: error.message });
   }
-   if (error.name === 'TokenExpiredError') {
+  if (error.name === 'TokenExpiredError') {
     return res.status(401).json({
-      error: 'token expired'
-    })
+      error: 'token expired',
+    });
+  }
 
   return next(error);
 };
