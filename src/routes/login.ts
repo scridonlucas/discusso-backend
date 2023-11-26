@@ -7,6 +7,7 @@ import { BaseUser, LoginUser } from '../types/types';
 import usersService from '../services/usersService';
 import loginService from '../services/loginService';
 import config from '../utils/config';
+import { UserToken } from '../types/types';
 
 const loginRouter = Router();
 
@@ -19,7 +20,7 @@ loginRouter.post('/', (async (req, res) => {
   const passwordCorrect = await loginService.comparePasswords(user, password);
 
   if (passwordCorrect && user) {
-    const userForToken = {
+    const userForToken: UserToken = {
       username: user.username,
       id: user.id,
     };

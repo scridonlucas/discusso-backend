@@ -38,3 +38,8 @@ export interface Cookie {
 export interface CustomRequest extends Request {
   token?: string;
 }
+
+export interface userToken {
+  username: string;
+  id: number;
+}
