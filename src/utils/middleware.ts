@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import config from './config';
 import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
+import { UserToken } from '../types/types';
 
 const jwtExtractor = (
   req: CustomRequest,
@@ -27,8 +28,8 @@ const jwtVerify = (
 ): void => {
   if (req.token) {
     try {
-      const decodedToken = jwt.verify(req.token, config.JWT);
-
+      const decodedToken = jwt.verify(req.token, config.JWT) as UserToken;
+      req.user = decodedToken.username;
       next();
     } catch (error) {
       next(error);
@@ -74,4 +75,4 @@ const errorHandler: ErrorRequestHandler = (
   return next(error);
 };
 
-export default { unknownEndPoint, errorHandler, jwtExtractor };
+export default { unknownEndPoint, errorHandler, jwtExtractor, jwtVerify };
