@@ -4,11 +4,14 @@ import cookieParser from 'cookie-parser';
 import usersRouter from './routes/users';
 import loginRouter from './routes/login';
 import middleware from './utils/middleware';
+import passport from 'passport';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+app.use(passport.initialize());
+
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
 app.use(middleware.unknownEndPoint);

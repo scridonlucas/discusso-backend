@@ -39,7 +39,7 @@ export interface CustomRequest extends Request {
   token?: string;
 }
 
-export interface userToken {
+export interface UserToken {
   username: string;
   id: number;
 }
