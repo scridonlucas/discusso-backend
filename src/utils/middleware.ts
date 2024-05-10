@@ -7,35 +7,19 @@ import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
 import { UserToken } from '../types/types';
 
-const jwtExtractor = (
+const jwtVerify = (
   req: CustomRequest,
   _res: Response,
   next: NextFunction
 ): void => {
   try {
     const cookies = cookiesValidator.toNewCookie(req.cookies);
-    req.token = cookies.token;
+    const token = cookies.token;
+    const decodedToken = jwt.verify(token, config.JWT) as UserToken;
+    req.user = decodedToken;
     next();
   } catch (error) {
     next(error);
-  }
-};
-
-const jwtVerify = (
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction
-): void => {
-  if (req.token) {
-    try {
-      const decodedToken = jwt.verify(req.token, config.JWT) as UserToken;
-      req.user = decodedToken.username;
-      next();
-    } catch (error) {
-      next(error);
-    }
-  } else {
-    res.status(401).json({ error: 'No token found!' });
   }
 };
 
@@ -75,4 +59,4 @@ const errorHandler: ErrorRequestHandler = (
   return next(error);
 };
 
-export default { unknownEndPoint, errorHandler, jwtExtractor, jwtVerify };
+export default { unknownEndPoint, errorHandler, jwtVerify };

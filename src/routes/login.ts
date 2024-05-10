@@ -30,7 +30,9 @@ loginRouter.post('/', (async (req, res) => {
 
     res.cookie('token', token, { httpOnly: true });
 
-    res.status(200).send({ succes: true });
+    return res.status(200).send({
+      success: true,
+    });
   }
   return res.status(401).json({ error: 'Invalid username or password!' });
 }) as RequestHandler);
