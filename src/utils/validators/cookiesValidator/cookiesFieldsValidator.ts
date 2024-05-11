@@ -1,8 +1,9 @@
 import typeValidators from '../typeValidators';
+import { CustomTokenError } from '../../customErrors';
 
 const tokenValidator = (input: unknown): string => {
   if (!typeValidators.isString(input)) {
-    throw new Error('Incorrect type');
+    throw new CustomTokenError('Incorrect type');
   }
   return input;
 };

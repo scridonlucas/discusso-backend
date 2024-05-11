@@ -1,9 +1,10 @@
 import { Cookie } from '../../../types/types';
 import cookiesFieldsValidator from './cookiesFieldsValidator';
+import { CustomTokenError } from '../../customErrors';
 
 const toNewCookie = (object: unknown): Cookie => {
   if (!object || typeof object !== 'object') {
-    throw new Error('Missing token!');
+    throw new CustomTokenError('Missing cookies!');
   }
   if ('token' in object) {
     const newCookies: Cookie = {
@@ -11,7 +12,7 @@ const toNewCookie = (object: unknown): Cookie => {
     };
     return newCookies;
   }
-  throw new Error('Some fields are missing');
+  throw new CustomTokenError('Token is missing!');
 };
 
 export default toNewCookie;

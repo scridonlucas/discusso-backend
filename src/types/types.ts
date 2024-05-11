@@ -36,7 +36,7 @@ export interface Cookie {
 }
 
 export interface CustomRequest extends Request {
-  token?: string;
+  decodedToken?: UserToken;
 }
 
 export interface UserToken {

@@ -6,6 +6,7 @@ import config from './config';
 import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
 import { UserToken } from '../types/types';
+import { CustomTokenError } from './customErrors';
 
 const jwtVerify = (
   req: CustomRequest,
@@ -16,7 +17,7 @@ const jwtVerify = (
     const cookies = cookiesValidator.toNewCookie(req.cookies);
     const token = cookies.token;
     const decodedToken = jwt.verify(token, config.JWT) as UserToken;
-    req.user = decodedToken;
+    req.decodedToken = decodedToken;
     next();
   } catch (error) {
     next(error);
@@ -46,6 +47,9 @@ const errorHandler: ErrorRequestHandler = (
       return res.status(400).json({ error: error.message });
     }
     return res.status(400).send({ error: 'Validation error!' });
+  }
+  if (error instanceof CustomTokenError) {
+    return res.status(401).json({ error: error.message });
   }
   if (error instanceof BaseError) {
     return res.status(504).json({ error: error.message });
