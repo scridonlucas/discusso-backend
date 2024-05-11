@@ -7,7 +7,12 @@ import authRouter from './routes/auth';
 import middleware from './utils/middleware';
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
