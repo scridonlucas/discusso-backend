@@ -2,7 +2,7 @@ import 'express-async-errors';
 import { Router } from 'express';
 import { RequestHandler } from 'express';
 import userValidator from '../utils/validators/userValidator';
-import { NewUser } from '../types/types';
+import { NewUser } from '../types/userTypes';
 import usersService from '../services/usersService';
 
 const usersRouter = Router();

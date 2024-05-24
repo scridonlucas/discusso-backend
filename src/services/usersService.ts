@@ -1,8 +1,7 @@
 import 'express-async-errors';
 import bcrypt from 'bcrypt';
-import { BaseUser, NewUser } from '../types/types';
 import models from '../models';
-
+import { BaseUser, NewUser } from '../types/userTypes';
 const { User } = models;
 
 const getUsers = async () => {

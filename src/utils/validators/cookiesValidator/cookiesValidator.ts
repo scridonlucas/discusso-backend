@@ -1,6 +1,6 @@
-import { Cookie } from '../../../types/types';
 import cookiesFieldsValidator from './cookiesFieldsValidator';
 import { CustomTokenError } from '../../customErrors';
+import { Cookie } from '../../../types/authTypes';
 
 const toNewCookie = (object: unknown): Cookie => {
   if (!object || typeof object !== 'object') {

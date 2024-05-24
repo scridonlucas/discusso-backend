@@ -1,4 +1,4 @@
-import { Gender } from '../../../types/types';
+import { Gender } from '../../../types/userTypes';
 import typeValidators from '../typeValidators';
 
 const parseName = (name: unknown): string => {

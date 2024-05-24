@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
-import { CustomRequest } from '../types/types';
 import { BaseError, ValidationError } from 'sequelize';
 import jwt from 'jsonwebtoken';
 import config from './config';
 import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
-import { UserToken } from '../types/types';
 import { CustomTokenError } from './customErrors';
+import { CustomRequest, UserToken } from '../types/authTypes';
 
 const jwtVerify = (
   req: CustomRequest,

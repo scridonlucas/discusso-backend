@@ -1,4 +1,4 @@
-import { Gender } from '../../types/types';
+import { Gender } from '../../types/userTypes';
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;

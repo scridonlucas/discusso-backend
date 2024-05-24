@@ -1,4 +1,4 @@
-import { LoginUser } from '../../../types/types';
+import { LoginUser } from '../../../types/userTypes';
 import loginFieldsValidator from './loginFieldsValidator';
 
 const toNewLoginEntry = (object: unknown): LoginUser => {

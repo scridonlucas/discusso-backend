@@ -1,5 +1,3 @@
-import { Request } from 'express';
-
 export interface NewRegisteredUser {
   firstName: string;
   lastName: string;
@@ -30,16 +28,3 @@ export interface LoginUser {
 export type NewUser = Omit<BaseUser, 'id'>;
 
 export type Gender = 'male' | 'female' | 'other';
-
-export interface Cookie {
-  token: string;
-}
-
-export interface CustomRequest extends Request {
-  decodedToken?: UserToken;
-}
-
-export interface UserToken {
-  username: string;
-  id: number;
-}
