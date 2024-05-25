@@ -5,13 +5,9 @@ import config from './config';
 import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
 import { CustomTokenError } from './customErrors';
-import { CustomRequest, UserToken } from '../types/authTypes';
+import { UserToken } from '../types/authTypes';
 
-const jwtVerify = (
-  req: CustomRequest,
-  _res: Response,
-  next: NextFunction
-): void => {
+const jwtVerify = (req: Request, _res: Response, next: NextFunction): void => {
   try {
     const cookies = cookiesValidator.toNewCookie(req.cookies);
     const token = cookies.token;

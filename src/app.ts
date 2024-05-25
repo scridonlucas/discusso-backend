@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import usersRouter from './routes/users';
 import authRouter from './routes/auth';
 import middleware from './utils/middleware';
+import discussionsRouter from './routes/discussions';
 
 const app = express();
 app.use(
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/discussions', discussionsRouter);
 app.use(middleware.unknownEndPoint);
 app.use(middleware.errorHandler);
 

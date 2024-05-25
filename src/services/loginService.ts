@@ -1,7 +1,10 @@
 import bcrypt from 'bcrypt';
-import { BaseUser } from '../types/userTypes';
+import { UserAttributes } from '../types/userTypes';
 
-const comparePasswords = async (user: BaseUser | null, password: string) => {
+const comparePasswords = async (
+  user: UserAttributes | null,
+  password: string
+) => {
   const passwordCorrect =
     user === null ? false : await bcrypt.compare(password, user.password);
   return passwordCorrect;

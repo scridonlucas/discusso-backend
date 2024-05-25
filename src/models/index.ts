@@ -1,7 +1,10 @@
 import User from './user';
-import Post from './posts';
+import Discussion from './discussions';
 
-void User.sync();
-void Post.sync();
+User.hasMany(Discussion);
+Discussion.belongsTo(User);
 
-export default { User, Post };
+void User.sync({ alter: true });
+void Discussion.sync({ alter: true });
+
+export default { User, Discussion };

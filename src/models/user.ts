@@ -1,9 +1,28 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, Optional } from 'sequelize';
+import { Gender } from '../types/userTypes';
 import database from '../utils/database';
-
+import { UserAttributes } from '../types/userTypes';
 const { sequelize } = database;
 
-class User extends Model {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+
+class User
+  extends Model<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
+  public id!: number;
+  public firstName!: string;
+  public lastName!: string;
+  public username!: string;
+  public email!: string;
+  public gender!: Gender;
+  public birthDate!: string;
+  public password!: string;
+
+  // timestamps!
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 User.init(
   {

@@ -5,11 +5,11 @@ import middleware from '../utils/middleware';
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 import loginValidator from '../utils/validators/loginValidator';
-import { BaseUser, LoginUser } from '../types/userTypes';
+import { UserAttributes, LoginUser } from '../types/userTypes';
 import usersService from '../services/usersService';
 import loginService from '../services/loginService';
 import config from '../utils/config';
-import { CustomRequest } from '../types/authTypes';
+import { Request } from 'express';
 
 const authRouter = Router();
 
@@ -18,7 +18,7 @@ authRouter.post('/login', (async (req, res) => {
     req.body
   );
 
-  const user: BaseUser | null = await usersService.getUserByEmail(email);
+  const user: UserAttributes | null = await usersService.getUserByEmail(email);
   const passwordCorrect = await loginService.comparePasswords(user, password);
 
   if (passwordCorrect && user) {
@@ -40,17 +40,18 @@ authRouter.post('/login', (async (req, res) => {
   return res.status(401).json({ error: 'Invalid username or password!' });
 }) as RequestHandler);
 
-authRouter.get('/logout', ((_req: CustomRequest, res: Response, _next) => {
+authRouter.get('/logout', ((_req, res: Response, _next) => {
   res.clearCookie('token');
   res.status(200).json({ success: true });
 }) as RequestHandler);
 
 authRouter.get('/verify', middleware.jwtVerify, ((
-  req: CustomRequest,
+  req: Request,
   res: Response,
   _next
 ) => {
-  const username = req.decodedToken?.username;
+  const username = req.decodedToken.username;
+
   console.log(username);
   res.json({
     success: true,
