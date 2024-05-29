@@ -6,6 +6,7 @@ Backend server for an social media application built using Express, Typescript a
 
 - **User Registration**: Allow users to create new accounts and store their information in a PostgreSQL database.
 - **User Authentification**: Allow users to log into their account. We use JWT, a widely-accepted standard for secure authentication, to protect user accounts.
+- **Discussions**: Allow users to start discussions.
 
 ## Knowledge
 
@@ -14,6 +15,7 @@ Backend server for an social media application built using Express, Typescript a
 - Validating the fields before posting the requests.
 - Setting up a PostgreSQL database and connecting it to Express apllication.
 - Creating PostgreSQL models and setting up validations and constraints for them.
+- Creating complex relationships between tables using PostgreSQL.
 - Using bcrypt library to hash passwords before storing them in a database.
 - Learning how to use JSON Web tokens for token-based authentification.
 - Using HTTP-only cookies to securely send the token.

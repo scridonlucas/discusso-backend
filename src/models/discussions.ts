@@ -14,7 +14,7 @@ class Discussion
   public id!: number;
   public title!: string;
   public content!: string;
-  userId!: number;
+  public userId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }

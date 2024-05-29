@@ -19,7 +19,12 @@ discussionsRouter.post('/', middleware.jwtVerify, (async (
     newDiscussion,
     userId
   );
-  res.json(discussion);
+  res.status(201).json(discussion);
 }) as RequestHandler);
 
+discussionsRouter.get('/', middleware.jwtVerify, (async (
+  req: Request<unknown, unknown, NewDiscussion>,
+  res: Response,
+  _next
+) => {}) as RequestHandler);
 export default discussionsRouter;
