@@ -5,6 +5,7 @@ import { Response } from 'express';
 import discussionsService from '../services/discussionsService';
 import { Router, Request } from 'express';
 import { NewDiscussion } from '../types/discussionType';
+import { PaginationQuery } from '../types/requestTypes';
 
 const discussionsRouter = Router();
 
@@ -23,8 +24,13 @@ discussionsRouter.post('/', middleware.jwtVerify, (async (
 }) as RequestHandler);
 
 discussionsRouter.get('/', middleware.jwtVerify, (async (
-  req: Request<unknown, unknown, NewDiscussion>,
+  req: Request<unknown, unknown, NewDiscussion, PaginationQuery>,
   res: Response,
   _next
-) => {}) as RequestHandler);
+) => {
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+  const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
+  const discussions = await discussionsService.getDiscussions(limit, offset);
+  res.status(201).json(discussions);
+}) as RequestHandler);
 export default discussionsRouter;

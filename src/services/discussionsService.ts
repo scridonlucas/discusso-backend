@@ -11,6 +11,12 @@ const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   return addedDiscussion;
 };
 
+const getDiscussions = async (limit: number, offset: number) => {
+  const discussions = 1;
+  return discussions;
+};
+
 export default {
   addDiscussion,
+  getDiscussions,
 };
