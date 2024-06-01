@@ -12,8 +12,16 @@ const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
 };
 
 const getDiscussions = async (limit: number, offset: number) => {
-  const discussions = 1;
-  return discussions;
+  const discussions = await Discussion.findAndCountAll({
+    limit,
+    offset,
+    order: [['createdAt', 'DESC']],
+  });
+
+  return {
+    discussions: discussions.rows,
+    total: discussions.count,
+  };
 };
 
 export default {
