@@ -1,0 +1,2 @@
+GET http://localhost:3001/api/discussions?limit=30&offset=0
+Content-Type: application/json
