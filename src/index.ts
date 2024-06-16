@@ -10,7 +10,6 @@ const start = () => {
     console.log(`Server running on port ${PORT}`);
   });
 };
-void start();
 
 // close db connection
 const gracefulShutdown = async () => {
@@ -23,6 +22,8 @@ const gracefulShutdown = async () => {
     process.exit(0);
   }
 };
+
+void start();
 
 process.on('SIGINT', () => {
   void gracefulShutdown();
