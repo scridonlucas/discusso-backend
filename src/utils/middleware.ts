@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
-import { BaseError, ValidationError } from 'sequelize';
 import { Prisma } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import config from './config';
@@ -71,18 +70,10 @@ const errorHandler: ErrorRequestHandler = (
       .json({ error: 'Validation error with Prisma Client.' });
   }
 
-  if (error instanceof ValidationError) {
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(400).json({ error: error.message });
-    }
-    return res.status(400).send({ error: 'Validation error!' });
-  }
   if (error instanceof CustomTokenError) {
     return res.status(401).json({ error: error.message });
   }
-  if (error instanceof BaseError) {
-    return res.status(504).json({ error: error.message });
-  }
+
   if (error.name === 'TokenExpiredError') {
     return res.status(401).json({
       error: 'token expired',

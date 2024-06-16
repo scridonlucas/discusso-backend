@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prismaClient';
 import { NewDiscussion } from '../types/discussionType';
-
-const prisma = new PrismaClient();
 
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const addedDiscussion = await prisma.discussion.create({

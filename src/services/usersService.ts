@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prismaClient';
 import bcrypt from 'bcrypt';
 import { NewUser } from '../types/userTypes';
-
-const prisma = new PrismaClient();
 
 const getUsers = async () => {
   const users = await prisma.user.findMany();
