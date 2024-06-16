@@ -6,7 +6,7 @@ Content-Type: application/json
   "lastName": "Doe",
   "username": "johndoe",
   "email": "johndoe@example.com",
-  "gender": "male",
+  "gender": "MALE",
   "birthDate": "1990-01-01",
   "password": "Test123.",
   "confirmPassword": "Test123."

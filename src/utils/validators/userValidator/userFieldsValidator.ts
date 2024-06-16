@@ -50,14 +50,14 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 };
 
-const parseBirthDate = (birthDate: unknown): string => {
+const parseBirthDate = (birthDate: unknown): Date => {
   if (
     !typeValidators.isString(birthDate) ||
     !typeValidators.isDate(birthDate)
   ) {
     throw new Error('Incorrect date format');
   }
-  return birthDate;
+  return new Date(birthDate);
 };
 
 const parsePassword = (password: unknown): string => {

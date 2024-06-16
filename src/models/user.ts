@@ -16,7 +16,7 @@ class User
   public username!: string;
   public email!: string;
   public gender!: Gender;
-  public birthDate!: string;
+  public birthDate!: Date;
   public password!: string;
 
   // timestamps!
