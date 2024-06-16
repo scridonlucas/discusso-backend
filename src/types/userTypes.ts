@@ -16,7 +16,7 @@ export interface UserAttributes {
   username: string;
   email: string;
   gender: Gender;
-  birthDate: string;
+  birthDate: Date;
   password: string;
 }
 
@@ -27,4 +27,4 @@ export interface LoginUser {
 
 export type NewUser = Omit<UserAttributes, 'id'>;
 
-export type Gender = 'male' | 'female' | 'other';
+export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
