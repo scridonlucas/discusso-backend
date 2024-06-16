@@ -4,7 +4,6 @@ import { RequestHandler } from 'express';
 import userValidator from '../utils/validators/userValidator';
 import { NewUser } from '../types/userTypes';
 import usersService from '../services/usersService';
-import usersServiceTest from '../services/usersServiceTest';
 
 const usersRouter = Router();
 
@@ -57,12 +56,6 @@ usersRouter.get('/check-email/:email', (async (req, res) => {
   } else {
     return res.json({ exists: false });
   }
-}) as RequestHandler);
-
-usersRouter.post('/test', (async (req, res) => {
-  const newUserEntry: NewUser = userValidator.toNewUserEntry(req.body);
-  const addedUser = await usersServiceTest.addUser(newUserEntry);
-  res.json(addedUser);
 }) as RequestHandler);
 
 export default usersRouter;

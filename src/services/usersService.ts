@@ -1,53 +1,57 @@
-import 'express-async-errors';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import models from '../models';
-import { UserAttributes, NewUser } from '../types/userTypes';
-const { User } = models;
+import { NewUser } from '../types/userTypes';
+
+const prisma = new PrismaClient();
 
 const getUsers = async () => {
-  const users = await User.findAll();
+  const users = await prisma.user.findMany();
   return users;
 };
 
 const getUser = async (id: number) => {
-  const user = await User.findByPk(id);
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
   return user;
 };
 
 const getUserByUsername = async (username: string) => {
-  const user = await User.findOne({ where: { username } });
+  const user = await prisma.user.findUnique({
+    where: { username },
+  });
   return user;
 };
 
 const getUserByEmail = async (email: string) => {
-  const response = await User.findOne({ where: { email } });
-  if (!response) {
-    return null;
-  }
-  const user: UserAttributes = response.toJSON();
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
   return user;
 };
 
 const addUser = async (newUser: NewUser) => {
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(newUser.password, saltRounds);
+
   const user = {
     ...newUser,
+    birthDate: new Date(newUser.birthDate),
     password: passwordHash,
   };
 
-  const addedUser = await User.create(user);
+  const addedUser = await prisma.user.create({
+    data: user,
+  });
 
   return addedUser;
 };
 
 const deleteUser = async (id: number) => {
-  const deletedUser = await User.destroy({
-    where: {
-      id: id,
-    },
+  const deletedUser = await prisma.user.delete({
+    where: { id },
   });
-
   return deletedUser;
 };
 
