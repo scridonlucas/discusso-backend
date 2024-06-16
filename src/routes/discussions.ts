@@ -6,7 +6,6 @@ import discussionsService from '../services/discussionsService';
 import { Router, Request } from 'express';
 import { NewDiscussion } from '../types/discussionType';
 import { PaginationQuery } from '../types/requestTypes';
-
 const discussionsRouter = Router();
 
 discussionsRouter.post('/', middleware.jwtVerify, (async (

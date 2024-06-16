@@ -1,26 +1,32 @@
-import models from '../models';
+import { PrismaClient } from '@prisma/client';
 import { NewDiscussion } from '../types/discussionType';
 
-const { Discussion } = models;
+const prisma = new PrismaClient();
 
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
-  const addedDiscussion = await Discussion.create({
-    ...newDiscussion,
-    userId: userId,
+  const addedDiscussion = await prisma.discussion.create({
+    data: {
+      ...newDiscussion,
+      userId: userId,
+    },
   });
   return addedDiscussion;
 };
 
 const getDiscussions = async (limit: number, offset: number) => {
-  const discussions = await Discussion.findAndCountAll({
-    limit,
-    offset,
-    order: [['createdAt', 'DESC']],
+  const discussions = await prisma.discussion.findMany({
+    skip: offset,
+    take: limit,
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
 
+  const total = await prisma.discussion.count();
+
   return {
-    discussions: discussions.rows,
-    total: discussions.count,
+    discussions,
+    total,
   };
 };
 
