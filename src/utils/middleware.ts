@@ -13,12 +13,14 @@ import cookiesValidator from './validators/cookiesValidator';
 import { CustomTokenError } from './customErrors';
 import { UserToken } from '../types/authTypes';
 
-const checkPermission = (_permission: string): RequestHandler => {
+const checkPermission = (permission: string): RequestHandler => {
   return (req: Request, _res: Response, _next: NextFunction): void => {
     const userId = req.decodedToken.id;
+    console.log(permission);
     console.log(userId);
   };
 };
+
 const jwtVerify = (req: Request, _res: Response, next: NextFunction): void => {
   try {
     const cookies = cookiesValidator.toNewCookie(req.cookies);
