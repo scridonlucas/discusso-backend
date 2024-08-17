@@ -10,15 +10,20 @@ import jwt from 'jsonwebtoken';
 import config from './config';
 import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
-import { CustomTokenError } from './customErrors';
+import { CustomTokenError, CustomPermissionError } from './customErrors';
 import { UserToken } from '../types/authTypes';
+import permissionsService from '../services/permissionsService';
 
 const checkPermission = (permission: string): RequestHandler => {
-  return (req: Request, _res: Response, _next: NextFunction): void => {
-    const userId = req.decodedToken.id;
-    console.log(permission);
-    console.log(userId);
-  };
+  return (async (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      const userId = req.decodedToken.id;
+      await permissionsService.hasPermission(userId, permission); // if user has no permission to access resource, an error is thrown
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }) as RequestHandler;
 };
 
 const jwtVerify = (req: Request, _res: Response, next: NextFunction): void => {
@@ -92,6 +97,10 @@ const errorHandler: ErrorRequestHandler = (
     return res.status(401).json({
       error: 'token expired',
     });
+  }
+
+  if (error instanceof CustomPermissionError) {
+    return res.status(401).json({ error: error.message });
   }
 
   return next(error);
