@@ -20,9 +20,10 @@ enum Gender {
 }
 
 enum RoleType {
-  USER
   ADMIN
+  MODERATOR
   PREMIUM
+  USER
 }
 
 model User {
