@@ -47,15 +47,41 @@ async function main() {
   });
 
   const deleteDiscussionPermission = await prisma.permission.upsert({
-    where: { permissionName: 'CREATE_DISCUSSION' },
+    where: { permissionName: 'DELETE_DISCUSSION' },
     update: {},
     create: {
       permissionName: 'DELETE_DISCUSSION',
-      description: 'Can create a discussion',
+      description: 'Can delete a discussion',
     },
   });
 
   console.log({ createDiscussionPermission, deleteDiscussionPermission });
+
+  await prisma.rolePermission.createMany({
+    data: [
+      {
+        roleId: adminRole.id,
+        permissionId: createDiscussionPermission.id,
+      },
+      {
+        roleId: adminRole.id,
+        permissionId: deleteDiscussionPermission.id,
+      },
+      {
+        roleId: moderatorRole.id,
+        permissionId: createDiscussionPermission.id,
+      },
+      {
+        roleId: moderatorRole.id,
+        permissionId: deleteDiscussionPermission.id,
+      },
+      {
+        roleId: userRole.id,
+        permissionId: createDiscussionPermission.id,
+      },
+    ],
+    skipDuplicates: true,
+  });
 }
 
 main()
