@@ -61,6 +61,28 @@ model Role {
   id        Int      @id @default(autoincrement())
   roleName  RoleType @unique
   users     User[]
+  permissions RolePermission[]
+
 
   @@index([roleName]) 
+}
+
+model Permission {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           Int         @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+
+  role         Role        @relation(fields: [roleId], references: [id])
+  permission   Permission  @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
 }
