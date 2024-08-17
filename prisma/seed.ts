@@ -36,6 +36,26 @@ async function main() {
   });
 
   console.log({ adminRole, userRole, premiumRole, moderatorRole });
+
+  const createDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'CREATE_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'CREATE_DISCUSSION',
+      description: 'Can create a discussion',
+    },
+  });
+
+  const deleteDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'CREATE_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'DELETE_DISCUSSION',
+      description: 'Can create a discussion',
+    },
+  });
+
+  console.log({ createDiscussionPermission, deleteDiscussionPermission });
 }
 
 main()

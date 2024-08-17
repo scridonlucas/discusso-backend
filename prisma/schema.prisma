@@ -26,6 +26,7 @@ enum RoleType {
   USER
 }
 
+
 model User {
   id        Int      @id @default(autoincrement())
   firstName String
@@ -70,7 +71,7 @@ model Role {
 
 model Permission {
   id          Int          @id @default(autoincrement())
-  name        String       @unique
+  permissionName        String       @unique
   description String?
   roles       RolePermission[]
 }

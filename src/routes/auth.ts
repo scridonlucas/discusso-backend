@@ -57,7 +57,7 @@ authRouter.get('/verify', middleware.jwtVerify, ((
     success: true,
     user: {
       username: username,
-      role: 'User',
+      role: 'USER',
     },
   });
 }) as RequestHandler);
