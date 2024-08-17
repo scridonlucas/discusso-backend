@@ -1,4 +1,10 @@
-import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+import {
+  Request,
+  Response,
+  NextFunction,
+  ErrorRequestHandler,
+  RequestHandler,
+} from 'express';
 import { Prisma } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import config from './config';
@@ -7,6 +13,12 @@ import cookiesValidator from './validators/cookiesValidator';
 import { CustomTokenError } from './customErrors';
 import { UserToken } from '../types/authTypes';
 
+const checkPermission = (_permission: string): RequestHandler => {
+  return (req: Request, _res: Response, _next: NextFunction): void => {
+    const userId = req.decodedToken.id;
+    console.log(userId);
+  };
+};
 const jwtVerify = (req: Request, _res: Response, next: NextFunction): void => {
   try {
     const cookies = cookiesValidator.toNewCookie(req.cookies);
@@ -83,4 +95,4 @@ const errorHandler: ErrorRequestHandler = (
   return next(error);
 };
 
-export default { unknownEndPoint, errorHandler, jwtVerify };
+export default { unknownEndPoint, errorHandler, jwtVerify, checkPermission };
