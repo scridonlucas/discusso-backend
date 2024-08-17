@@ -7,6 +7,7 @@ Backend server for an social media application built using Express, Typescript a
 - **User Registration**: Allow users to create new accounts and store their information in a PostgreSQL database.
 - **User Authentification**: Allow users to log into their account. We use JWT, a widely-accepted standard for secure authentication, to protect user accounts.
 - **Authentification**: The authentication system is entirely custom-built by me, without using any external libraries.
+- **Role-Based Access Control (RBAC)**: Implemented a custom RBAC system where each role—users, admins, moderators, and premium users—has specific permissions that define what actions they can perform within the application.
 - **Discussions**: Allow users to start discussions.
 
 ## Knowledge
