@@ -37,7 +37,7 @@ const addUser = async (newUser: NewUser) => {
     ...newUser,
     birthDate: new Date(newUser.birthDate),
     password: passwordHash,
-    roleId: 1,
+    roleId: 3,
   };
 
   const addedUser = await prisma.user.create({

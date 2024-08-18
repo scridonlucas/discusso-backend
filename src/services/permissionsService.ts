@@ -25,7 +25,8 @@ const hasPermission = async (
   }
 
   const hasPerm = user.role.permissions.some(
-    (rp) => rp.permission.permissionName === permissionName
+    (rolePermission) =>
+      rolePermission.permission.permissionName === permissionName
   );
 
   if (!hasPerm) {
