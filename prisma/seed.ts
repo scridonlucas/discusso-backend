@@ -82,6 +82,39 @@ async function main() {
     ],
     skipDuplicates: true,
   });
+
+  // seeding communities
+  const investmentStrategies = await prisma.community.upsert({
+    where: { name: 'Investment Strategies' },
+    update: {},
+    create: {
+      name: 'Investment Strategies',
+      description:
+        'A place to discuss different investment strategies, including stocks, bonds, real estate, and alternative assets.',
+    },
+  });
+
+  const personalFinance = await prisma.community.upsert({
+    where: { name: 'Personal Finance' },
+    update: {},
+    create: {
+      name: 'Personal Finance',
+      description:
+        'A community where members share tips and strategies for budgeting, saving, and managing personal finances.',
+    },
+  });
+
+  const economicPolicy = await prisma.community.upsert({
+    where: { name: 'Economic Policy & Governance' },
+    update: {},
+    create: {
+      name: 'Economic Policy & Governance',
+      description:
+        'A forum for debating and discussing economic policies, regulations, and governance issues.',
+    },
+  });
+
+  console.log({ investmentStrategies, personalFinance, economicPolicy });
 }
 
 main()
