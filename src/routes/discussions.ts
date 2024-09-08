@@ -28,6 +28,10 @@ discussionsRouter.post(
         .json({ error: 'Title, content, and communityId are required' });
     }
 
+    if (typeof communityId !== 'number' || communityId <= 0) {
+      res.status(400).json({ error: 'communityId must be a positive number' });
+    }
+
     if (title.length < 3) {
       res
         .status(400)
@@ -54,7 +58,7 @@ discussionsRouter.post(
       });
     }
 
-    if (/^[A-Za-z0-9\s.,?!'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]+$/.test(content)) {
+    if (!/^[A-Za-z0-9\s.,?!'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]+$/.test(content)) {
       res.status(400).json({
         error:
           'Content can only contain letters, numbers, and common punctuation',
