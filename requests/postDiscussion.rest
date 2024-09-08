@@ -2,7 +2,7 @@ POST http://localhost:3001/api/discussions
 Content-Type: application/json
 
 {
-  "title": "saxs",
+  "title": "x",
   "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "communityId": 2
 }

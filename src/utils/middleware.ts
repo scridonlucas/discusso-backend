@@ -10,7 +10,11 @@ import jwt from 'jsonwebtoken';
 import config from './config';
 import 'express-async-errors';
 import cookiesValidator from './validators/cookiesValidator';
-import { CustomTokenError, CustomPermissionError } from './customErrors';
+import {
+  CustomTokenError,
+  CustomPermissionError,
+  CustomDiscussionError,
+} from './customErrors';
 import { UserToken } from '../types/authTypes';
 import permissionsService from '../services/permissionsService';
 
@@ -100,6 +104,10 @@ const errorHandler: ErrorRequestHandler = (
   }
 
   if (error instanceof CustomPermissionError) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  if (error instanceof CustomDiscussionError) {
     return res.status(401).json({ error: error.message });
   }
 

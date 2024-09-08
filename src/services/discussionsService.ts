@@ -1,13 +1,23 @@
 import prisma from '../utils/prismaClient';
 import { NewDiscussion } from '../types/discussionType';
+import { CustomDiscussionError } from '../utils/customErrors';
 
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
+  const community = await prisma.community.findUnique({
+    where: { id: newDiscussion.communityId },
+  });
+
+  if (!community) {
+    throw new CustomDiscussionError('Community not found');
+  }
+
   const addedDiscussion = await prisma.discussion.create({
     data: {
       ...newDiscussion,
       userId: userId,
     },
   });
+
   return addedDiscussion;
 };
 

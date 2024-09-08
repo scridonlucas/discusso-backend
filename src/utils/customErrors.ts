@@ -11,3 +11,10 @@ export class CustomPermissionError extends Error {
     this.name = 'PermissionError';
   }
 }
+
+export class CustomDiscussionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'DiscussionError';
+  }
+}
