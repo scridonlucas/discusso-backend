@@ -2,6 +2,6 @@ POST http://localhost:3001/api/discussions
 Content-Type: application/json
 
 {
-  "title": "Noua Discuție",
-  "content": "Acesta este conținutul noii discuții."
+  "title": "superrxxxx_dasdadwad",
+  "content": "Testez suaasdasdasdsadsdadwad un test222"
 }

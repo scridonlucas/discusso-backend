@@ -38,6 +38,7 @@ model User {
   password  String
   roleId    Int
   discussions Discussion[]
+  followedCommunities UserCommunity[] 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -46,17 +47,34 @@ model User {
   @@index([roleId])
 }
 
+model Community {
+  id           Int             @id @default(autoincrement())
+  name         String          @unique
+  description  String?
+  discussions  Discussion[]
+  followers    UserCommunity[] 
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([name])
+}
+
+
 model Discussion {
   id        Int      @id @default(autoincrement())
   title     String
   content   String
   userId    Int
+  communityId  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user      User     @relation(fields: [userId], references: [id])
+  community    Community       @relation(fields: [communityId], references: [id])
 
   @@index([userId])
+    @@index([communityId])
+
 }
 
 model Role {
@@ -64,7 +82,6 @@ model Role {
   roleName  RoleType @unique
   users     User[]
   permissions RolePermission[]
-
 
   @@index([roleName]) 
 }
@@ -76,6 +93,7 @@ model Permission {
   roles       RolePermission[]
 }
 
+// many to many tables 
 model RolePermission {
   id           Int         @id @default(autoincrement())
   roleId       Int
@@ -87,4 +105,14 @@ model RolePermission {
   @@unique([roleId, permissionId])
   @@index([roleId])
   @@index([permissionId])
+}
+
+model UserCommunity {
+  id           Int             @id @default(autoincrement())
+  userId       Int
+  communityId  Int
+  joinedAt     DateTime        @default(now()) 
+
+  user         User            @relation(fields: [userId], references: [id])
+  community    Community       @relation(fields: [communityId], references: [id])
 }

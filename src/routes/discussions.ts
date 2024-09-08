@@ -33,10 +33,10 @@ discussionsRouter.get('/', middleware.jwtVerify, (async (
   res: Response,
   _next
 ) => {
-  console.log(req.query);
   const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
   const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
   const discussions = await discussionsService.getDiscussions(limit, offset);
+  console.log(discussions);
   res.status(201).json(discussions);
 }) as RequestHandler);
 export default discussionsRouter;
