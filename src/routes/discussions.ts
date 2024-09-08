@@ -23,43 +23,49 @@ discussionsRouter.post(
     const { title, content, communityId } = req.body;
 
     if (!title || !content || !communityId) {
-      res
+      return res
         .status(400)
         .json({ error: 'Title, content, and communityId are required' });
     }
 
     if (typeof communityId !== 'number' || communityId <= 0) {
-      res.status(400).json({ error: 'communityId must be a positive number' });
+      return res
+        .status(400)
+        .json({ error: 'communityId must be a positive number' });
     }
 
     if (title.length < 3) {
-      res
+      return res
         .status(400)
         .json({ error: 'Title must be at least 3 characters long' });
     }
 
     if (title.length > 300) {
-      res.status(400).json({ error: 'Title cannot exceed 300 characters' });
+      return res
+        .status(400)
+        .json({ error: 'Title cannot exceed 300 characters' });
     }
 
     if (content.length < 20) {
-      res
+      return res
         .status(400)
         .json({ error: 'Content should contain at least 20 characters' });
     }
 
     if (content.length > 1000) {
-      res.status(400).json({ error: 'Content cannot exceed 1000 characters' });
+      return res
+        .status(400)
+        .json({ error: 'Content cannot exceed 1000 characters' });
     }
 
     if (!/^[A-Za-z0-9\s]+$/.test(title)) {
-      res.status(400).json({
+      return res.status(400).json({
         error: 'Title can only contain letters, numbers, and spaces',
       });
     }
 
     if (!/^[A-Za-z0-9\s.,?!'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]+$/.test(content)) {
-      res.status(400).json({
+      return res.status(400).json({
         error:
           'Content can only contain letters, numbers, and common punctuation',
       });
@@ -70,7 +76,7 @@ discussionsRouter.post(
       userId
     );
 
-    res.status(201).json(discussion);
+    return res.status(201).json(discussion);
   }) as RequestHandler
 );
 
