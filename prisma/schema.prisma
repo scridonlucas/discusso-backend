@@ -39,6 +39,8 @@ model User {
   roleId    Int
   discussions Discussion[]
   followedCommunities UserCommunity[] 
+  likes               Like[] 
+  comments            Comment[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -61,13 +63,15 @@ model Community {
 
 
 model Discussion {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  userId    Int
-  communityId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  title         String
+  content       String
+  userId        Int
+  communityId   Int
+  likes         Like[] 
+  comments      Comment[] 
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   user      User     @relation(fields: [userId], references: [id])
   community    Community       @relation(fields: [communityId], references: [id])
@@ -75,6 +79,33 @@ model Discussion {
   @@index([userId])
   @@index([communityId])
 
+}
+
+model Like {
+  id            Int        @id @default(autoincrement())
+  userId        Int
+  discussionId  Int
+
+  user        User       @relation(fields: [userId], references: [id])
+  discussion  Discussion @relation(fields: [discussionId], references: [id])
+
+  @@unique([userId, discussionId])
+  @@index([discussionId])
+}
+
+model Comment {
+  id            Int        @id @default(autoincrement())
+  content       String
+  userId        Int
+  discussionId  Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user        User       @relation(fields: [userId], references: [id])
+  discussion  Discussion @relation(fields: [discussionId], references: [id])
+
+  @@index([userId])
+  @@index([discussionId])
 }
 
 model Role {
