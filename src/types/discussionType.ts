@@ -10,4 +10,5 @@ export interface DiscussionAttributes {
 export interface NewDiscussion {
   title: string;
   content: string;
+  communityId: number;
 }
