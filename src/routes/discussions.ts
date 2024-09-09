@@ -91,4 +91,15 @@ discussionsRouter.get('/', middleware.jwtVerify, (async (
   console.log(discussions);
   res.status(201).json(discussions);
 }) as RequestHandler);
+
+// likes functionality
+discussionsRouter.post('/:discussionId/like', middleware.jwtVerify, (async (
+  req,
+  res,
+  _next
+) => {
+  const userId = req.decodedToken.id;
+  const { discussionId } = req.params;
+}) as RequestHandler);
+
 export default discussionsRouter;
