@@ -38,7 +38,32 @@ const getDiscussions = async (limit: number, offset: number) => {
   };
 };
 
+const addLike = async (userId: number, discussionId: number) => {
+  const existingLike = await prisma.like.findUnique({
+    where: {
+      userId_discussionId: {
+        userId,
+        discussionId,
+      },
+    },
+  });
+
+  if (existingLike) {
+    throw new Error('This user has already liked this discussion');
+  }
+
+  const like = await prisma.like.create({
+    data: {
+      userId,
+      discussionId,
+    },
+  });
+
+  return like;
+};
+
 export default {
   addDiscussion,
   getDiscussions,
+  addLike,
 };

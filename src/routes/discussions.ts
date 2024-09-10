@@ -99,7 +99,15 @@ discussionsRouter.post('/:discussionId/like', middleware.jwtVerify, (async (
   _next
 ) => {
   const userId = req.decodedToken.id;
-  const { discussionId } = req.params;
+  const discussionId = Number(req.params.discussionId);
+
+  if (isNaN(discussionId)) {
+    return res.status(400).json({ error: 'Invalid discussion ID' });
+  }
+
+  const like = await discussionsService.addLike(userId, discussionId);
+
+  return res.status(201).json(like);
 }) as RequestHandler);
 
 export default discussionsRouter;
