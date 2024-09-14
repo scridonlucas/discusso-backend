@@ -94,10 +94,44 @@ export const getTotalLikesForDiscussion = async (discussionId: number) => {
   return totalLikes;
 };
 
+export const getUsersWhoLikedDiscussion = async (discussionId: number) => {
+  const users = await prisma.like.findMany({
+    where: { discussionId },
+    include: {
+      user: true,
+    },
+  });
+  const usersList = users.map((user) => user.user);
+
+  return usersList;
+};
+
+export const hasUserLikedDiscussion = async (
+  userId: number,
+  discussionId: number
+) => {
+  const existingLike = await prisma.like.findUnique({
+    where: {
+      userId_discussionId: {
+        userId,
+        discussionId,
+      },
+    },
+  });
+
+  if (existingLike === null) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
 export default {
   addDiscussion,
   getDiscussions,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,
+  getUsersWhoLikedDiscussion,
+  hasUserLikedDiscussion,
 };

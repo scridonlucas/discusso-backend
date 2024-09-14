@@ -145,4 +145,42 @@ discussionsRouter.get(
   }) as RequestHandler
 );
 
+discussionsRouter.get(
+  '/:discussionId/likes/users',
+  middleware.jwtVerify,
+  (async (req, res, _next) => {
+    const discussionId = Number(req.params.discussionId);
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    const users = await discussionsService.getUsersWhoLikedDiscussion(
+      discussionId
+    );
+
+    return res.status(200).json({ users });
+  }) as RequestHandler
+);
+
+discussionsRouter.get(
+  '/:discussionId/likes/check',
+  middleware.jwtVerify,
+  (async (req, res, _next) => {
+    const userId = req.decodedToken.id;
+    const discussionId = Number(req.params.discussionId);
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    const hasLiked = await discussionsService.hasUserLikedDiscussion(
+      userId,
+      discussionId
+    );
+
+    return res.status(200).json({ hasLiked });
+  }) as RequestHandler
+);
+
 export default discussionsRouter;
