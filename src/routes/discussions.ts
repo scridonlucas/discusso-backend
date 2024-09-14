@@ -125,18 +125,33 @@ discussionsRouter.get(
     return res.status(201).json(discussions);
   }
 );
-
 discussionsRouter.get(
-  '/',
+  '/users/:communityId/discussions',
   middleware.jwtVerify,
   async (
-    req: Request<unknown, unknown, NewDiscussion, PaginationQuery>,
+    req: Request<
+      { [key: string]: string },
+      unknown,
+      NewDiscussion,
+      PaginationQuery
+    >,
     res: Response,
     _next
   ) => {
+    const communityId = Number(req.params.communityId);
+
+    if (isNaN(communityId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
-    const discussions = await discussionsService.getDiscussions(limit, offset);
+
+    const discussions = await discussionsService.getDiscussionsByCommunity(
+      communityId,
+      limit,
+      offset
+    );
 
     return res.status(201).json(discussions);
   }
@@ -162,14 +177,16 @@ discussionsRouter.delete(
   '/:discussionId',
   middleware.jwtVerify,
   async (req, res, _next) => {
+    const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
 
     if (isNaN(discussionId)) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
     }
 
-    const deletedDiscussion = await discussionsService.getDiscussionById(
-      discussionId
+    const deletedDiscussion = await discussionsService.deleteDiscussion(
+      discussionId,
+      userId
     );
 
     return res.status(200).json(deletedDiscussion);
