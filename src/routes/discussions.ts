@@ -124,7 +124,25 @@ discussionsRouter.delete('/:discussionId/like', middleware.jwtVerify, (async (
 
   const removedLike = await discussionsService.deleteLike(userId, discussionId);
 
-  return res.status(201).json(removedLike);
+  return res.status(200).json(removedLike);
 }) as RequestHandler);
+
+discussionsRouter.get(
+  '/:discussionId/likes/count',
+  middleware.jwtVerify,
+  (async (req, res, _next) => {
+    const discussionId = Number(req.params.discussionId);
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    const totalLikes = await discussionsService.getTotalLikesForDiscussion(
+      discussionId
+    );
+
+    return res.status(200).json({ totalLikes });
+  }) as RequestHandler
+);
 
 export default discussionsRouter;

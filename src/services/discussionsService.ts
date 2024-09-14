@@ -87,9 +87,17 @@ const deleteLike = async (userId: number, discussionId: number) => {
   return removedLike;
 };
 
+export const getTotalLikesForDiscussion = async (discussionId: number) => {
+  const totalLikes = await prisma.like.count({
+    where: { discussionId },
+  });
+  return totalLikes;
+};
+
 export default {
   addDiscussion,
   getDiscussions,
   addLike,
   deleteLike,
+  getTotalLikesForDiscussion,
 };
