@@ -38,6 +38,82 @@ const getDiscussions = async (limit: number, offset: number) => {
   };
 };
 
+const getDiscussionsByUser = async (
+  userId: number,
+  limit: number,
+  offset: number
+) => {
+  const discussions = await prisma.discussion.findMany({
+    where: { userId },
+    skip: offset,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const total = await prisma.discussion.count({
+    where: { userId },
+  });
+
+  return { discussions, total };
+};
+
+const getDiscussionsByCommunity = async (
+  communityId: number,
+  limit: number,
+  offset: number
+) => {
+  const discussions = await prisma.discussion.findMany({
+    where: { communityId },
+    skip: offset,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const total = await prisma.discussion.count({
+    where: { communityId },
+  });
+
+  return { discussions, total };
+};
+
+const getDiscussionById = async (discussionId: number) => {
+  const discussion = await prisma.discussion.findUnique({
+    where: { id: discussionId },
+    include: {
+      user: true,
+      community: true,
+      comments: true,
+    },
+  });
+
+  if (!discussion) {
+    throw new CustomDiscussionError('Discussion not found');
+  }
+
+  return discussion;
+};
+
+const deleteDiscussion = async (discussionId: number, userId: number) => {
+  const discussion = await prisma.discussion.findUnique({
+    where: { id: discussionId },
+  });
+
+  if (!discussion) {
+    throw new CustomDiscussionError('Discussion not found');
+  }
+
+  if (discussion.userId !== userId) {
+    throw new CustomDiscussionError('Not authorized to delete this discussion');
+  }
+
+  await prisma.discussion.delete({
+    where: { id: discussionId },
+  });
+
+  return { message: 'Discussion deleted successfully' };
+};
+
+// likes service
 const addLike = async (userId: number, discussionId: number) => {
   const existingLike = await prisma.like.findUnique({
     where: {
@@ -73,7 +149,9 @@ const deleteLike = async (userId: number, discussionId: number) => {
   });
 
   if (!existingLike) {
-    throw new CustomDiscussionError('User has not liked this discussion');
+    throw new CustomDiscussionError(
+      'User has not liked this discussion or not authorized to remove this like'
+    );
   }
   const removedLike = await prisma.like.delete({
     where: {
@@ -129,6 +207,10 @@ export const hasUserLikedDiscussion = async (
 export default {
   addDiscussion,
   getDiscussions,
+  getDiscussionsByUser,
+  getDiscussionsByCommunity,
+  getDiscussionById,
+  deleteDiscussion,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,
