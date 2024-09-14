@@ -49,7 +49,7 @@ const addLike = async (userId: number, discussionId: number) => {
   });
 
   if (existingLike) {
-    throw new Error('This user has already liked this discussion');
+    throw new CustomDiscussionError('User has already liked this discussion');
   }
 
   const like = await prisma.like.create({
@@ -62,8 +62,34 @@ const addLike = async (userId: number, discussionId: number) => {
   return like;
 };
 
+const deleteLike = async (userId: number, discussionId: number) => {
+  const existingLike = await prisma.like.findUnique({
+    where: {
+      userId_discussionId: {
+        userId,
+        discussionId,
+      },
+    },
+  });
+
+  if (!existingLike) {
+    throw new CustomDiscussionError('User has not liked this discussion');
+  }
+  const removedLike = await prisma.like.delete({
+    where: {
+      userId_discussionId: {
+        userId,
+        discussionId,
+      },
+    },
+  });
+
+  return removedLike;
+};
+
 export default {
   addDiscussion,
   getDiscussions,
   addLike,
+  deleteLike,
 };

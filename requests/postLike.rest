@@ -1,0 +1,7 @@
+POST http://localhost:3001/api/discussions/24/like
+Content-Type: application/json
+
+{
+}
+
+

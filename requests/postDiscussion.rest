@@ -4,5 +4,5 @@ Content-Type: application/json
 {
   "title": "xxx",
   "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  "communityId": 25
+  "communityId": 1
 }
