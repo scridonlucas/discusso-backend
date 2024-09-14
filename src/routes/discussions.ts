@@ -1,5 +1,4 @@
 import 'express-async-errors';
-import { RequestHandler } from 'express';
 import middleware from '../utils/middleware';
 import { Response } from 'express';
 import discussionsService from '../services/discussionsService';
@@ -13,7 +12,7 @@ discussionsRouter.post(
   '/',
   middleware.jwtVerify,
   middleware.checkPermission('CREATE_DISCUSSION'),
-  (async (
+  async (
     req: Request<unknown, unknown, NewDiscussion>,
     res: Response,
     _next
@@ -77,20 +76,24 @@ discussionsRouter.post(
     );
 
     return res.status(201).json(discussion);
-  }) as RequestHandler
+  }
 );
 
-discussionsRouter.get('/', middleware.jwtVerify, (async (
-  req: Request<unknown, unknown, NewDiscussion, PaginationQuery>,
-  res: Response,
-  _next
-) => {
-  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
-  const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
-  const discussions = await discussionsService.getDiscussions(limit, offset);
+discussionsRouter.get(
+  '/',
+  middleware.jwtVerify,
+  async (
+    req: Request<unknown, unknown, NewDiscussion, PaginationQuery>,
+    res: Response,
+    _next
+  ) => {
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
+    const discussions = await discussionsService.getDiscussions(limit, offset);
 
-  return res.status(201).json(discussions);
-}) as RequestHandler);
+    return res.status(201).json(discussions);
+  }
+);
 
 discussionsRouter.get(
   '/users/:userId/discussions',

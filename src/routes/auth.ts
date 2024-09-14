@@ -1,6 +1,5 @@
 import 'express-async-errors';
 import { Router } from 'express';
-import { RequestHandler } from 'express';
 import middleware from '../utils/middleware';
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
@@ -13,7 +12,7 @@ import { Request } from 'express';
 
 const authRouter = Router();
 
-authRouter.post('/login', (async (req, res) => {
+authRouter.post('/login', async (req, res) => {
   const { email, password }: LoginUser = loginValidator.toNewLoginEntry(
     req.body
   );
@@ -38,28 +37,28 @@ authRouter.post('/login', (async (req, res) => {
     });
   }
   return res.status(401).json({ error: 'Invalid username or password!' });
-}) as RequestHandler);
+});
 
-authRouter.get('/logout', ((_req, res: Response, _next) => {
+authRouter.get('/logout', (_req, res: Response, _next) => {
   res.clearCookie('token');
   res.status(200).json({ success: true });
-}) as RequestHandler);
+});
 
-authRouter.get('/verify', middleware.jwtVerify, ((
-  req: Request,
-  res: Response,
-  _next
-) => {
-  const username = req.decodedToken.username;
+authRouter.get(
+  '/verify',
+  middleware.jwtVerify,
+  (req: Request, res: Response, _next) => {
+    const username = req.decodedToken.username;
 
-  console.log(username);
-  res.json({
-    success: true,
-    user: {
-      username: username,
-      role: 'test',
-    },
-  });
-}) as RequestHandler);
+    console.log(username);
+    res.json({
+      success: true,
+      user: {
+        username: username,
+        role: 'test',
+      },
+    });
+  }
+);
 
 export default authRouter;
