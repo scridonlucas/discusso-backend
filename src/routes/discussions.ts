@@ -3,7 +3,7 @@ import middleware from '../utils/middleware';
 import { Response } from 'express';
 import discussionsService from '../services/discussionsService';
 import { Router, Request } from 'express';
-import { NewDiscussion } from '../types/discussionType';
+import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
 import { PaginationQuery } from '../types/requestTypes';
 
 const discussionsRouter = Router();
@@ -199,14 +199,18 @@ discussionsRouter.delete(
   }
 );
 
-/* discussionsRouter.put(
+discussionsRouter.put(
   '/:discussionId',
   middleware.jwtVerify,
+  middleware.checkPermission([
+    'UPDATE_OWN_DISCUSSION',
+    'UPDATE_ANY_DISCUSSION',
+  ]),
   async (
     req: Request<
       { [key: string]: string },
       unknown,
-      NewDiscussion,
+      UpdatedDiscussion,
       PaginationQuery
     >,
     res: Response,
@@ -214,14 +218,66 @@ discussionsRouter.delete(
   ) => {
     const discussionId = Number(req.params.discussionId);
     const userId = req.decodedToken.id;
+    const userPermissions = req.userPermissions;
+
+    const { title, content } = req.body;
 
     if (isNaN(discussionId)) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
     }
 
-    return res.status(200);
+    if (!title && !content) {
+      return res.status(400).json({
+        error: 'At least one of title or content must be provided.',
+      });
+    }
+
+    if (title !== undefined) {
+      if (title.length < 3) {
+        return res
+          .status(400)
+          .json({ error: 'Title must be at least 3 characters long' });
+      }
+
+      if (title.length > 300) {
+        return res
+          .status(400)
+          .json({ error: 'Title cannot exceed 300 characters' });
+      }
+
+      if (!/^[A-Za-z0-9\s]+$/.test(title)) {
+        return res.status(400).json({
+          error: 'Title can only contain letters, numbers, and spaces',
+        });
+      }
+    }
+
+    if (content !== undefined) {
+      if (content.length < 20) {
+        return res
+          .status(400)
+          .json({ error: 'Content should contain at least 20 characters' });
+      }
+
+      if (content.length > 1000) {
+        return res
+          .status(400)
+          .json({ error: 'Content cannot exceed 1000 characters' });
+      }
+
+      if (
+        !/^[A-Za-z0-9\s.,?!'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]+$/.test(content)
+      ) {
+        return res.status(400).json({
+          error:
+            'Content can only contain letters, numbers, and common punctuation',
+        });
+      }
+    }
+
+    return res.status(200).json('');
   }
-);*/
+);
 
 // likes functionality
 discussionsRouter.post(

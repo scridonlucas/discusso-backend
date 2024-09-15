@@ -1,6 +1,9 @@
 import prisma from '../utils/prismaClient';
-import { NewDiscussion } from '../types/discussionType';
-import { CustomDiscussionError } from '../utils/customErrors';
+import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
+import {
+  CustomDiscussionError,
+  CustomPermissionError,
+} from '../utils/customErrors';
 
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
@@ -116,13 +119,18 @@ const deleteDiscussion = async (
     });
     return { message: 'Discussion deleted successfully' };
   } else {
-    throw new CustomDiscussionError(
-      'User is not authorized to delete this discussion'
+    throw new CustomPermissionError(
+      'User is not authorized to delete this discussion.'
     );
   }
 };
 
-//const updateDiscussion = async (discussionId: number, userId: number) => {};
+const updateDiscussion = async (
+  userId: number,
+  discussionId: number,
+  updatedDiscussion: UpdatedDiscussion,
+  userPermissions: string[]
+) => {};
 
 // likes service
 const addLike = async (userId: number, discussionId: number) => {
@@ -222,7 +230,7 @@ export default {
   getDiscussionsByCommunity,
   getDiscussionById,
   deleteDiscussion,
-  //updateDiscussion,
+  updateDiscussion,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,
