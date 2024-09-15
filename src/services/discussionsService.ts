@@ -1,6 +1,7 @@
 import prisma from '../utils/prismaClient';
 import { NewDiscussion } from '../types/discussionType';
 import { CustomDiscussionError } from '../utils/customErrors';
+import permissionsService from './permissionsService';
 
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
@@ -103,7 +104,7 @@ const deleteDiscussion = async (discussionId: number, userId: number) => {
   }
 
   if (discussion.userId !== userId) {
-    throw new CustomDiscussionError('Not authorized to delete this discussion');
+    await permissionsService.hasPermission(userId, 'DELETE_ANY_DISCUSSION');
   }
 
   await prisma.discussion.delete({

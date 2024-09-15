@@ -46,11 +46,11 @@ async function main() {
     },
   });
 
-  const updateDiscussionPermission = await prisma.permission.upsert({
-    where: { permissionName: 'UPDATE_DISCUSSION' },
+  const updateOwnDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'UPDATE_OWN_DISCUSSION' },
     update: {},
     create: {
-      permissionName: 'UPDATE_DISCUSSION',
+      permissionName: 'UPDATE_OWN_DISCUSSION',
       description: 'Can update his own discussion',
     },
   });
@@ -64,11 +64,11 @@ async function main() {
     },
   });
 
-  const deleteDiscussionPermission = await prisma.permission.upsert({
-    where: { permissionName: 'DELETE_DISCUSSION' },
+  const deleteOwnDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'DELETE_OWN_DISCUSSION' },
     update: {},
     create: {
-      permissionName: 'DELETE_DISCUSSION',
+      permissionName: 'DELETE_OWN_DISCUSSION',
       description: 'Can delete his own discussion',
     },
   });
@@ -84,9 +84,9 @@ async function main() {
 
   console.log({
     createDiscussionPermission,
-    deleteDiscussionPermission,
+    deleteOwnDiscussionPermission,
     deleteAnyDiscussionPermission,
-    updateDiscussionPermission,
+    updateOwnDiscussionPermission,
     updateAnyDiscussionPermission,
   });
 
@@ -122,11 +122,11 @@ async function main() {
       },
       {
         roleId: userRole.id,
-        permissionId: updateDiscussionPermission.id,
+        permissionId: updateOwnDiscussionPermission.id,
       },
       {
         roleId: userRole.id,
-        permissionId: deleteDiscussionPermission.id,
+        permissionId: deleteOwnDiscussionPermission.id,
       },
     ],
     skipDuplicates: true,

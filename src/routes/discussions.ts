@@ -176,6 +176,7 @@ discussionsRouter.post(
 discussionsRouter.delete(
   '/:discussionId',
   middleware.jwtVerify,
+  middleware.checkPermission('DELETE_OWN_DISCUSSION'),
   async (req, res, _next) => {
     const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
@@ -193,7 +194,7 @@ discussionsRouter.delete(
   }
 );
 
-discussionsRouter.put(
+/* discussionsRouter.put(
   '/:discussionId',
   middleware.jwtVerify,
   async (
@@ -212,9 +213,10 @@ discussionsRouter.put(
     if (isNaN(discussionId)) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
     }
+
     return res.status(200);
   }
-);
+);*/
 
 // likes functionality
 discussionsRouter.post(

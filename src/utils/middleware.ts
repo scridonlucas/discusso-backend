@@ -19,15 +19,15 @@ import { UserToken } from '../types/authTypes';
 import permissionsService from '../services/permissionsService';
 
 const checkPermission = (permission: string): RequestHandler => {
-  return (async (req: Request, _res: Response, next: NextFunction) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       const userId = req.decodedToken.id;
-      await permissionsService.hasPermission(userId, permission); // if user has no permission to access resource, an error is thrown
+      await permissionsService.hasPermission(userId, permission);
       next();
     } catch (error) {
       next(error);
     }
-  }) as RequestHandler;
+  };
 };
 
 const jwtVerify = (req: Request, _res: Response, next: NextFunction): void => {
