@@ -11,7 +11,7 @@ const discussionsRouter = Router();
 discussionsRouter.post(
   '/',
   middleware.jwtVerify,
-  middleware.checkPermission('CREATE_DISCUSSION'),
+  middleware.checkPermission(['CREATE_DISCUSSION']),
   async (
     req: Request<unknown, unknown, NewDiscussion>,
     res: Response,
@@ -176,18 +176,23 @@ discussionsRouter.post(
 discussionsRouter.delete(
   '/:discussionId',
   middleware.jwtVerify,
-  middleware.checkPermission('DELETE_OWN_DISCUSSION'),
+  middleware.checkPermission([
+    'DELETE_OWN_DISCUSSION',
+    'DELETE_ANY_DISCUSSION',
+  ]),
   async (req, res, _next) => {
     const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
-
+    const userPermissions = req.userPermissions;
+    console.log(userPermissions);
     if (isNaN(discussionId)) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
     }
 
     const deletedDiscussion = await discussionsService.deleteDiscussion(
       discussionId,
-      userId
+      userId,
+      userPermissions
     );
 
     return res.status(200).json(deletedDiscussion);

@@ -1,7 +1,6 @@
 import prisma from '../utils/prismaClient';
 import { NewDiscussion } from '../types/discussionType';
 import { CustomDiscussionError } from '../utils/customErrors';
-import permissionsService from './permissionsService';
 
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
@@ -94,7 +93,11 @@ const getDiscussionById = async (discussionId: number) => {
   return discussion;
 };
 
-const deleteDiscussion = async (discussionId: number, userId: number) => {
+const deleteDiscussion = async (
+  discussionId: number,
+  userId: number,
+  userPermissions: string[]
+) => {
   const discussion = await prisma.discussion.findUnique({
     where: { id: discussionId },
   });
@@ -103,18 +106,23 @@ const deleteDiscussion = async (discussionId: number, userId: number) => {
     throw new CustomDiscussionError('Discussion not found');
   }
 
-  if (discussion.userId !== userId) {
-    await permissionsService.hasPermission(userId, 'DELETE_ANY_DISCUSSION');
+  if (
+    userPermissions.includes('DELETE_ANY_DISCUSSION') ||
+    (userPermissions.includes('DELETE_OWN_DISCUSSION') &&
+      discussion.userId === userId)
+  ) {
+    await prisma.discussion.delete({
+      where: { id: discussionId },
+    });
+    return { message: 'Discussion deleted successfully' };
+  } else {
+    throw new CustomDiscussionError(
+      'User is not authorized to delete this discussion'
+    );
   }
-
-  await prisma.discussion.delete({
-    where: { id: discussionId },
-  });
-
-  return { message: 'Discussion deleted successfully' };
 };
 
-const updateDiscussion = async (discussionId: number, userId: number) => {};
+//const updateDiscussion = async (discussionId: number, userId: number) => {};
 
 // likes service
 const addLike = async (userId: number, discussionId: number) => {
@@ -214,7 +222,7 @@ export default {
   getDiscussionsByCommunity,
   getDiscussionById,
   deleteDiscussion,
-  updateDiscussion,
+  //updateDiscussion,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,

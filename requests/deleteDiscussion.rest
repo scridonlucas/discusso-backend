@@ -1,0 +1,2 @@
+DELETE http://localhost:3001/api/discussions/24
+Content-Type: application/json
