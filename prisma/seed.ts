@@ -46,16 +46,49 @@ async function main() {
     },
   });
 
+  const updateDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'UPDATE_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'UPDATE_DISCUSSION',
+      description: 'Can update his own discussion',
+    },
+  });
+
+  const updateAnyDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'UPDATE_ANY_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'UPDATE_ANY_DISCUSSION',
+      description: 'Can update any discussion',
+    },
+  });
+
   const deleteDiscussionPermission = await prisma.permission.upsert({
     where: { permissionName: 'DELETE_DISCUSSION' },
     update: {},
     create: {
       permissionName: 'DELETE_DISCUSSION',
-      description: 'Can delete a discussion',
+      description: 'Can delete his own discussion',
     },
   });
 
-  console.log({ createDiscussionPermission, deleteDiscussionPermission });
+  const deleteAnyDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'DELETE_ANY_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'DELETE_ANY_DISCUSSION',
+      description: 'Can delete any discussion',
+    },
+  });
+
+  console.log({
+    createDiscussionPermission,
+    deleteDiscussionPermission,
+    deleteAnyDiscussionPermission,
+    updateDiscussionPermission,
+    updateAnyDiscussionPermission,
+  });
 
   await prisma.rolePermission.createMany({
     data: [
@@ -65,7 +98,11 @@ async function main() {
       },
       {
         roleId: adminRole.id,
-        permissionId: deleteDiscussionPermission.id,
+        permissionId: updateAnyDiscussionPermission.id,
+      },
+      {
+        roleId: adminRole.id,
+        permissionId: deleteAnyDiscussionPermission.id,
       },
       {
         roleId: moderatorRole.id,
@@ -73,11 +110,23 @@ async function main() {
       },
       {
         roleId: moderatorRole.id,
-        permissionId: deleteDiscussionPermission.id,
+        permissionId: updateAnyDiscussionPermission.id,
+      },
+      {
+        roleId: moderatorRole.id,
+        permissionId: deleteAnyDiscussionPermission.id,
       },
       {
         roleId: userRole.id,
         permissionId: createDiscussionPermission.id,
+      },
+      {
+        roleId: userRole.id,
+        permissionId: updateDiscussionPermission.id,
+      },
+      {
+        roleId: userRole.id,
+        permissionId: deleteDiscussionPermission.id,
       },
     ],
     skipDuplicates: true,

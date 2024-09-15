@@ -113,6 +113,8 @@ const deleteDiscussion = async (discussionId: number, userId: number) => {
   return { message: 'Discussion deleted successfully' };
 };
 
+const updateDiscussion = async (discussionId: number, userId: number) => {};
+
 // likes service
 const addLike = async (userId: number, discussionId: number) => {
   const existingLike = await prisma.like.findUnique({
@@ -211,6 +213,7 @@ export default {
   getDiscussionsByCommunity,
   getDiscussionById,
   deleteDiscussion,
+  updateDiscussion,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,

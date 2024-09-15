@@ -193,6 +193,29 @@ discussionsRouter.delete(
   }
 );
 
+discussionsRouter.put(
+  '/:discussionId',
+  middleware.jwtVerify,
+  async (
+    req: Request<
+      { [key: string]: string },
+      unknown,
+      NewDiscussion,
+      PaginationQuery
+    >,
+    res: Response,
+    _next
+  ) => {
+    const discussionId = Number(req.params.discussionId);
+    const userId = req.decodedToken.id;
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+    return res.status(200);
+  }
+);
+
 // likes functionality
 discussionsRouter.post(
   '/:discussionId/like',
