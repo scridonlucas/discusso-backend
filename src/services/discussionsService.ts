@@ -1,9 +1,6 @@
 import prisma from '../utils/prismaClient';
 import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
-import {
-  CustomDiscussionError,
-  CustomPermissionError,
-} from '../utils/customErrors';
+import { CustomDiscussionError } from '../utils/customErrors';
 
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
@@ -96,10 +93,25 @@ const getDiscussionById = async (discussionId: number) => {
   return discussion;
 };
 
-const deleteDiscussion = async (
+const deleteDiscussion = async (discussionId: number, _userId: number) => {
+  const discussion = await prisma.discussion.findUnique({
+    where: { id: discussionId },
+  });
+
+  if (!discussion) {
+    throw new CustomDiscussionError('Discussion not found');
+  }
+
+  await prisma.discussion.delete({
+    where: { id: discussionId },
+  });
+  return { message: 'Discussion deleted successfully' };
+};
+
+const updateDiscussion = async (
+  _userId: number,
   discussionId: number,
-  userId: number,
-  userPermissions: string[]
+  discussionUpdateData: UpdatedDiscussion
 ) => {
   const discussion = await prisma.discussion.findUnique({
     where: { id: discussionId },
@@ -109,28 +121,18 @@ const deleteDiscussion = async (
     throw new CustomDiscussionError('Discussion not found');
   }
 
-  if (
-    userPermissions.includes('DELETE_ANY_DISCUSSION') ||
-    (userPermissions.includes('DELETE_OWN_DISCUSSION') &&
-      discussion.userId === userId)
-  ) {
-    await prisma.discussion.delete({
-      where: { id: discussionId },
-    });
-    return { message: 'Discussion deleted successfully' };
-  } else {
-    throw new CustomPermissionError(
-      'User is not authorized to delete this discussion.'
-    );
-  }
-};
+  const updatedDiscussion = await prisma.discussion.update({
+    where: { id: discussionId },
+    data: {
+      ...(discussionUpdateData.title && { title: discussionUpdateData.title }),
+      ...(discussionUpdateData.content && {
+        content: discussionUpdateData.content,
+      }),
+    },
+  });
 
-const updateDiscussion = async (
-  userId: number,
-  discussionId: number,
-  updatedDiscussion: UpdatedDiscussion,
-  userPermissions: string[]
-) => {};
+  return updatedDiscussion;
+};
 
 // likes service
 const addLike = async (userId: number, discussionId: number) => {

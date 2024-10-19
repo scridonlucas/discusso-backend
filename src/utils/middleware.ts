@@ -18,15 +18,11 @@ import {
 import { UserToken } from '../types/authTypes';
 import permissionsService from '../services/permissionsService';
 
-const checkPermission = (permissions: string[]): RequestHandler => {
+const checkPermission = (permission: string): RequestHandler => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       const userId = req.decodedToken.id;
-      const userPermissions = await permissionsService.getPermissions(
-        userId,
-        permissions
-      );
-      req.userPermissions = userPermissions;
+      await permissionsService.hasPermission(userId, permission); // if user has no permission to access resource, an error is thrown
       next();
     } catch (error) {
       next(error);

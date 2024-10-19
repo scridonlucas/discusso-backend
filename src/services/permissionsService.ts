@@ -1,10 +1,10 @@
 import prisma from '../utils/prismaClient';
 import { CustomPermissionError } from '../utils/customErrors';
 
-const getPermissions = async (
+const hasPermission = async (
   userId: number,
-  permissions: string[]
-): Promise<string[]> => {
+  permissionName: string
+): Promise<boolean> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -24,21 +24,18 @@ const getPermissions = async (
     throw new CustomPermissionError('User not found!');
   }
 
-  const userPermissionNames = user.role.permissions.map(
-    (rolePermission) => rolePermission.permission.permissionName
+  const hasPerm = user.role.permissions.some(
+    (rp) => rp.permission.permissionName === permissionName
   );
-
-  const userHasPermissions = permissions.filter((permissionName) =>
-    userPermissionNames.includes(permissionName)
-  );
-
-  if (userHasPermissions.length === 0) {
-    throw new CustomPermissionError('User does not have permissions.');
+  if (!hasPerm) {
+    throw new CustomPermissionError(
+      'You do not have permission to perform this action'
+    );
   }
 
-  return userHasPermissions;
+  return hasPerm;
 };
 
 export default {
-  getPermissions,
+  hasPermission,
 };
