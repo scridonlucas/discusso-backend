@@ -34,6 +34,8 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@casl/ability": "^6.7.1",
+    "@casl/prisma": "^1.5.0",
     "@prisma/client": "^5.15.0",
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.6",

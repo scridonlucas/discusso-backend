@@ -194,6 +194,27 @@ discussionsRouter.delete(
   }
 );
 
+discussionsRouter.delete(
+  '/admin/:discussionId',
+  middleware.jwtVerify,
+  middleware.checkPermission('DELETE_ANY_DISCUSSION'),
+  async (req, res, _next) => {
+    const userId = req.decodedToken.id;
+    const discussionId = Number(req.params.discussionId);
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    const deletedDiscussion = await discussionsService.deleteDiscussion(
+      discussionId,
+      userId
+    );
+
+    return res.status(200).json(deletedDiscussion);
+  }
+);
+
 discussionsRouter.put(
   '/:discussionId',
   middleware.jwtVerify,

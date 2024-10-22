@@ -30,6 +30,12 @@ const checkPermission = (permission: string): RequestHandler => {
   };
 };
 
+const checkPermissionWithOwnership = (
+  resourceType: ResourceType,
+  ownPermission: string,
+  anyPermission: string
+) => {};
+
 const jwtVerify = (req: Request, _res: Response, next: NextFunction): void => {
   try {
     const cookies = cookiesValidator.toNewCookie(req.cookies);
