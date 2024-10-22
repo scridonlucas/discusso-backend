@@ -16,6 +16,7 @@ import {
   CustomDiscussionError,
 } from './customErrors';
 import { UserToken } from '../types/authTypes';
+import { Resource } from '../types/resourceTypes';
 import permissionsService from '../services/permissionsService';
 
 const checkPermission = (permission: string): RequestHandler => {
@@ -31,10 +32,18 @@ const checkPermission = (permission: string): RequestHandler => {
 };
 
 const checkPermissionWithOwnership = (
-  resourceType: ResourceType,
+  resourceType: Resource,
   ownPermission: string,
   anyPermission: string
-) => {};
+): RequestHandler => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      const userId = req.decodedToken.id;
+    } catch (error) {
+      next(error);
+    }
+  };
+};
 
 const jwtVerify = (req: Request, _res: Response, next: NextFunction): void => {
   try {
