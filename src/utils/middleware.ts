@@ -39,6 +39,9 @@ const checkPermissionWithOwnership = (
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       const userId = req.decodedToken.id;
+      const discussionId = Number(req.params.discussionId);
+
+      await permissionsService.hasPermission(userId, anyPermission);
     } catch (error) {
       next(error);
     }

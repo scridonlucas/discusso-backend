@@ -27,11 +27,6 @@ const hasPermission = async (
   const hasPerm = user.role.permissions.some(
     (rp) => rp.permission.permissionName === permissionName
   );
-  if (!hasPerm) {
-    throw new CustomPermissionError(
-      'You do not have permission to perform this action'
-    );
-  }
 
   return hasPerm;
 };
