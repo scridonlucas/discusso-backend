@@ -157,7 +157,7 @@ discussionsRouter.get(
   }
 );
 
-discussionsRouter.post(
+discussionsRouter.get(
   '/:discussionId',
   middleware.jwtVerify,
   async (req, res, _next) => {

@@ -91,6 +91,42 @@ async function main() {
     },
   });
 
+  const deleteCommunityPermission = await prisma.permission.upsert({
+    where: { permissionName: 'DELETE_COMMUNITY' },
+    update: {},
+    create: {
+      permissionName: 'DELETE_COMMUNITY',
+      description: 'Can delete a community',
+    },
+  });
+
+  const updateCommunityPermission = await prisma.permission.upsert({
+    where: { permissionName: 'UPDATE_COMMUNITY' },
+    update: {},
+    create: {
+      permissionName: 'UPDATE_COMMUNITY',
+      description: 'Can update a community',
+    },
+  });
+
+  const likeDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'LIKE_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'LIKE_DISCUSSION',
+      description: 'Can like a discussion',
+    },
+  });
+
+  const removeLikePermission = await prisma.permission.upsert({
+    where: { permissionName: 'REMOVE_LIKE_FROM_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'REMOVE_LIKE_FROM_DISCUSSION',
+      description: 'Can remove a like',
+    },
+  });
+
   console.log({
     createDiscussionPermission,
     deleteOwnDiscussionPermission,
@@ -98,6 +134,10 @@ async function main() {
     updateOwnDiscussionPermission,
     updateAnyDiscussionPermission,
     createCommunityPermission,
+    deleteCommunityPermission,
+    updateCommunityPermission,
+    likeDiscussionPermission,
+    removeLikePermission,
   });
 
   await prisma.rolePermission.createMany({
@@ -115,6 +155,26 @@ async function main() {
         permissionId: deleteAnyDiscussionPermission.id,
       },
       {
+        roleId: adminRole.id,
+        permissionId: likeDiscussionPermission.id,
+      },
+      {
+        roleId: adminRole.id,
+        permissionId: removeLikePermission.id,
+      },
+      {
+        roleId: adminRole.id,
+        permissionId: createCommunityPermission.id,
+      },
+      {
+        roleId: adminRole.id,
+        permissionId: deleteCommunityPermission.id,
+      },
+      {
+        roleId: adminRole.id,
+        permissionId: updateCommunityPermission.id,
+      },
+      {
         roleId: moderatorRole.id,
         permissionId: createDiscussionPermission.id,
       },
@@ -125,6 +185,26 @@ async function main() {
       {
         roleId: moderatorRole.id,
         permissionId: deleteAnyDiscussionPermission.id,
+      },
+      {
+        roleId: moderatorRole.id,
+        permissionId: likeDiscussionPermission.id,
+      },
+      {
+        roleId: moderatorRole.id,
+        permissionId: removeLikePermission.id,
+      },
+      {
+        roleId: moderatorRole.id,
+        permissionId: createCommunityPermission.id,
+      },
+      {
+        roleId: moderatorRole.id,
+        permissionId: deleteCommunityPermission.id,
+      },
+      {
+        roleId: moderatorRole.id,
+        permissionId: updateCommunityPermission.id,
       },
       {
         roleId: userRole.id,
@@ -138,19 +218,32 @@ async function main() {
         roleId: userRole.id,
         permissionId: deleteOwnDiscussionPermission.id,
       },
+      {
+        roleId: userRole.id,
+        permissionId: likeDiscussionPermission.id,
+      },
+      {
+        roleId: userRole.id,
+        permissionId: removeLikePermission.id,
+      },
     ],
     skipDuplicates: true,
   });
 
   // seeding communities
+  const userId = 1; // admin user
 
-  /* const investmentStrategies = await prisma.community.upsert({
+  // Seeding communities
+  const investmentStrategies = await prisma.community.upsert({
     where: { name: 'Investment Strategies' },
     update: {},
     create: {
       name: 'Investment Strategies',
       description:
         'A place to discuss different investment strategies, including stocks, bonds, real estate, and alternative assets.',
+      user: {
+        connect: { id: userId },
+      },
     },
   });
 
@@ -161,6 +254,9 @@ async function main() {
       name: 'Personal Finance',
       description:
         'A community where members share tips and strategies for budgeting, saving, and managing personal finances.',
+      user: {
+        connect: { id: userId },
+      },
     },
   });
 
@@ -171,11 +267,13 @@ async function main() {
       name: 'Economic Policy & Governance',
       description:
         'A forum for debating and discussing economic policies, regulations, and governance issues.',
+      user: {
+        connect: { id: userId }, // Connect to an existing user
+      },
     },
   });
 
   console.log({ investmentStrategies, personalFinance, economicPolicy });
-  */
 }
 
 main()
