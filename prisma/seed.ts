@@ -82,12 +82,22 @@ async function main() {
     },
   });
 
+  const createCommunityPermission = await prisma.permission.upsert({
+    where: { permissionName: 'CREATE_COMMUNITY' },
+    update: {},
+    create: {
+      permissionName: 'CREATE_COMMUNITY',
+      description: 'Can create a community',
+    },
+  });
+
   console.log({
     createDiscussionPermission,
     deleteOwnDiscussionPermission,
     deleteAnyDiscussionPermission,
     updateOwnDiscussionPermission,
     updateAnyDiscussionPermission,
+    createCommunityPermission,
   });
 
   await prisma.rolePermission.createMany({
@@ -133,7 +143,8 @@ async function main() {
   });
 
   // seeding communities
-  const investmentStrategies = await prisma.community.upsert({
+
+  /* const investmentStrategies = await prisma.community.upsert({
     where: { name: 'Investment Strategies' },
     update: {},
     create: {
@@ -164,6 +175,7 @@ async function main() {
   });
 
   console.log({ investmentStrategies, personalFinance, economicPolicy });
+  */
 }
 
 main()

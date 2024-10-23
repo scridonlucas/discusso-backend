@@ -21,8 +21,10 @@ const parseUsername = (username: unknown): string => {
   if (!typeValidators.isString(username)) {
     throw new Error('Incorrect username type');
   }
-  if (!/^[a-zA-Z0-9]+$/.test(username)) {
-    throw new Error('Username can only contain letters and numbers');
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    throw new Error(
+      'Username can only contain letters, numbers, and underscores'
+    );
   }
   if (username.length < 3 || username.length > 16) {
     throw new Error(
