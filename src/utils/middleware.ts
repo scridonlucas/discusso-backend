@@ -18,6 +18,8 @@ import {
 import { UserToken } from '../types/authTypes';
 import { Resource } from '../types/resourceTypes';
 import permissionsService from '../services/permissionsService';
+import ownershipService from '../services/ownershipService';
+
 const checkPermission = (permission: string): RequestHandler => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
@@ -41,21 +43,51 @@ const checkPermission = (permission: string): RequestHandler => {
 };
 
 const checkPermissionWithOwnership = (
-  _resourceType: Resource,
+  resourceType: Resource,
   resourceIdParam: string,
-  _ownPermission: string,
-  _anyPermission: string
+  ownPermission: string,
+  anyPermission: string
 ): RequestHandler => {
-  return (req: Request, _res: Response, next: NextFunction) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
     try {
-      //const userId = req.decodedToken.id;
+      const userId = req.decodedToken.id;
       const discussionId = Number(req.params[resourceIdParam]);
 
       if (isNaN(discussionId)) {
         throw new CustomPermissionError('Invalid discussion ID');
       }
 
-      next();
+      const hasAnyPermission = await permissionsService.hasPermission(
+        userId,
+        anyPermission
+      );
+
+      if (hasAnyPermission) {
+        return next(); // if user has any permission, allow access
+      }
+
+      const hasOwnPermission = await permissionsService.hasPermission(
+        userId,
+        ownPermission
+      );
+
+      if (!hasOwnPermission) {
+        throw new CustomPermissionError(
+          'You do not have permission to perform this action'
+        );
+      }
+
+      const isUserOwner = await ownershipService.isOwner(
+        resourceType,
+        userId,
+        discussionId
+      );
+
+      if (!isUserOwner) {
+        throw new CustomPermissionError('You do not own this resource');
+      }
+
+      return next();
     } catch (error) {
       next(error);
     }
