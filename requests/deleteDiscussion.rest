@@ -1,2 +1,2 @@
-DELETE http://localhost:3001/api/discussions/25
+DELETE http://localhost:3001/api/discussions/1
 Content-Type: application/json

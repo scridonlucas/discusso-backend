@@ -176,7 +176,12 @@ discussionsRouter.post(
 discussionsRouter.delete(
   '/:discussionId',
   middleware.jwtVerify,
-  middleware.checkPermission('DELETE_OWN_DISCUSSION'),
+  middleware.checkPermissionWithOwnership(
+    'discussion',
+    'discussionId',
+    'DELETE_OWN_DISCUSSION',
+    'DELETE_ANY_DISCUSSION'
+  ),
   async (req, res, _next) => {
     const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
@@ -197,7 +202,12 @@ discussionsRouter.delete(
 discussionsRouter.put(
   '/:discussionId',
   middleware.jwtVerify,
-  middleware.checkPermission('UPDATE_OWN_DISCUSSION'),
+  middleware.checkPermissionWithOwnership(
+    'discussion',
+    'discussionId',
+    'UPDATE_OWN_DISCUSSION',
+    'UPDATE_ANY_DISCUSSION'
+  ),
   async (
     req: Request<
       { [key: string]: string },

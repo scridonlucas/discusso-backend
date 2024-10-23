@@ -18,13 +18,22 @@ import {
 import { UserToken } from '../types/authTypes';
 import { Resource } from '../types/resourceTypes';
 import permissionsService from '../services/permissionsService';
-
 const checkPermission = (permission: string): RequestHandler => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       const userId = req.decodedToken.id;
-      await permissionsService.hasPermission(userId, permission); // if user has no permission to access resource, an error is thrown
-      next();
+      const hasPerm = await permissionsService.hasPermission(
+        userId,
+        permission
+      );
+
+      if (!hasPerm) {
+        throw new CustomPermissionError(
+          'You do not have permission to perform this action'
+        );
+      }
+
+      return next();
     } catch (error) {
       next(error);
     }
@@ -32,16 +41,21 @@ const checkPermission = (permission: string): RequestHandler => {
 };
 
 const checkPermissionWithOwnership = (
-  resourceType: Resource,
-  ownPermission: string,
-  anyPermission: string
+  _resourceType: Resource,
+  resourceIdParam: string,
+  _ownPermission: string,
+  _anyPermission: string
 ): RequestHandler => {
-  return async (req: Request, _res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
-      const userId = req.decodedToken.id;
-      const discussionId = Number(req.params.discussionId);
+      //const userId = req.decodedToken.id;
+      const discussionId = Number(req.params[resourceIdParam]);
 
-      await permissionsService.hasPermission(userId, anyPermission);
+      if (isNaN(discussionId)) {
+        throw new CustomPermissionError('Invalid discussion ID');
+      }
+
+      next();
     } catch (error) {
       next(error);
     }
@@ -132,4 +146,10 @@ const errorHandler: ErrorRequestHandler = (
   return next(error);
 };
 
-export default { unknownEndPoint, errorHandler, jwtVerify, checkPermission };
+export default {
+  unknownEndPoint,
+  errorHandler,
+  jwtVerify,
+  checkPermission,
+  checkPermissionWithOwnership,
+};
