@@ -1,8 +1,7 @@
 import 'express-async-errors';
 import middleware from '../utils/middleware';
-import { Response } from 'express';
 import discussionsService from '../services/discussionsService';
-import { Router, Request } from 'express';
+import { Router, Request, Response } from 'express';
 import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
 import { PaginationQuery } from '../types/requestTypes';
 
@@ -290,6 +289,8 @@ discussionsRouter.put(
 discussionsRouter.post(
   '/:discussionId/like',
   middleware.jwtVerify,
+  middleware.checkPermission('LIKE_DISCUSSION'),
+
   async (req, res, _next) => {
     const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
@@ -307,6 +308,7 @@ discussionsRouter.post(
 discussionsRouter.delete(
   '/:discussionId/like',
   middleware.jwtVerify,
+  middleware.checkPermission('REMOVE_LIKE_FROM_DISCUSSION'),
   async (req, res, _next) => {
     const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
