@@ -48,6 +48,7 @@ model User {
   createdCommunities  Community[]
   likes               Like[] 
   comments            Comment[]
+  notifications    Notification[] 
   filedReports      Report[] 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -150,6 +151,18 @@ model Report {
   
   @@index([userId])
   @@index([discussionId])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  content   String
+  type      String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 // many to many tables 
