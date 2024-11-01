@@ -49,12 +49,13 @@ authRouter.get(
   middleware.jwtVerify,
   (req: Request, res: Response, _next) => {
     const username = req.decodedToken.username;
+    const userId = req.decodedToken.id;
 
-    console.log(username);
     res.json({
       success: true,
       user: {
         username: username,
+        userId: userId,
         role: 'test',
       },
     });
