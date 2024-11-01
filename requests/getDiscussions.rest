@@ -1,0 +1,2 @@
+GET http://localhost:3001/api/discussions/
+Content-Type: application/json

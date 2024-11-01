@@ -1,7 +1,7 @@
 import 'express-async-errors';
 import middleware from '../utils/middleware';
 import discussionsService from '../services/discussionsService';
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
 import { PaginationQuery } from '../types/requestTypes';
 
@@ -14,10 +14,9 @@ discussionsRouter.post(
   async (
     req: Request<unknown, unknown, NewDiscussion>,
     res: Response,
-    _next
+    _next: NextFunction
   ) => {
     const userId = req.decodedToken.id;
-
     const { title, content, communityId } = req.body;
 
     if (!title || !content || !communityId) {

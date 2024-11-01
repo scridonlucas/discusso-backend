@@ -32,6 +32,19 @@ enum ReportStatus {
   RESOLVED
 }
 
+enum ReportReason {
+  SPAM
+  ADVERTISING
+  FRAUD
+  FINANCIAL_MANIPULATION
+  INAPPROPRIATE
+  HARASSMENT
+  MISINFORMATION
+  COPYRIGHT_VIOLATION
+  OFF_TOPIC
+  OTHER
+}
+
 
 model User {
   id        Int      @id @default(autoincrement())
@@ -43,13 +56,19 @@ model User {
   birthDate DateTime
   password  String
   roleId    Int
+  following           Follow[]        @relation("Follower")
+  followers           Follow[]        @relation("Followed")
   discussions Discussion[]
+  credibility   Int     @default(0) 
   followedCommunities UserCommunity[] 
   createdCommunities  Community[]
   likes               Like[] 
   comments            Comment[]
+  bookmarks           Bookmark[]
   notifications    Notification[] 
   filedReports      Report[] 
+  moderatedActions    ModerationLog[]  @relation("Moderator")   
+  actionsOnUser       ModerationLog[]  @relation("AffectedUser") 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -83,6 +102,7 @@ model Discussion {
   communityId   Int
   likes         Like[] 
   comments      Comment[] 
+  bookmarks           Bookmark[] 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   reports       Report[]
@@ -141,7 +161,7 @@ model Report {
   id              Int         @id @default(autoincrement())
   userId          Int         
   discussionId    Int       
-  reason          String     
+  reason          ReportReason     
   status          ReportStatus @default(PENDING) 
   createdAt       DateTime    @default(now())
   reviewedAt      DateTime?  
@@ -165,7 +185,9 @@ model Notification {
   @@index([userId])
 }
 
+
 // many to many tables 
+
 model RolePermission {
   id           Int         @id @default(autoincrement())
   roleId       Int
@@ -187,4 +209,47 @@ model UserCommunity {
 
   user         User            @relation(fields: [userId], references: [id])
   community    Community       @relation(fields: [communityId], references: [id])
+}
+
+model Follow {
+  id          Int      @id @default(autoincrement())
+  followerId  Int
+  followedId  Int
+  createdAt   DateTime @default(now())
+
+  follower    User     @relation("Follower", fields: [followerId], references: [id])
+  followed    User     @relation("Followed", fields: [followedId], references: [id])
+
+  @@unique([followerId, followedId]) // Ensures each follow relationship is unique
+  @@index([followerId])
+  @@index([followedId])
+}
+
+model Bookmark {
+  id           Int         @id @default(autoincrement())
+  userId       Int
+  discussionId Int
+  createdAt    DateTime    @default(now())
+
+  user         User        @relation(fields: [userId], references: [id])
+  discussion   Discussion  @relation(fields: [discussionId], references: [id])
+
+  @@unique([userId, discussionId]) 
+  @@index([userId])
+  @@index([discussionId])
+}
+
+model ModerationLog {
+  id           Int          @id @default(autoincrement())
+  moderatorId  Int        
+  userId       Int?     
+  action       String    
+  targetId     Int?      
+  createdAt    DateTime     @default(now())
+
+  moderator    User         @relation("Moderator", fields: [moderatorId], references: [id])
+  user         User?        @relation("AffectedUser", fields: [userId], references: [id])
+
+  @@index([moderatorId])
+  @@index([userId])
 }

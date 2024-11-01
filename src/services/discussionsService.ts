@@ -28,6 +28,10 @@ const getDiscussions = async (limit: number, offset: number) => {
     orderBy: {
       createdAt: 'desc',
     },
+    include: {
+      user: { select: { id: true, username: true } },
+      _count: { select: { likes: true, comments: true } },
+    },
   });
 
   const total = await prisma.discussion.count();
