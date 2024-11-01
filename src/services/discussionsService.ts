@@ -30,6 +30,7 @@ const getDiscussions = async (limit: number, offset: number) => {
     },
     include: {
       user: { select: { id: true, username: true } },
+      community: { select: { name: true } },
       _count: { select: { likes: true, comments: true } },
     },
   });
