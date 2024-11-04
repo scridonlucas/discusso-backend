@@ -127,6 +127,24 @@ async function main() {
     },
   });
 
+  const addBookmarkPermission = await prisma.permission.upsert({
+    where: { permissionName: 'ADD_BOOKMARK_TO_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'ADD_BOOKMARK_TO_DISCUSSION',
+      description: 'Can add a bookmark',
+    },
+  });
+
+  const removeBookmarkPermission = await prisma.permission.upsert({
+    where: { permissionName: 'REMOVE_BOOKMARK_FROM_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'REMOVE_BOOKMARK_FROM_DISCUSSION',
+      description: 'Can remove a bookmark',
+    },
+  });
+
   console.log({
     createDiscussionPermission,
     deleteOwnDiscussionPermission,
@@ -138,95 +156,64 @@ async function main() {
     updateCommunityPermission,
     likeDiscussionPermission,
     removeLikePermission,
+    addBookmarkPermission,
+    removeBookmarkPermission,
   });
 
+  const rolePermissions = [
+    {
+      roleId: adminRole.id,
+      permissions: [
+        createDiscussionPermission.id,
+        updateAnyDiscussionPermission.id,
+        deleteAnyDiscussionPermission.id,
+        likeDiscussionPermission.id,
+        removeLikePermission.id,
+        createCommunityPermission.id,
+        deleteCommunityPermission.id,
+        updateCommunityPermission.id,
+        addBookmarkPermission.id,
+        removeBookmarkPermission.id,
+      ],
+    },
+    {
+      roleId: moderatorRole.id,
+      permissions: [
+        createDiscussionPermission.id,
+        updateAnyDiscussionPermission.id,
+        deleteAnyDiscussionPermission.id,
+        likeDiscussionPermission.id,
+        removeLikePermission.id,
+        createCommunityPermission.id,
+        deleteCommunityPermission.id,
+        updateCommunityPermission.id,
+        addBookmarkPermission.id,
+        removeBookmarkPermission.id,
+      ],
+    },
+    {
+      roleId: userRole.id,
+      permissions: [
+        createDiscussionPermission.id,
+        updateOwnDiscussionPermission.id,
+        deleteOwnDiscussionPermission.id,
+        likeDiscussionPermission.id,
+        removeLikePermission.id,
+        addBookmarkPermission.id,
+        removeBookmarkPermission.id,
+      ],
+    },
+  ];
+
+  const data = rolePermissions.flatMap(({ roleId, permissions }) =>
+    permissions.map((permissionId) => ({
+      roleId,
+      permissionId,
+    }))
+  );
+
   await prisma.rolePermission.createMany({
-    data: [
-      {
-        roleId: adminRole.id,
-        permissionId: createDiscussionPermission.id,
-      },
-      {
-        roleId: adminRole.id,
-        permissionId: updateAnyDiscussionPermission.id,
-      },
-      {
-        roleId: adminRole.id,
-        permissionId: deleteAnyDiscussionPermission.id,
-      },
-      {
-        roleId: adminRole.id,
-        permissionId: likeDiscussionPermission.id,
-      },
-      {
-        roleId: adminRole.id,
-        permissionId: removeLikePermission.id,
-      },
-      {
-        roleId: adminRole.id,
-        permissionId: createCommunityPermission.id,
-      },
-      {
-        roleId: adminRole.id,
-        permissionId: deleteCommunityPermission.id,
-      },
-      {
-        roleId: adminRole.id,
-        permissionId: updateCommunityPermission.id,
-      },
-      {
-        roleId: moderatorRole.id,
-        permissionId: createDiscussionPermission.id,
-      },
-      {
-        roleId: moderatorRole.id,
-        permissionId: updateAnyDiscussionPermission.id,
-      },
-      {
-        roleId: moderatorRole.id,
-        permissionId: deleteAnyDiscussionPermission.id,
-      },
-      {
-        roleId: moderatorRole.id,
-        permissionId: likeDiscussionPermission.id,
-      },
-      {
-        roleId: moderatorRole.id,
-        permissionId: removeLikePermission.id,
-      },
-      {
-        roleId: moderatorRole.id,
-        permissionId: createCommunityPermission.id,
-      },
-      {
-        roleId: moderatorRole.id,
-        permissionId: deleteCommunityPermission.id,
-      },
-      {
-        roleId: moderatorRole.id,
-        permissionId: updateCommunityPermission.id,
-      },
-      {
-        roleId: userRole.id,
-        permissionId: createDiscussionPermission.id,
-      },
-      {
-        roleId: userRole.id,
-        permissionId: updateOwnDiscussionPermission.id,
-      },
-      {
-        roleId: userRole.id,
-        permissionId: deleteOwnDiscussionPermission.id,
-      },
-      {
-        roleId: userRole.id,
-        permissionId: likeDiscussionPermission.id,
-      },
-      {
-        roleId: userRole.id,
-        permissionId: removeLikePermission.id,
-      },
-    ],
+    data,
     skipDuplicates: true,
   });
 

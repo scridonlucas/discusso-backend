@@ -289,7 +289,6 @@ discussionsRouter.post(
   '/:discussionId/like',
   middleware.jwtVerify,
   middleware.checkPermission('LIKE_DISCUSSION'),
-
   async (req, res, _next) => {
     const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
@@ -378,6 +377,45 @@ discussionsRouter.get(
     );
 
     return res.status(200).json({ hasLiked });
+  }
+);
+
+// bookmark / save service
+
+discussionsRouter.post(
+  '/:discussionId/bookmark',
+  middleware.jwtVerify,
+  middleware.checkPermission('ADD_BOOKMARK_TO_DISCUSSION'),
+  async (req, res) => {
+    const userId = req.decodedToken.id;
+    const discussionId = Number(req.params.discussionId);
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    const bookmark = await discussionsService.addBookmark(userId, discussionId);
+    return res.status(201).json(bookmark);
+  }
+);
+
+discussionsRouter.delete(
+  '/:discussionId/bookmark',
+  middleware.jwtVerify,
+  middleware.checkPermission('REMOVE_BOOKMARK_FROM_DISCUSSION'),
+  async (req, res) => {
+    const userId = req.decodedToken.id;
+    const discussionId = Number(req.params.discussionId);
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    const result = await discussionsService.removeBookmark(
+      userId,
+      discussionId
+    );
+    return res.status(200).json(result);
   }
 );
 

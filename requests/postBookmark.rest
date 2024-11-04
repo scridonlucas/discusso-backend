@@ -1,0 +1,5 @@
+POST http://localhost:3001/api/discussions/32/bookmark
+Content-Type: application/json
+
+{
+}

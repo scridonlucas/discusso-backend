@@ -180,9 +180,7 @@ const deleteLike = async (userId: number, discussionId: number) => {
   });
 
   if (!existingLike) {
-    throw new CustomDiscussionError(
-      'User has not liked this discussion or not authorized to remove this like'
-    );
+    throw new CustomDiscussionError('User has not liked this discussion.');
   }
   const removedLike = await prisma.like.delete({
     where: {
@@ -235,6 +233,57 @@ export const hasUserLikedDiscussion = async (
   }
 };
 
+// bookmark/ save service
+const addBookmark = async (userId: number, discussionId: number) => {
+  const existingBookmark = await prisma.bookmark.findUnique({
+    where: {
+      userId_discussionId: {
+        userId,
+        discussionId,
+      },
+    },
+  });
+
+  if (existingBookmark) {
+    throw new CustomDiscussionError('User has already saved this discussion');
+  }
+
+  const bookmark = await prisma.bookmark.create({
+    data: {
+      userId,
+      discussionId,
+    },
+  });
+
+  return bookmark;
+};
+
+const removeBookmark = async (userId: number, discussionId: number) => {
+  const existingBookmark = await prisma.bookmark.findUnique({
+    where: {
+      userId_discussionId: {
+        userId,
+        discussionId,
+      },
+    },
+  });
+
+  if (!existingBookmark) {
+    throw new CustomDiscussionError('Bookmark does not exist');
+  }
+
+  const bookmark = await prisma.bookmark.delete({
+    where: {
+      userId_discussionId: {
+        userId,
+        discussionId,
+      },
+    },
+  });
+
+  return bookmark;
+};
+
 export default {
   addDiscussion,
   getDiscussions,
@@ -248,4 +297,6 @@ export default {
   getTotalLikesForDiscussion,
   getUsersWhoLikedDiscussion,
   hasUserLikedDiscussion,
+  addBookmark,
+  removeBookmark,
 };
