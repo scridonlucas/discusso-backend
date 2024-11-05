@@ -1,7 +1,7 @@
 import prisma from '../utils/prismaClient';
 import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
 import { CustomDiscussionError } from '../utils/customErrors';
-
+import { Prisma } from '@prisma/client';
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
     where: { id: newDiscussion.communityId },
@@ -20,19 +20,30 @@ const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
 
   return addedDiscussion;
 };
-
-const getDiscussions = async (limit: number, offset: number) => {
+const getDiscussions = async (
+  limit: number,
+  offset: number,
+  sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented' = 'recent',
+  dateRange: 'last_hour' | 'last_day' | 'last_week' | 'last_month' | null = null
+) => {
+  const orderBy: Prisma.DiscussionOrderByWithRelationInput =
+    getOrderByOption(sort);
+  const where = getTimeFilterCondition(dateRange);
   const discussions = await prisma.discussion.findMany({
     skip: offset,
     take: limit,
-    orderBy: {
-      createdAt: 'desc',
-    },
+    orderBy,
+    where,
     include: {
       user: { select: { id: true, username: true } },
       community: { select: { name: true } },
       _count: { select: { likes: true, comments: true } },
       likes: {
+        select: {
+          user: { select: { id: true, username: true } },
+        },
+      },
+      bookmarks: {
         select: {
           user: { select: { id: true, username: true } },
         },
@@ -233,7 +244,7 @@ export const hasUserLikedDiscussion = async (
   }
 };
 
-// bookmark/ save service
+// bookmark / save service
 const addBookmark = async (userId: number, discussionId: number) => {
   const existingBookmark = await prisma.bookmark.findUnique({
     where: {
@@ -283,6 +294,47 @@ const removeBookmark = async (userId: number, discussionId: number) => {
 
   return bookmark;
 };
+
+// Helper functions
+const getOrderByOption = (
+  sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented'
+): Prisma.DiscussionOrderByWithRelationInput => {
+  switch (sort) {
+    case 'recent':
+      return { createdAt: 'desc' };
+    case 'oldest':
+      return { createdAt: 'asc' };
+    case 'most_liked':
+      return { likes: { _count: 'desc' } };
+    case 'most_commented':
+      return { comments: { _count: 'desc' } };
+    default:
+      return { createdAt: 'desc' };
+  }
+};
+
+function getTimeFilterCondition(
+  timeFilter: 'last_hour' | 'last_day' | 'last_week' | 'last_month' | null
+) {
+  const now = new Date();
+  if (!timeFilter) return {};
+
+  switch (timeFilter) {
+    case 'last_hour':
+      now.setHours(now.getHours() - 1);
+      return { createdAt: { gte: now } };
+    case 'last_day':
+      now.setDate(now.getDate() - 1);
+      return { createdAt: { gte: now } };
+    case 'last_week':
+      now.setDate(now.getDate() - 7);
+      return { createdAt: { gte: now } };
+    case 'last_month':
+      now.setMonth(now.getMonth() - 1);
+      return { createdAt: { gte: now } };
+  }
+}
+//
 
 export default {
   addDiscussion,

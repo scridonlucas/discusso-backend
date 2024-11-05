@@ -3,7 +3,7 @@ import middleware from '../utils/middleware';
 import discussionsService from '../services/discussionsService';
 import { Router, Request, Response, NextFunction } from 'express';
 import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
-import { PaginationQuery } from '../types/requestTypes';
+import { DiscussionQueryParams } from '../types/requestTypes';
 
 const discussionsRouter = Router();
 
@@ -81,15 +81,22 @@ discussionsRouter.get(
   '/',
   middleware.jwtVerify,
   async (
-    req: Request<unknown, unknown, NewDiscussion, PaginationQuery>,
+    req: Request<unknown, unknown, NewDiscussion, DiscussionQueryParams>,
     res: Response,
     _next
   ) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
-    const discussions = await discussionsService.getDiscussions(limit, offset);
+    const sort = req.query.sort ? req.query.sort : 'recent';
+    const dateRange = req.query.dateRange;
+    const discussions = await discussionsService.getDiscussions(
+      limit,
+      offset,
+      sort,
+      dateRange
+    );
 
-    return res.status(201).json(discussions);
+    return res.status(200).json(discussions);
   }
 );
 
@@ -101,7 +108,7 @@ discussionsRouter.get(
       { [key: string]: string },
       unknown,
       NewDiscussion,
-      PaginationQuery
+      DiscussionQueryParams
     >,
     res: Response,
     _next
@@ -120,7 +127,7 @@ discussionsRouter.get(
       offset
     );
 
-    return res.status(201).json(discussions);
+    return res.status(200).json(discussions);
   }
 );
 discussionsRouter.get(
@@ -131,7 +138,7 @@ discussionsRouter.get(
       { [key: string]: string },
       unknown,
       NewDiscussion,
-      PaginationQuery
+      DiscussionQueryParams
     >,
     res: Response,
     _next
@@ -151,7 +158,7 @@ discussionsRouter.get(
       offset
     );
 
-    return res.status(201).json(discussions);
+    return res.status(200).json(discussions);
   }
 );
 
@@ -211,7 +218,7 @@ discussionsRouter.put(
       { [key: string]: string },
       unknown,
       UpdatedDiscussion,
-      PaginationQuery
+      DiscussionQueryParams
     >,
     res: Response,
     _next

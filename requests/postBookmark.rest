@@ -1,4 +1,4 @@
-POST http://localhost:3001/api/discussions/32/bookmark
+POST http://localhost:3001/api/discussions/35/bookmark
 Content-Type: application/json
 
 {
