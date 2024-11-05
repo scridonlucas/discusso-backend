@@ -86,13 +86,34 @@ discussionsRouter.get(
     _next
   ) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
-    const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
     const sort = req.query.sort ? req.query.sort : 'recent';
     const dateRange = req.query.dateRange;
     const discussions = await discussionsService.getDiscussions(
       limit,
-      offset,
+      cursor,
       sort,
+      dateRange
+    );
+
+    return res.status(200).json(discussions);
+  }
+);
+
+discussionsRouter.get(
+  '/trending',
+  middleware.jwtVerify,
+  async (
+    req: Request<unknown, unknown, NewDiscussion, DiscussionQueryParams>,
+    res: Response,
+    _next
+  ) => {
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
+    const dateRange = req.query.dateRange;
+    const discussions = await discussionsService.getTrendingDiscussions(
+      limit,
+      cursor,
       dateRange
     );
 
@@ -119,12 +140,12 @@ discussionsRouter.get(
     }
 
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
-    const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
 
     const discussions = await discussionsService.getDiscussionsByUser(
       userId,
       limit,
-      offset
+      cursor
     );
 
     return res.status(200).json(discussions);
@@ -150,12 +171,12 @@ discussionsRouter.get(
     }
 
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
-    const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
 
     const discussions = await discussionsService.getDiscussionsByCommunity(
       communityId,
       limit,
-      offset
+      cursor
     );
 
     return res.status(200).json(discussions);

@@ -22,7 +22,7 @@ const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
 };
 const getDiscussions = async (
   limit: number,
-  offset: number,
+  cursor: number | null,
   sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented' = 'recent',
   dateRange: 'last_hour' | 'last_day' | 'last_week' | 'last_month' | null = null
 ) => {
@@ -30,8 +30,9 @@ const getDiscussions = async (
     getOrderByOption(sort);
   const where = getTimeFilterCondition(dateRange);
   const discussions = await prisma.discussion.findMany({
-    skip: offset,
     take: limit,
+    skip: cursor ? 1 : 0,
+    cursor: cursor ? { id: cursor } : undefined,
     orderBy,
     where,
     include: {
@@ -55,6 +56,47 @@ const getDiscussions = async (
 
   return {
     discussions,
+    nextCursor:
+      discussions.length > 0 ? discussions[discussions.length - 1].id : null,
+    total,
+  };
+};
+
+const getTrendingDiscussions = async (
+  limit: number,
+  cursor: number | null,
+  dateRange: 'last_hour' | 'last_day' | 'last_week' | 'last_month' | null = null
+) => {
+  const where = getTimeFilterCondition(dateRange);
+  const discussions = await prisma.discussion.findMany({
+    take: limit,
+    skip: cursor ? 1 : 0,
+    cursor: cursor ? { id: cursor } : undefined,
+    orderBy: { createdAt: 'desc' },
+    where,
+    include: {
+      user: { select: { id: true, username: true } },
+      community: { select: { name: true } },
+      _count: { select: { likes: true, comments: true } },
+      likes: {
+        select: {
+          user: { select: { id: true, username: true } },
+        },
+      },
+      bookmarks: {
+        select: {
+          user: { select: { id: true, username: true } },
+        },
+      },
+    },
+  });
+
+  const total = await prisma.discussion.count();
+
+  return {
+    discussions,
+    nextCursor:
+      discussions.length > 0 ? discussions[discussions.length - 1].id : null,
     total,
   };
 };
@@ -62,11 +104,12 @@ const getDiscussions = async (
 const getDiscussionsByUser = async (
   userId: number,
   limit: number,
-  offset: number
+  cursor: number | null
 ) => {
   const discussions = await prisma.discussion.findMany({
     where: { userId },
-    skip: offset,
+    skip: cursor ? 1 : 0,
+    cursor: cursor ? { id: cursor } : undefined,
     take: limit,
     orderBy: { createdAt: 'desc' },
   });
@@ -75,17 +118,23 @@ const getDiscussionsByUser = async (
     where: { userId },
   });
 
-  return { discussions, total };
+  return {
+    discussions,
+    nextCursor:
+      discussions.length > 0 ? discussions[discussions.length - 1].id : null,
+    total,
+  };
 };
 
 const getDiscussionsByCommunity = async (
   communityId: number,
   limit: number,
-  offset: number
+  cursor: number | null
 ) => {
   const discussions = await prisma.discussion.findMany({
     where: { communityId },
-    skip: offset,
+    skip: cursor ? 1 : 0,
+    cursor: cursor ? { id: cursor } : undefined,
     take: limit,
     orderBy: { createdAt: 'desc' },
   });
@@ -94,7 +143,12 @@ const getDiscussionsByCommunity = async (
     where: { communityId },
   });
 
-  return { discussions, total };
+  return {
+    discussions,
+    nextCursor:
+      discussions.length > 0 ? discussions[discussions.length - 1].id : null,
+    total,
+  };
 };
 
 const getDiscussionById = async (discussionId: number) => {
@@ -339,6 +393,7 @@ function getTimeFilterCondition(
 export default {
   addDiscussion,
   getDiscussions,
+  getTrendingDiscussions,
   getDiscussionsByUser,
   getDiscussionsByCommunity,
   getDiscussionById,
