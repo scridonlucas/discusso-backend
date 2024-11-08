@@ -21,14 +21,26 @@ const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   return addedDiscussion;
 };
 const getDiscussions = async (
+  userId: number,
   limit: number,
   cursor: number | null,
   sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented' = 'recent',
-  dateRange: 'last_hour' | 'last_day' | 'last_week' | 'last_month' | null = null
+  dateRange:
+    | 'all'
+    | 'last_hour'
+    | 'last_day'
+    | 'last_week'
+    | 'last_month' = 'all',
+  feedType: 'for_you' | 'following' = 'for_you'
 ) => {
   const orderBy: Prisma.DiscussionOrderByWithRelationInput =
     getOrderByOption(sort);
-  const where = getTimeFilterCondition(dateRange);
+
+  const where: Prisma.DiscussionWhereInput = {
+    ...getTimeFilterCondition(dateRange),
+    ...getFeedCondition(feedType, userId),
+  };
+
   const discussions = await prisma.discussion.findMany({
     take: limit,
     skip: cursor ? 1 : 0,
@@ -65,7 +77,12 @@ const getDiscussions = async (
 const getTrendingDiscussions = async (
   limit: number,
   cursor: number | null,
-  dateRange: 'last_hour' | 'last_day' | 'last_week' | 'last_month' | null = null
+  dateRange:
+    | 'last_hour'
+    | 'last_day'
+    | 'last_week'
+    | 'last_month'
+    | 'all' = 'all'
 ) => {
   const where = getTimeFilterCondition(dateRange);
   const discussions = await prisma.discussion.findMany({
@@ -368,10 +385,11 @@ const getOrderByOption = (
 };
 
 function getTimeFilterCondition(
-  timeFilter: 'last_hour' | 'last_day' | 'last_week' | 'last_month' | null
-) {
+  timeFilter: 'last_hour' | 'last_day' | 'last_week' | 'last_month' | 'all'
+): Prisma.DiscussionWhereInput {
   const now = new Date();
-  if (!timeFilter) return {};
+
+  if (!timeFilter || timeFilter === 'all') return {};
 
   switch (timeFilter) {
     case 'last_hour':
@@ -386,8 +404,24 @@ function getTimeFilterCondition(
     case 'last_month':
       now.setMonth(now.getMonth() - 1);
       return { createdAt: { gte: now } };
+    default:
+      return {};
   }
 }
+
+const getFeedCondition = (
+  feedType: 'for_you' | 'following',
+  userId: number
+): Prisma.DiscussionWhereInput => {
+  if (feedType === 'for_you') return {};
+
+  return {
+    OR: [
+      { community: { followers: { some: { userId } } } },
+      { user: { followers: { some: { followerId: userId } } } },
+    ],
+  };
+};
 //
 
 export default {

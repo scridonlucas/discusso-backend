@@ -85,15 +85,20 @@ discussionsRouter.get(
     res: Response,
     _next
   ) => {
+    const userId = req.decodedToken.id;
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
     const sort = req.query.sort ? req.query.sort : 'recent';
-    const dateRange = req.query.dateRange;
+    const dateRange = req.query.date_range ? req.query.date_range : 'all';
+    const feedType = req.query.feed_type ? req.query.feed_type : 'for_you';
+
     const discussions = await discussionsService.getDiscussions(
+      userId,
       limit,
       cursor,
       sort,
-      dateRange
+      dateRange,
+      feedType
     );
 
     return res.status(200).json(discussions);
@@ -110,7 +115,7 @@ discussionsRouter.get(
   ) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
-    const dateRange = req.query.dateRange;
+    const dateRange = req.query.date_range;
     const discussions = await discussionsService.getTrendingDiscussions(
       limit,
       cursor,
