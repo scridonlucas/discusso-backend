@@ -9,6 +9,7 @@ import usersService from '../services/usersService';
 import loginService from '../services/loginService';
 import config from '../utils/config';
 import { Request } from 'express';
+import { getUserWithRole } from '../services/usersService';
 
 const authRouter = Router();
 
@@ -47,16 +48,21 @@ authRouter.get('/logout', (_req, res: Response, _next) => {
 authRouter.get(
   '/verify',
   middleware.jwtVerify,
-  (req: Request, res: Response, _next) => {
+  async (req: Request, res: Response, _next) => {
     const username = req.decodedToken.username;
     const userId = req.decodedToken.id;
+    const user = await getUserWithRole(userId);
 
-    res.json({
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.status(200).json({
       success: true,
       user: {
         username: username,
         userId: userId,
-        role: 'test',
+        role: user.role.roleName,
       },
     });
   }

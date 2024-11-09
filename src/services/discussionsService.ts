@@ -31,7 +31,7 @@ const getDiscussions = async (
     | 'last_day'
     | 'last_week'
     | 'last_month' = 'all',
-  feedType: 'for_you' | 'following' = 'for_you'
+  feedType: 'explore' | 'following' = 'explore'
 ) => {
   const orderBy: Prisma.DiscussionOrderByWithRelationInput =
     getOrderByOption(sort);
@@ -410,10 +410,10 @@ function getTimeFilterCondition(
 }
 
 const getFeedCondition = (
-  feedType: 'for_you' | 'following',
+  feedType: 'explore' | 'following',
   userId: number
 ): Prisma.DiscussionWhereInput => {
-  if (feedType === 'for_you') return {};
+  if (feedType === 'explore') return {};
 
   return {
     OR: [

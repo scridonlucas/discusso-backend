@@ -14,6 +14,15 @@ const getUser = async (id: number) => {
   return user;
 };
 
+export const getUserWithRole = async (userId: number) => {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      role: true,
+    },
+  });
+};
+
 const getUserByUsername = async (username: string) => {
   const user = await prisma.user.findUnique({
     where: { username },
@@ -57,6 +66,7 @@ const deleteUser = async (id: number) => {
 export default {
   getUsers,
   getUser,
+  getUserWithRole,
   getUserByUsername,
   getUserByEmail,
   addUser,

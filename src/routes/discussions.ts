@@ -90,7 +90,7 @@ discussionsRouter.get(
     const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
     const sort = req.query.sort ? req.query.sort : 'recent';
     const dateRange = req.query.date_range ? req.query.date_range : 'all';
-    const feedType = req.query.feed_type ? req.query.feed_type : 'for_you';
+    const feedType = req.query.feed_type ? req.query.feed_type : 'explore';
 
     const discussions = await discussionsService.getDiscussions(
       userId,
