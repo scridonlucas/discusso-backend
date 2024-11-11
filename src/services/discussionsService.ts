@@ -175,6 +175,16 @@ const getDiscussionById = async (discussionId: number) => {
       user: true,
       community: true,
       comments: true,
+      likes: {
+        select: {
+          user: { select: { id: true, username: true } },
+        },
+      },
+      bookmarks: {
+        select: {
+          user: { select: { id: true, username: true } },
+        },
+      },
     },
   });
 
