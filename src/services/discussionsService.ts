@@ -379,6 +379,26 @@ const removeBookmark = async (userId: number, discussionId: number) => {
   return bookmark;
 };
 
+// comment functionality
+const addComment = async (
+  userId: number,
+  discussionId: number,
+  content: string
+) => {
+  const comment = await prisma.comment.create({
+    data: {
+      userId,
+      discussionId,
+      content,
+    },
+    include: {
+      user: { select: { id: true, username: true } },
+    },
+  });
+
+  return comment;
+};
+
 // Helper functions
 const getOrderByOption = (
   sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented'
@@ -453,4 +473,5 @@ export default {
   hasUserLikedDiscussion,
   addBookmark,
   removeBookmark,
+  addComment,
 };

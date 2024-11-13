@@ -12,6 +12,11 @@ export interface NewDiscussion {
   content: string;
   communityId: number;
 }
+export interface NewComment {
+  content: string;
+  userId: number;
+  discussionId: number;
+}
 
 export interface UpdatedDiscussion {
   title?: string;

@@ -2,7 +2,12 @@ import 'express-async-errors';
 import middleware from '../utils/middleware';
 import discussionsService from '../services/discussionsService';
 import { Router, Request, Response, NextFunction } from 'express';
-import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
+import {
+  NewDiscussion,
+  UpdatedDiscussion,
+  NewComment,
+} from '../types/discussionType';
+
 import { DiscussionQueryParams } from '../types/requestTypes';
 
 const discussionsRouter = Router();
@@ -449,6 +454,38 @@ discussionsRouter.delete(
       discussionId
     );
     return res.status(200).json(result);
+  }
+);
+
+// comment functionality
+
+discussionsRouter.post(
+  '/:discussionId/comment',
+  middleware.jwtVerify,
+  middleware.checkPermission('COMMENT_DISCUSSION'),
+  async (
+    req: Request<{ discussionId: string }, unknown, NewComment>,
+    res: Response,
+    _next: NextFunction
+  ) => {
+    const userId = req.decodedToken.id;
+    const discussionId = Number(req.params.discussionId);
+    const { content } = req.body;
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+    if (!content) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+
+    const comment = await discussionsService.addComment(
+      userId,
+      discussionId,
+      content
+    );
+
+    return res.status(201).json(comment);
   }
 );
 
