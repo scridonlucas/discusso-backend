@@ -185,6 +185,7 @@ const getDiscussionById = async (discussionId: number) => {
           user: { select: { id: true, username: true } },
         },
       },
+      _count: { select: { likes: true, comments: true } },
     },
   });
 
@@ -256,6 +257,7 @@ const addLike = async (userId: number, discussionId: number) => {
       userId,
       discussionId,
     },
+    include: { user: { select: { id: true, username: true } } },
   });
 
   return like;
@@ -345,6 +347,7 @@ const addBookmark = async (userId: number, discussionId: number) => {
       userId,
       discussionId,
     },
+    include: { user: { select: { id: true, username: true } } },
   });
 
   return bookmark;

@@ -64,6 +64,7 @@ model User {
   createdCommunities  Community[]
   likes               Like[] 
   comments            Comment[]
+  commentLikes  CommentLike[]  
   bookmarks           Bookmark[]
   notifications    Notification[] 
   filedReports      Report[] 
@@ -136,9 +137,22 @@ model Comment {
 
   user        User       @relation(fields: [userId], references: [id])
   discussion  Discussion @relation(fields: [discussionId], references: [id])
+  likes       CommentLike[]
 
   @@index([userId])
   @@index([discussionId])
+}
+
+model CommentLike {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  commentId     Int
+  createdAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id])
+  comment       Comment   @relation(fields: [commentId], references: [id])
+
+  @@unique([userId, commentId])  // Ensure a user can only like a comment once
 }
 
 model Role {
