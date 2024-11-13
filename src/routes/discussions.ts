@@ -472,11 +472,32 @@ discussionsRouter.post(
     const discussionId = Number(req.params.discussionId);
     const { content } = req.body;
 
-    if (isNaN(discussionId)) {
+    if (isNaN(discussionId) || discussionId <= 0) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
     }
     if (!content) {
-      return res.status(400).json({ error: 'Content is required' });
+      return res.status(400).json({ error: 'Comment content is required' });
+    }
+
+    if (typeof content !== 'string') {
+      return res
+        .status(400)
+        .json({ error: 'Comment content must be a string' });
+    }
+
+    if (content.length > 500) {
+      return res
+        .status(400)
+        .json({ error: 'Comment content cannot exceed 500 characters' });
+    }
+
+    if (
+      !/^[\p{L}\p{N}\s.,?!'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]*$/u.test(content)
+    ) {
+      return res.status(400).json({
+        error:
+          'Content can only contain letters, numbers, spaces, emojis, and common punctuation',
+      });
     }
 
     const comment = await discussionsService.addComment(
