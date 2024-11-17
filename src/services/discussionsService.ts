@@ -174,7 +174,11 @@ const getDiscussionById = async (discussionId: number) => {
     include: {
       user: true,
       community: true,
-      comments: true,
+      comments: {
+        include: {
+          user: { select: { id: true, username: true } },
+        },
+      },
       likes: {
         select: {
           user: { select: { id: true, username: true } },
@@ -399,6 +403,39 @@ const addComment = async (
   return comment;
 };
 
+async function getComments(
+  discussionId: number,
+  limit: number,
+  cursor: number | null,
+  sort: 'recent' | 'oldest' | 'most_liked' = 'recent'
+) {
+  const orderBy: Prisma.CommentOrderByWithRelationInput =
+    getOrderByOptionForComments(sort);
+
+  const comments = await prisma.comment.findMany({
+    take: limit,
+    skip: cursor ? 1 : 0,
+    cursor: cursor ? { id: cursor } : undefined,
+    orderBy,
+    where: {
+      discussionId,
+    },
+    include: {
+      user: { select: { id: true, username: true } },
+      _count: { select: { likes: true } },
+    },
+  });
+
+  const nextCursor =
+    comments.length === limit ? comments[comments.length - 1].id : null;
+
+  const totalCount = await prisma.comment.count({
+    where: { discussionId },
+  });
+
+  return { comments, totalCount, nextCursor };
+}
+
 // Helper functions
 const getOrderByOption = (
   sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented'
@@ -412,6 +449,21 @@ const getOrderByOption = (
       return { likes: { _count: 'desc' } };
     case 'most_commented':
       return { comments: { _count: 'desc' } };
+    default:
+      return { createdAt: 'desc' };
+  }
+};
+
+const getOrderByOptionForComments = (
+  sort: 'recent' | 'oldest' | 'most_liked'
+): Prisma.CommentOrderByWithRelationInput => {
+  switch (sort) {
+    case 'recent':
+      return { createdAt: 'desc' };
+    case 'oldest':
+      return { createdAt: 'asc' };
+    case 'most_liked':
+      return { likes: { _count: 'desc' } };
     default:
       return { createdAt: 'desc' };
   }
@@ -474,4 +526,5 @@ export default {
   addBookmark,
   removeBookmark,
   addComment,
+  getComments,
 };

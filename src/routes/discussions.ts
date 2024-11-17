@@ -8,7 +8,10 @@ import {
   NewComment,
 } from '../types/discussionType';
 
-import { DiscussionQueryParams } from '../types/requestTypes';
+import {
+  DiscussionQueryParams,
+  CommentQueryParams,
+} from '../types/requestTypes';
 
 const discussionsRouter = Router();
 
@@ -86,7 +89,12 @@ discussionsRouter.get(
   '/',
   middleware.jwtVerify,
   async (
-    req: Request<unknown, unknown, NewDiscussion, DiscussionQueryParams>,
+    req: Request<
+      { discussionId: string },
+      unknown,
+      unknown,
+      DiscussionQueryParams
+    >,
     res: Response,
     _next
   ) => {
@@ -507,6 +515,39 @@ discussionsRouter.post(
     );
 
     return res.status(201).json(comment);
+  }
+);
+
+discussionsRouter.get(
+  '/:discussionId/comments',
+  middleware.jwtVerify,
+  async (
+    req: Request<
+      { discussionId: string },
+      unknown,
+      unknown,
+      CommentQueryParams
+    >,
+    res: Response,
+    _next
+  ) => {
+    const discussionId = Number(req.params.discussionId);
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : 10;
+    const sort = req.query.sort ? req.query.sort : 'recent';
+
+    if (isNaN(discussionId) || discussionId <= 0) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    const comments = await discussionsService.getComments(
+      discussionId,
+      limit,
+      cursor,
+      sort
+    );
+
+    return res.status(200).json(comments);
   }
 );
 

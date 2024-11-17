@@ -5,3 +5,9 @@ export interface DiscussionQueryParams {
   date_range?: 'last_hour' | 'last_day' | 'last_week' | 'last_month';
   feed_type?: 'explore' | 'following';
 }
+
+export interface CommentQueryParams {
+  limit?: string;
+  cursor?: string;
+  sort?: 'recent' | 'oldest' | 'most_liked';
+}
