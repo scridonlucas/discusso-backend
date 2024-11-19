@@ -492,11 +492,16 @@ discussionsRouter.post(
         .status(400)
         .json({ error: 'Comment content must be a string' });
     }
-
-    if (content.length > 500) {
+    if (content.length < 3) {
       return res
         .status(400)
-        .json({ error: 'Comment content cannot exceed 500 characters' });
+        .json({ error: 'Comment content must be at least 3 characters' });
+    }
+
+    if (content.length > 1000) {
+      return res
+        .status(400)
+        .json({ error: 'Comment content cannot exceed 1000 characters' });
     }
 
     if (

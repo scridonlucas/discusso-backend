@@ -397,6 +397,7 @@ const addComment = async (
     },
     include: {
       user: { select: { id: true, username: true } },
+      _count: { select: { likes: true } },
     },
   });
 
