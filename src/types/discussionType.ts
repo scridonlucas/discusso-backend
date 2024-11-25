@@ -14,8 +14,6 @@ export interface NewDiscussion {
 }
 export interface NewComment {
   content: string;
-  userId: number;
-  discussionId: number;
 }
 
 export interface UpdatedDiscussion {

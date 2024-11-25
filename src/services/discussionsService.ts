@@ -423,6 +423,11 @@ async function getComments(
     },
     include: {
       user: { select: { id: true, username: true } },
+      likes: {
+        select: {
+          user: { select: { id: true, username: true } },
+        },
+      },
       _count: { select: { likes: true } },
     },
   });
