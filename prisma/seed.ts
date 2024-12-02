@@ -154,6 +154,24 @@ async function main() {
     },
   });
 
+  const likeCommentPermission = await prisma.permission.upsert({
+    where: { permissionName: 'LIKE_COMMENT' },
+    update: {},
+    create: {
+      permissionName: 'LIKE_COMMENT',
+      description: 'Can like a comment',
+    },
+  });
+
+  const removeLikeCommentPermission = await prisma.permission.upsert({
+    where: { permissionName: 'REMOVE_LIKE_FROM_COMMENT' },
+    update: {},
+    create: {
+      permissionName: 'REMOVE_LIKE_FROM_COMMENT',
+      description: 'Can remove a like from a comment',
+    },
+  });
+
   const addBookmarkPermission = await prisma.permission.upsert({
     where: { permissionName: 'ADD_BOOKMARK_TO_DISCUSSION' },
     update: {},
@@ -186,6 +204,8 @@ async function main() {
     commentDiscussionPermission,
     removeOwnCommentPermission,
     removeAnyCommentPermission,
+    likeCommentPermission,
+    removeLikeCommentPermission,
     addBookmarkPermission,
     removeBookmarkPermission,
   });
@@ -201,6 +221,8 @@ async function main() {
         removeLikePermission.id,
         commentDiscussionPermission.id,
         removeAnyCommentPermission.id,
+        likeCommentPermission.id,
+        removeLikeCommentPermission.id,
         createCommunityPermission.id,
         deleteCommunityPermission.id,
         updateCommunityPermission.id,
@@ -218,6 +240,8 @@ async function main() {
         removeLikePermission.id,
         commentDiscussionPermission.id,
         removeAnyCommentPermission.id,
+        likeCommentPermission.id,
+        removeLikeCommentPermission.id,
         createCommunityPermission.id,
         deleteCommunityPermission.id,
         updateCommunityPermission.id,
@@ -235,6 +259,8 @@ async function main() {
         removeLikePermission.id,
         commentDiscussionPermission.id,
         removeOwnCommentPermission.id,
+        likeCommentPermission.id,
+        removeLikeCommentPermission.id,
         addBookmarkPermission.id,
         removeBookmarkPermission.id,
       ],

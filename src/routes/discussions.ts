@@ -556,4 +556,43 @@ discussionsRouter.get(
   }
 );
 
+discussionsRouter.post(
+  '/comments/:commentId/like',
+  middleware.jwtVerify,
+  middleware.checkPermission('LIKE_COMMENT'),
+  async (req, res, _next) => {
+    const userId = req.decodedToken.id;
+    const commentId = Number(req.params.commentId);
+
+    if (isNaN(commentId) || commentId <= 0) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
+    }
+
+    const like = await discussionsService.addCommentLike(userId, commentId);
+
+    return res.status(201).json(like);
+  }
+);
+
+discussionsRouter.delete(
+  '/comments/:commentId/like',
+  middleware.jwtVerify,
+  middleware.checkPermission('REMOVE_LIKE_FROM_COMMENT'),
+  async (req, res, _next) => {
+    const userId = req.decodedToken.id;
+    const commentId = Number(req.params.commentId);
+
+    if (isNaN(commentId) || commentId <= 0) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
+    }
+
+    const removedLike = await discussionsService.removeCommentLike(
+      userId,
+      commentId
+    );
+
+    return res.status(200).json(removedLike);
+  }
+);
+
 export default discussionsRouter;

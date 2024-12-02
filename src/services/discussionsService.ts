@@ -442,6 +442,54 @@ async function getComments(
   return { comments, totalCount, nextCursor };
 }
 
+async function addCommentLike(userId: number, commentId: number) {
+  const existingLike = await prisma.commentLike.findUnique({
+    where: {
+      userId_commentId: { userId, commentId },
+    },
+  });
+
+  if (existingLike) {
+    throw new CustomDiscussionError('User has already liked this comment');
+  }
+
+  const like = await prisma.commentLike.create({
+    data: {
+      userId,
+      commentId,
+    },
+    include: { user: { select: { id: true, username: true } } },
+  });
+
+  return like;
+}
+
+const removeCommentLike = async (userId: number, commentId: number) => {
+  const existingLike = await prisma.commentLike.findUnique({
+    where: {
+      userId_commentId: {
+        userId,
+        commentId,
+      },
+    },
+  });
+
+  if (!existingLike) {
+    throw new CustomDiscussionError('User has not liked this comment');
+  }
+
+  const removedLike = await prisma.commentLike.delete({
+    where: {
+      userId_commentId: {
+        userId,
+        commentId,
+      },
+    },
+  });
+
+  return removedLike;
+};
+
 // Helper functions
 const getOrderByOption = (
   sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented'
@@ -533,4 +581,6 @@ export default {
   removeBookmark,
   addComment,
   getComments,
+  addCommentLike,
+  removeCommentLike,
 };
