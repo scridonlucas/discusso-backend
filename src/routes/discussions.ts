@@ -6,6 +6,7 @@ import {
   NewDiscussion,
   UpdatedDiscussion,
   NewComment,
+  ReportDiscussionReason,
 } from '../types/discussionType';
 
 import {
@@ -592,6 +593,33 @@ discussionsRouter.delete(
     );
 
     return res.status(200).json(removedLike);
+  }
+);
+
+// report functionality
+
+discussionsRouter.post(
+  '/:discussionId/report',
+  middleware.jwtVerify,
+  middleware.checkPermission('REPORT_DISCUSSION'),
+  async (
+    req: Request<{ discussionId: string }, unknown, ReportDiscussionReason>,
+    res: Response,
+    _next: NextFunction
+  ) => {
+    const userId = req.decodedToken.id;
+    const discussionId = Number(req.params.discussionId);
+    const { reportReason } = req.body;
+
+    if (isNaN(discussionId)) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    if (!reportReason) {
+      return res.status(400).json({ message: 'Report reason is required.' });
+    }
+
+    return res.status(201).json(reportReason);
   }
 );
 

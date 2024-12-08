@@ -82,6 +82,15 @@ async function main() {
     },
   });
 
+  const reportDiscussionPermission = await prisma.permission.upsert({
+    where: { permissionName: 'REPORT_DISCUSSION' },
+    update: {},
+    create: {
+      permissionName: 'REPORT_DISCUSSION',
+      description: 'Can report a discussion',
+    },
+  });
+
   const createCommunityPermission = await prisma.permission.upsert({
     where: { permissionName: 'CREATE_COMMUNITY' },
     update: {},
@@ -172,6 +181,15 @@ async function main() {
     },
   });
 
+  const reportCommentPermission = await prisma.permission.upsert({
+    where: { permissionName: 'REPORT_COMMENT' },
+    update: {},
+    create: {
+      permissionName: 'REPORT_COMMENT',
+      description: 'Can report a comment',
+    },
+  });
+
   const addBookmarkPermission = await prisma.permission.upsert({
     where: { permissionName: 'ADD_BOOKMARK_TO_DISCUSSION' },
     update: {},
@@ -190,26 +208,6 @@ async function main() {
     },
   });
 
-  console.log({
-    createDiscussionPermission,
-    deleteOwnDiscussionPermission,
-    deleteAnyDiscussionPermission,
-    updateOwnDiscussionPermission,
-    updateAnyDiscussionPermission,
-    createCommunityPermission,
-    deleteCommunityPermission,
-    updateCommunityPermission,
-    likeDiscussionPermission,
-    removeLikePermission,
-    commentDiscussionPermission,
-    removeOwnCommentPermission,
-    removeAnyCommentPermission,
-    likeCommentPermission,
-    removeLikeCommentPermission,
-    addBookmarkPermission,
-    removeBookmarkPermission,
-  });
-
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -217,12 +215,14 @@ async function main() {
         createDiscussionPermission.id,
         updateAnyDiscussionPermission.id,
         deleteAnyDiscussionPermission.id,
+        reportDiscussionPermission.id,
         likeDiscussionPermission.id,
         removeLikePermission.id,
         commentDiscussionPermission.id,
         removeAnyCommentPermission.id,
         likeCommentPermission.id,
         removeLikeCommentPermission.id,
+        reportCommentPermission.id,
         createCommunityPermission.id,
         deleteCommunityPermission.id,
         updateCommunityPermission.id,
@@ -236,12 +236,14 @@ async function main() {
         createDiscussionPermission.id,
         updateAnyDiscussionPermission.id,
         deleteAnyDiscussionPermission.id,
+        reportDiscussionPermission.id,
         likeDiscussionPermission.id,
         removeLikePermission.id,
         commentDiscussionPermission.id,
         removeAnyCommentPermission.id,
         likeCommentPermission.id,
         removeLikeCommentPermission.id,
+        reportCommentPermission.id,
         createCommunityPermission.id,
         deleteCommunityPermission.id,
         updateCommunityPermission.id,
@@ -255,12 +257,14 @@ async function main() {
         createDiscussionPermission.id,
         updateOwnDiscussionPermission.id,
         deleteOwnDiscussionPermission.id,
+        reportDiscussionPermission.id,
         likeDiscussionPermission.id,
         removeLikePermission.id,
         commentDiscussionPermission.id,
         removeOwnCommentPermission.id,
         likeCommentPermission.id,
         removeLikeCommentPermission.id,
+        reportCommentPermission.id,
         addBookmarkPermission.id,
         removeBookmarkPermission.id,
       ],

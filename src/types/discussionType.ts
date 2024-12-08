@@ -20,3 +20,7 @@ export interface UpdatedDiscussion {
   title?: string;
   content?: string;
 }
+
+export interface ReportDiscussionReason {
+  reportReason: string;
+}
