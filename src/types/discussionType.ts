@@ -22,5 +22,17 @@ export interface UpdatedDiscussion {
 }
 
 export interface ReportDiscussionReason {
-  reportReason: string;
+  reportReason: reportReason;
 }
+
+export type reportReason =
+  | 'SPAM'
+  | 'ADVERTISING'
+  | 'FRAUD'
+  | 'FINANCIAL_MANIPULATION'
+  | 'INAPPROPRIATE'
+  | 'HARASSMENT'
+  | 'MISINFORMATION'
+  | 'COPYRIGHT_VIOLATION'
+  | 'OFF_TOPIC'
+  | 'OTHER';

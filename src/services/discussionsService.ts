@@ -2,6 +2,7 @@ import prisma from '../utils/prismaClient';
 import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
 import { CustomDiscussionError } from '../utils/customErrors';
 import { Prisma } from '@prisma/client';
+import { reportReason } from '../types/discussionType';
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
     where: { id: newDiscussion.communityId },
@@ -490,6 +491,41 @@ const removeCommentLike = async (userId: number, commentId: number) => {
   return removedLike;
 };
 
+// report logic
+const reportDiscussion = async ({
+  discussionId,
+  userId,
+  reason,
+}: {
+  discussionId: number;
+  userId: number;
+  reason: reportReason;
+}) => {
+  const existingPendingReport = await prisma.report.findFirst({
+    where: {
+      discussionId,
+      userId,
+      status: 'PENDING',
+    },
+  });
+
+  if (existingPendingReport) {
+    throw new CustomDiscussionError(
+      `You have already reported this discussion and it is currently under review.`
+    );
+  }
+
+  const newReport = await prisma.report.create({
+    data: {
+      discussionId,
+      userId,
+      reason,
+    },
+  });
+
+  return newReport;
+};
+
 // Helper functions
 const getOrderByOption = (
   sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented'
@@ -572,6 +608,7 @@ export default {
   getDiscussionById,
   deleteDiscussion,
   updateDiscussion,
+  reportDiscussion,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,
