@@ -21,6 +21,8 @@ export interface UpdatedDiscussion {
   content?: string;
 }
 
+export interface NewReport {}
+
 export interface ReportReason {
   reportReason: reportReason;
 }

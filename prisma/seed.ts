@@ -91,6 +91,15 @@ async function main() {
     },
   });
 
+  const getDiscussionReportsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_DISCUSSION_REPORTS' },
+    update: {},
+    create: {
+      permissionName: 'GET_DISCUSSION_REPORTS',
+      description: 'Can get reported discussions',
+    },
+  });
+
   const createCommunityPermission = await prisma.permission.upsert({
     where: { permissionName: 'CREATE_COMMUNITY' },
     update: {},
@@ -190,6 +199,15 @@ async function main() {
     },
   });
 
+  const getCommentReportsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_COMMENT_REPORTS' },
+    update: {},
+    create: {
+      permissionName: 'GET_COMMENT_REPORTS',
+      description: 'Can get comment reports',
+    },
+  });
+
   const addBookmarkPermission = await prisma.permission.upsert({
     where: { permissionName: 'ADD_BOOKMARK_TO_DISCUSSION' },
     update: {},
@@ -216,6 +234,7 @@ async function main() {
         updateAnyDiscussionPermission.id,
         deleteAnyDiscussionPermission.id,
         reportDiscussionPermission.id,
+        getDiscussionReportsPermission.id,
         likeDiscussionPermission.id,
         removeLikePermission.id,
         commentDiscussionPermission.id,
@@ -223,6 +242,7 @@ async function main() {
         likeCommentPermission.id,
         removeLikeCommentPermission.id,
         reportCommentPermission.id,
+        getCommentReportsPermission.id,
         createCommunityPermission.id,
         deleteCommunityPermission.id,
         updateCommunityPermission.id,
@@ -237,12 +257,14 @@ async function main() {
         updateAnyDiscussionPermission.id,
         deleteAnyDiscussionPermission.id,
         reportDiscussionPermission.id,
+        getDiscussionReportsPermission.id,
         likeDiscussionPermission.id,
         removeLikePermission.id,
         commentDiscussionPermission.id,
         removeAnyCommentPermission.id,
         likeCommentPermission.id,
         removeLikeCommentPermission.id,
+        getCommentReportsPermission.id,
         reportCommentPermission.id,
         createCommunityPermission.id,
         deleteCommunityPermission.id,

@@ -11,3 +11,9 @@ export interface CommentQueryParams {
   cursor?: string;
   sort?: 'recent' | 'oldest' | 'most_liked';
 }
+
+export interface DiscussionReportsQueryParams {
+  limit?: string;
+  cursor?: string;
+  status?: 'PENDING' | 'RESOLVED' | 'DISMISSED';
+}

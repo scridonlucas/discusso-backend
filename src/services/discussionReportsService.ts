@@ -1,7 +1,7 @@
 import prisma from '../utils/prismaClient';
 import { Prisma } from '@prisma/client';
 
-const getReportedDiscussions = async (
+const getDiscussionReports = async (
   limit: number,
   cursor: number | null,
   status: 'PENDING' | 'RESOLVED' | 'DISMISSED'
@@ -34,4 +34,4 @@ const getReportedDiscussions = async (
   };
 };
 
-export default { getReportedDiscussions };
+export default { getDiscussionReports };
