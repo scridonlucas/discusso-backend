@@ -163,7 +163,7 @@ const errorHandler: ErrorRequestHandler = (
 
   if (error.name === 'TokenExpiredError') {
     return res.status(401).json({
-      error: 'token expired',
+      error: 'Token expired',
     });
   }
 

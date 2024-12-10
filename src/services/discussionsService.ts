@@ -443,65 +443,13 @@ async function getComments(
   return { comments, totalCount, nextCursor };
 }
 
-async function addCommentLike(userId: number, commentId: number) {
-  const existingLike = await prisma.commentLike.findUnique({
-    where: {
-      userId_commentId: { userId, commentId },
-    },
-  });
-
-  if (existingLike) {
-    throw new CustomDiscussionError('User has already liked this comment');
-  }
-
-  const like = await prisma.commentLike.create({
-    data: {
-      userId,
-      commentId,
-    },
-    include: { user: { select: { id: true, username: true } } },
-  });
-
-  return like;
-}
-
-const removeCommentLike = async (userId: number, commentId: number) => {
-  const existingLike = await prisma.commentLike.findUnique({
-    where: {
-      userId_commentId: {
-        userId,
-        commentId,
-      },
-    },
-  });
-
-  if (!existingLike) {
-    throw new CustomDiscussionError('User has not liked this comment');
-  }
-
-  const removedLike = await prisma.commentLike.delete({
-    where: {
-      userId_commentId: {
-        userId,
-        commentId,
-      },
-    },
-  });
-
-  return removedLike;
-};
-
 // report logic
-const reportDiscussion = async ({
-  discussionId,
-  userId,
-  reason,
-}: {
-  discussionId: number;
-  userId: number;
-  reason: reportReason;
-}) => {
-  const existingPendingReport = await prisma.report.findFirst({
+const addDiscussionReport = async (
+  discussionId: number,
+  userId: number,
+  reason: reportReason
+) => {
+  const existingPendingReport = await prisma.discussionReport.findFirst({
     where: {
       discussionId,
       userId,
@@ -515,7 +463,7 @@ const reportDiscussion = async ({
     );
   }
 
-  const newReport = await prisma.report.create({
+  const newReport = await prisma.discussionReport.create({
     data: {
       discussionId,
       userId,
@@ -608,7 +556,6 @@ export default {
   getDiscussionById,
   deleteDiscussion,
   updateDiscussion,
-  reportDiscussion,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,
@@ -618,6 +565,5 @@ export default {
   removeBookmark,
   addComment,
   getComments,
-  addCommentLike,
-  removeCommentLike,
+  addDiscussionReport,
 };

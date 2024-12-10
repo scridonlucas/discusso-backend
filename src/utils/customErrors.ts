@@ -18,3 +18,10 @@ export class CustomDiscussionError extends Error {
     this.name = 'DiscussionError';
   }
 }
+
+export class CustomReportError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ReportError';
+  }
+}

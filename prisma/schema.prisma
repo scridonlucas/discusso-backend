@@ -28,8 +28,8 @@ enum RoleType {
 
 enum ReportStatus {
   PENDING
-  REVIEWED
   RESOLVED
+  DISMISSED
 }
 
 enum ReportReason {
@@ -67,7 +67,8 @@ model User {
   commentLikes  CommentLike[]  
   bookmarks           Bookmark[]
   notifications    Notification[] 
-  filedReports      Report[] 
+  filedDiscussionReports      DiscussionReport[] 
+  filledCommentReports      CommentReport[]
   moderatedActions    ModerationLog[]  @relation("Moderator")   
   actionsOnUser       ModerationLog[]  @relation("AffectedUser") 
   createdAt DateTime @default(now())
@@ -106,7 +107,7 @@ model Discussion {
   bookmarks           Bookmark[] 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  reports       Report[]
+  reports       DiscussionReport[]
   user          User     @relation(fields: [userId], references: [id])
   community     Community       @relation(fields: [communityId], references: [id])
 
@@ -134,10 +135,10 @@ model Comment {
   discussionId  Int
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
-
   user        User       @relation(fields: [userId], references: [id])
   discussion  Discussion @relation(fields: [discussionId], references: [id])
   likes       CommentLike[]
+  reports     CommentReport[]
 
   @@index([userId])
   @@index([discussionId])
@@ -171,7 +172,7 @@ model Permission {
   roles       RolePermission[]
 }
 
-model Report {
+model DiscussionReport {
   id              Int         @id @default(autoincrement())
   userId          Int         
   discussionId    Int       
@@ -179,12 +180,29 @@ model Report {
   status          ReportStatus @default(PENDING) 
   createdAt       DateTime    @default(now())
   reviewedAt      DateTime?  
-
+  notes           String?
   user            User        @relation(fields: [userId], references: [id])
   discussion      Discussion  @relation(fields: [discussionId], references: [id])
   
   @@index([userId])
   @@index([discussionId])
+}
+
+model CommentReport {
+  id          Int            @id @default(autoincrement())
+  userId      Int
+  commentId   Int
+  reason      ReportReason
+  status      ReportStatus   @default(PENDING)
+  createdAt   DateTime       @default(now())
+  reviewedAt  DateTime?
+  notes           String?
+
+  user        User           @relation(fields: [userId], references: [id])
+  comment     Comment        @relation(fields: [commentId], references: [id])
+
+  @@index([userId])
+  @@index([commentId])
 }
 
 model Notification {
