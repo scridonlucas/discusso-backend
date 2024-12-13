@@ -183,7 +183,6 @@ model DiscussionReport {
   notes           String?
   user            User        @relation(fields: [userId], references: [id])
   discussion      Discussion  @relation(fields: [discussionId], references: [id])
-  
   @@index([userId])
   @@index([discussionId])
 }

@@ -9,7 +9,7 @@ const commentReportsRouter = Router();
 commentReportsRouter.get(
   '/',
   middleware.jwtVerify,
-  middleware.checkPermission('GET_DISCUSSION_REPORTS'),
+  middleware.checkPermission('GET_COMMENTS_REPORTS'),
 
   async (
     req: Request<unknown, unknown, unknown, ReportsQueryParams>,
@@ -25,7 +25,26 @@ commentReportsRouter.get(
       status
     );
 
-    res.status(200).json(commentReports);
+    return res.status(200).json(commentReports);
+  }
+);
+
+commentReportsRouter.get(
+  '/:commentId',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_COMMENT_REPORTS'),
+  async (req, res) => {
+    const commentId = Number(req.params.commentId);
+
+    if (isNaN(commentId)) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
+    }
+
+    const commentReport = await commentReportsService.getCommentReportById(
+      commentId
+    );
+
+    return res.status(200).json(commentReport);
   }
 );
 export default commentReportsRouter;

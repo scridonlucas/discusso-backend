@@ -26,7 +26,25 @@ discussionReportsRouter.get(
         status
       );
 
-    res.status(200).json(discussionReports);
+    return res.status(200).json(discussionReports);
+  }
+);
+
+discussionReportsRouter.get(
+  '/:discussionId',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_DISCUSSION_REPORTS'),
+  async (req, res, _next) => {
+    const discussionId = Number(req.params.discussionId);
+
+    if (isNaN(discussionId) || discussionId <= 0) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    const discussionReport =
+      await discussionReportsService.getDiscussionReportById(discussionId);
+
+    return res.status(200).json(discussionReport);
   }
 );
 
