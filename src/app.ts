@@ -9,7 +9,6 @@ import commentsRouter from './routes/comments';
 import communitiesRouter from './routes/communities';
 import discussionReportsRouter from './routes/discussionReports';
 import commentReportsRouter from './routes/commentReports';
-
 const app = express();
 app.use(
   cors({
@@ -21,7 +20,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
-app.use('/api/discussions', discussionsRouter);
+app.use(
+  '/api/discussions',
+  middleware.jwtVerify,
+  middleware.checkUserStatus,
+  discussionsRouter
+);
 app.use('/api/comments', commentsRouter);
 app.use('/api/discussion-reports', discussionReportsRouter);
 app.use('/api/comment-reports', commentReportsRouter);

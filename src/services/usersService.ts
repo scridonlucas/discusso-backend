@@ -63,6 +63,14 @@ const deleteUser = async (id: number) => {
   return deletedUser;
 };
 
+const updateUserStatus = async (id: number, status: 'ACTIVE' | 'BANNED') => {
+  const updatedUser = await prisma.user.update({
+    where: { id },
+    data: { status },
+  });
+  return updatedUser;
+};
+
 export default {
   getUsers,
   getUser,
@@ -71,4 +79,5 @@ export default {
   getUserByEmail,
   addUser,
   deleteUser,
+  updateUserStatus,
 };

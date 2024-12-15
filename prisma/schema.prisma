@@ -48,7 +48,6 @@ enum ReportReason {
 enum UserStatus {
   ACTIVE
   BANNED
-  DELETED
 }
 
 model User {

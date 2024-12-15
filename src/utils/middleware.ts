@@ -14,11 +14,13 @@ import {
   CustomTokenError,
   CustomPermissionError,
   CustomDiscussionError,
+  CustomUserStatusError,
 } from './customErrors';
 import { UserToken } from '../types/authTypes';
 import { Resource } from '../types/resourceTypes';
 import permissionsService from '../services/permissionsService';
 import ownershipService from '../services/ownershipService';
+import usersService from '../services/usersService';
 
 const checkPermission = (permission: string): RequestHandler => {
   return async (req: Request, _res: Response, next: NextFunction) => {
@@ -106,6 +108,28 @@ const jwtVerify = (req: Request, _res: Response, next: NextFunction): void => {
   }
 };
 
+const checkUserStatus = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.decodedToken.id;
+    const user = await usersService.getUser(userId);
+    if (!user) {
+      throw new CustomUserStatusError('User not found.');
+    }
+
+    if (user.status === 'BANNED') {
+      throw new CustomUserStatusError('User is banned.');
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 const unknownEndPoint = (
   _req: Request,
   res: Response,
@@ -175,6 +199,10 @@ const errorHandler: ErrorRequestHandler = (
     return res.status(401).json({ error: error.message });
   }
 
+  if (error instanceof CustomUserStatusError) {
+    return res.status(403).json({ error: error.message });
+  }
+
   return next(error);
 };
 
@@ -184,4 +212,5 @@ export default {
   jwtVerify,
   checkPermission,
   checkPermissionWithOwnership,
+  checkUserStatus,
 };

@@ -1,8 +1,9 @@
 import 'express-async-errors';
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import userValidator from '../utils/validators/userValidator';
 import { NewUser } from '../types/userTypes';
 import usersService from '../services/usersService';
+import middleware from '../utils/middleware';
 
 const usersRouter = Router();
 
@@ -56,5 +57,29 @@ usersRouter.get('/check-email/:email', async (req, res) => {
     return res.json({ exists: false });
   }
 });
+
+usersRouter.patch(
+  '/:userId',
+  middleware.checkPermission('UPDATE_USER_STATUS'),
+  async (
+    req: Request<{ userId: string }, unknown, { status?: 'ACTIVE' | 'BANNED' }>,
+    res: Response
+  ) => {
+    const userId = Number(req.params.userId);
+    const status = req.body.status;
+
+    if (isNaN(userId) || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+
+    const updatedUser = await usersService.updateUserStatus(userId, status);
+
+    return res.status(200).json(updatedUser);
+  }
+);
 
 export default usersRouter;

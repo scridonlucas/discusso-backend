@@ -14,6 +14,7 @@ export interface UserAttributes {
   firstName: string;
   lastName: string;
   username: string;
+  status: 'ACTIVE' | 'BANNED';
   email: string;
   gender: Gender;
   birthDate: Date;

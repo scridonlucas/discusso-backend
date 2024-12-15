@@ -21,12 +21,15 @@ authRouter.post('/login', async (req, res) => {
   const user: UserAttributes | null = await usersService.getUserByEmail(email);
   const passwordCorrect = await loginService.comparePasswords(user, password);
 
-  if (passwordCorrect && user) {
+  if (user && user.status === 'BANNED') {
+    return res.status(403).json({ error: 'User is banned!' });
+  }
+
+  if (passwordCorrect && user && user.status === 'ACTIVE') {
     const userForToken = {
       username: user.username,
       id: user.id,
     };
-
     const token = jwt.sign(userForToken, config.JWT, {
       expiresIn: 60 * 60,
     });
@@ -48,6 +51,7 @@ authRouter.get('/logout', (_req, res: Response, _next) => {
 authRouter.get(
   '/verify',
   middleware.jwtVerify,
+  middleware.checkUserStatus,
   async (req: Request, res: Response, _next) => {
     const username = req.decodedToken.username;
     const userId = req.decodedToken.id;

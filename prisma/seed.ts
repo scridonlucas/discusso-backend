@@ -246,6 +246,15 @@ async function main() {
     },
   });
 
+  const updateUserStatus = await prisma.permission.upsert({
+    where: { permissionName: 'UPDATE_USER_STATUS' },
+    update: {},
+    create: {
+      permissionName: 'UPDATE_USER_STATUS',
+      description: 'Can update user status',
+    },
+  });
+
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -270,6 +279,7 @@ async function main() {
         removeBookmarkPermission.id,
         changeCommentReportStatusPermission.id,
         changeDiscussionReportStatusPermission.id,
+        updateUserStatus.id,
       ],
     },
     {

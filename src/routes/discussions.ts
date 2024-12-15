@@ -18,7 +18,6 @@ const discussionsRouter = Router();
 
 discussionsRouter.post(
   '/',
-  middleware.jwtVerify,
   middleware.checkPermission('CREATE_DISCUSSION'),
   async (
     req: Request<unknown, unknown, NewDiscussion>,
@@ -88,7 +87,6 @@ discussionsRouter.post(
 
 discussionsRouter.get(
   '/',
-  middleware.jwtVerify,
   async (
     req: Request<
       { discussionId: string },
@@ -121,7 +119,6 @@ discussionsRouter.get(
 
 discussionsRouter.get(
   '/trending',
-  middleware.jwtVerify,
   async (
     req: Request<unknown, unknown, NewDiscussion, DiscussionQueryParams>,
     res: Response,
@@ -142,7 +139,6 @@ discussionsRouter.get(
 
 discussionsRouter.get(
   '/users/:userId/discussions',
-  middleware.jwtVerify,
   async (
     req: Request<
       { [key: string]: string },
@@ -172,7 +168,6 @@ discussionsRouter.get(
 );
 discussionsRouter.get(
   '/users/:communityId/discussions',
-  middleware.jwtVerify,
   async (
     req: Request<
       { [key: string]: string },
@@ -202,25 +197,20 @@ discussionsRouter.get(
   }
 );
 
-discussionsRouter.get(
-  '/:discussionId',
-  middleware.jwtVerify,
-  async (req, res, _next) => {
-    const discussionId = Number(req.params.discussionId);
+discussionsRouter.get('/:discussionId', async (req, res, _next) => {
+  const discussionId = Number(req.params.discussionId);
 
-    if (isNaN(discussionId)) {
-      return res.status(400).json({ error: 'Invalid discussion ID' });
-    }
-
-    const discussion = await discussionsService.getDiscussionById(discussionId);
-
-    return res.status(200).json(discussion);
+  if (isNaN(discussionId)) {
+    return res.status(400).json({ error: 'Invalid discussion ID' });
   }
-);
+
+  const discussion = await discussionsService.getDiscussionById(discussionId);
+
+  return res.status(200).json(discussion);
+});
 
 discussionsRouter.delete(
   '/:discussionId',
-  middleware.jwtVerify,
   middleware.checkPermissionWithOwnership(
     'discussion',
     'discussionId',
@@ -246,7 +236,6 @@ discussionsRouter.delete(
 
 discussionsRouter.put(
   '/:discussionId',
-  middleware.jwtVerify,
   middleware.checkPermissionWithOwnership(
     'discussion',
     'discussionId',
@@ -334,7 +323,6 @@ discussionsRouter.put(
 // likes functionality
 discussionsRouter.post(
   '/:discussionId/like',
-  middleware.jwtVerify,
   middleware.checkPermission('LIKE_DISCUSSION'),
   async (req, res, _next) => {
     const userId = req.decodedToken.id;
@@ -352,7 +340,6 @@ discussionsRouter.post(
 
 discussionsRouter.delete(
   '/:discussionId/like',
-  middleware.jwtVerify,
   middleware.checkPermission('REMOVE_LIKE_FROM_DISCUSSION'),
   async (req, res, _next) => {
     const userId = req.decodedToken.id;
@@ -371,67 +358,54 @@ discussionsRouter.delete(
   }
 );
 
-discussionsRouter.get(
-  '/:discussionId/likes/count',
-  middleware.jwtVerify,
-  async (req, res, _next) => {
-    const discussionId = Number(req.params.discussionId);
+discussionsRouter.get('/:discussionId/likes/count', async (req, res, _next) => {
+  const discussionId = Number(req.params.discussionId);
 
-    if (isNaN(discussionId)) {
-      return res.status(400).json({ error: 'Invalid discussion ID' });
-    }
-
-    const totalLikes = await discussionsService.getTotalLikesForDiscussion(
-      discussionId
-    );
-
-    return res.status(200).json({ totalLikes });
+  if (isNaN(discussionId)) {
+    return res.status(400).json({ error: 'Invalid discussion ID' });
   }
-);
 
-discussionsRouter.get(
-  '/:discussionId/likes/users',
-  middleware.jwtVerify,
-  async (req, res, _next) => {
-    const discussionId = Number(req.params.discussionId);
+  const totalLikes = await discussionsService.getTotalLikesForDiscussion(
+    discussionId
+  );
 
-    if (isNaN(discussionId)) {
-      return res.status(400).json({ error: 'Invalid discussion ID' });
-    }
+  return res.status(200).json({ totalLikes });
+});
 
-    const users = await discussionsService.getUsersWhoLikedDiscussion(
-      discussionId
-    );
+discussionsRouter.get('/:discussionId/likes/users', async (req, res, _next) => {
+  const discussionId = Number(req.params.discussionId);
 
-    return res.status(200).json({ users });
+  if (isNaN(discussionId)) {
+    return res.status(400).json({ error: 'Invalid discussion ID' });
   }
-);
 
-discussionsRouter.get(
-  '/:discussionId/likes/check',
-  middleware.jwtVerify,
-  async (req, res, _next) => {
-    const userId = req.decodedToken.id;
-    const discussionId = Number(req.params.discussionId);
+  const users = await discussionsService.getUsersWhoLikedDiscussion(
+    discussionId
+  );
 
-    if (isNaN(discussionId)) {
-      return res.status(400).json({ error: 'Invalid discussion ID' });
-    }
+  return res.status(200).json({ users });
+});
 
-    const hasLiked = await discussionsService.hasUserLikedDiscussion(
-      userId,
-      discussionId
-    );
+discussionsRouter.get('/:discussionId/likes/check', async (req, res, _next) => {
+  const userId = req.decodedToken.id;
+  const discussionId = Number(req.params.discussionId);
 
-    return res.status(200).json({ hasLiked });
+  if (isNaN(discussionId)) {
+    return res.status(400).json({ error: 'Invalid discussion ID' });
   }
-);
+
+  const hasLiked = await discussionsService.hasUserLikedDiscussion(
+    userId,
+    discussionId
+  );
+
+  return res.status(200).json({ hasLiked });
+});
 
 // bookmark / save service
 
 discussionsRouter.post(
   '/:discussionId/bookmark',
-  middleware.jwtVerify,
   middleware.checkPermission('ADD_BOOKMARK_TO_DISCUSSION'),
   async (req, res) => {
     const userId = req.decodedToken.id;
@@ -448,7 +422,6 @@ discussionsRouter.post(
 
 discussionsRouter.delete(
   '/:discussionId/bookmark',
-  middleware.jwtVerify,
   middleware.checkPermission('REMOVE_BOOKMARK_FROM_DISCUSSION'),
   async (req, res) => {
     const userId = req.decodedToken.id;
@@ -470,7 +443,6 @@ discussionsRouter.delete(
 
 discussionsRouter.post(
   '/:discussionId/comment',
-  middleware.jwtVerify,
   middleware.checkPermission('COMMENT_DISCUSSION'),
   async (
     req: Request<{ discussionId: string }, unknown, NewComment>,
@@ -526,7 +498,6 @@ discussionsRouter.post(
 
 discussionsRouter.get(
   '/:discussionId/comments',
-  middleware.jwtVerify,
   async (
     req: Request<
       { discussionId: string },
@@ -561,7 +532,6 @@ discussionsRouter.get(
 
 discussionsRouter.post(
   '/:discussionId/report',
-  middleware.jwtVerify,
   middleware.checkPermission('REPORT_DISCUSSION'),
   async (
     req: Request<{ discussionId: string }, unknown, ReportReason>,

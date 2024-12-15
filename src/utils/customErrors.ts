@@ -25,3 +25,10 @@ export class CustomReportError extends Error {
     this.name = 'ReportError';
   }
 }
+
+export class CustomUserStatusError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UserStatusError';
+  }
+}
