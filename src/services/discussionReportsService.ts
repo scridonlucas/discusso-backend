@@ -54,4 +54,20 @@ const getDiscussionReportById = async (id: number) => {
   return discussionReport;
 };
 
-export default { getDiscussionReports, getDiscussionReportById };
+const updateDiscussionReportStatus = async (
+  id: number,
+  status: 'PENDING' | 'RESOLVED' | 'DISMISSED'
+) => {
+  const discussionReport = await prisma.discussionReport.update({
+    where: { id: id },
+    data: { status: status, reviewedAt: new Date() },
+  });
+
+  return discussionReport;
+};
+
+export default {
+  getDiscussionReports,
+  getDiscussionReportById,
+  updateDiscussionReportStatus,
+};

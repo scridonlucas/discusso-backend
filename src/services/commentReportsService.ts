@@ -51,4 +51,19 @@ const getCommentReportById = async (id: number) => {
   return commentReport;
 };
 
-export default { getReportedComments, getCommentReportById };
+const updateCommentReportStatus = async (
+  id: number,
+  status: 'PENDING' | 'RESOLVED' | 'DISMISSED'
+) => {
+  const commentReport = await prisma.commentReport.update({
+    where: { id: id },
+    data: { status: status, reviewedAt: new Date() },
+  });
+
+  return commentReport;
+};
+export default {
+  getReportedComments,
+  getCommentReportById,
+  updateCommentReportStatus,
+};

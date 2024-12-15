@@ -1,0 +1,6 @@
+PATCH http://localhost:3001/api/discussion-reports/9 
+Content-Type: application/json
+
+{
+    "status" : "DISMISSED"
+}

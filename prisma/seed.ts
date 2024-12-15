@@ -100,6 +100,17 @@ async function main() {
     },
   });
 
+  const changeDiscussionReportStatusPermission = await prisma.permission.upsert(
+    {
+      where: { permissionName: 'CHANGE_DISCUSSION_REPORT_STATUS' },
+      update: {},
+      create: {
+        permissionName: 'CHANGE_DISCUSSION_REPORT_STATUS',
+        description: 'Can change reported discussion status',
+      },
+    }
+  );
+
   const createCommunityPermission = await prisma.permission.upsert({
     where: { permissionName: 'CREATE_COMMUNITY' },
     update: {},
@@ -208,6 +219,15 @@ async function main() {
     },
   });
 
+  const changeCommentReportStatusPermission = await prisma.permission.upsert({
+    where: { permissionName: 'CHANGE_COMMENT_REPORT_STATUS' },
+    update: {},
+    create: {
+      permissionName: 'CHANGE_COMMENT_REPORT_STATUS',
+      description: 'Can change comment report status',
+    },
+  });
+
   const addBookmarkPermission = await prisma.permission.upsert({
     where: { permissionName: 'ADD_BOOKMARK_TO_DISCUSSION' },
     update: {},
@@ -248,6 +268,8 @@ async function main() {
         updateCommunityPermission.id,
         addBookmarkPermission.id,
         removeBookmarkPermission.id,
+        changeCommentReportStatusPermission.id,
+        changeDiscussionReportStatusPermission.id,
       ],
     },
     {
@@ -271,6 +293,8 @@ async function main() {
         updateCommunityPermission.id,
         addBookmarkPermission.id,
         removeBookmarkPermission.id,
+        changeCommentReportStatusPermission.id,
+        changeDiscussionReportStatusPermission.id,
       ],
     },
     {

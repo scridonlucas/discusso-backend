@@ -9,7 +9,7 @@ const commentReportsRouter = Router();
 commentReportsRouter.get(
   '/',
   middleware.jwtVerify,
-  middleware.checkPermission('GET_COMMENTS_REPORTS'),
+  middleware.checkPermission('GET_COMMENT_REPORTS'),
 
   async (
     req: Request<unknown, unknown, unknown, ReportsQueryParams>,
@@ -45,6 +45,38 @@ commentReportsRouter.get(
     );
 
     return res.status(200).json(commentReport);
+  }
+);
+
+commentReportsRouter.patch(
+  '/:discussionId',
+  middleware.jwtVerify,
+  middleware.checkPermission('CHANGE_COMMENT_REPORT_STATUS'),
+  async (
+    req: Request<
+      { commentId: string },
+      unknown,
+      { status?: 'PENDING' | 'RESOLVED' | 'DISMISSED' }
+    >,
+    res: Response
+  ) => {
+    const commentId = Number(req.params.commentId);
+    const status = req.body.status;
+
+    if (isNaN(commentId) || commentId <= 0) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
+    }
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+
+    const commentReport = await commentReportsService.updateCommentReportStatus(
+      commentId,
+      status
+    );
+
+    return res.status(200).json({ commentReport });
   }
 );
 export default commentReportsRouter;

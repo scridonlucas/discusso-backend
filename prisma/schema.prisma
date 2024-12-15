@@ -45,6 +45,11 @@ enum ReportReason {
   OTHER
 }
 
+enum UserStatus {
+  ACTIVE
+  BANNED
+  DELETED
+}
 
 model User {
   id        Int      @id @default(autoincrement())
@@ -56,6 +61,7 @@ model User {
   birthDate DateTime
   password  String
   roleId    Int
+  status    UserStatus @default(ACTIVE)
   following           Follow[]        @relation("Follower")
   followers           Follow[]        @relation("Followed")
   discussions Discussion[]

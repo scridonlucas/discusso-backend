@@ -48,4 +48,37 @@ discussionReportsRouter.get(
   }
 );
 
+discussionReportsRouter.patch(
+  '/:discussionId',
+  middleware.jwtVerify,
+  middleware.checkPermission('CHANGE_DISCUSSION_REPORT_STATUS'),
+  async (
+    req: Request<
+      { discussionId: string },
+      unknown,
+      { status?: 'PENDING' | 'RESOLVED' | 'DISMISSED' }
+    >,
+    res: Response
+  ) => {
+    const discussionId = Number(req.params.discussionId);
+    const status = req.body.status;
+
+    if (isNaN(discussionId) || discussionId <= 0) {
+      return res.status(400).json({ error: 'Invalid discussion ID' });
+    }
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+
+    const discussionReport =
+      await discussionReportsService.updateDiscussionReportStatus(
+        discussionId,
+        status
+      );
+
+    return res.status(200).json({ discussionReport });
+  }
+);
+
 export default discussionReportsRouter;
