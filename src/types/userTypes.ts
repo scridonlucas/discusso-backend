@@ -29,3 +29,5 @@ export interface LoginUser {
 export type NewUser = Omit<UserAttributes, 'id'>;
 
 export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
+
+export type Status = 'ACTIVE' | 'BANNED';

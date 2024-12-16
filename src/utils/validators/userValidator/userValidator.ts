@@ -10,6 +10,7 @@ const toNewUserEntry = (object: unknown): NewUser => {
     'firstName' in object &&
     'lastName' in object &&
     'username' in object &&
+    'status' in object &&
     'email' in object &&
     'gender' in object &&
     'birthDate' in object &&
@@ -29,6 +30,7 @@ const toNewUserEntry = (object: unknown): NewUser => {
       firstName: fieldsValidator.parseName(object.firstName),
       lastName: fieldsValidator.parseName(object.lastName),
       username: fieldsValidator.parseUsername(object.username),
+      status: fieldsValidator.parseStatus(object.status),
       email: fieldsValidator.parseEmail(object.email),
       gender: fieldsValidator.parseGender(object.gender),
       birthDate: fieldsValidator.parseBirthDate(object.birthDate),

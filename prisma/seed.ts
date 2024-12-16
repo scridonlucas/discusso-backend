@@ -255,6 +255,24 @@ async function main() {
     },
   });
 
+  const createLog = await prisma.permission.upsert({
+    where: { permissionName: 'CREATE_LOG' },
+    update: {},
+    create: {
+      permissionName: 'CREATE_LOG',
+      description: 'Can create a log',
+    },
+  });
+
+  const getLogs = await prisma.permission.upsert({
+    where: { permissionName: 'GET_LOGS' },
+    update: {},
+    create: {
+      permissionName: 'GET_LOGS',
+      description: 'Can get logs',
+    },
+  });
+
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -280,6 +298,8 @@ async function main() {
         changeCommentReportStatusPermission.id,
         changeDiscussionReportStatusPermission.id,
         updateUserStatus.id,
+        createLog.id,
+        getLogs.id,
       ],
     },
     {
@@ -305,6 +325,8 @@ async function main() {
         removeBookmarkPermission.id,
         changeCommentReportStatusPermission.id,
         changeDiscussionReportStatusPermission.id,
+        createLog.id,
+        getLogs.id,
       ],
     },
     {

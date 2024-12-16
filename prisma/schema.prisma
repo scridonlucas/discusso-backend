@@ -74,7 +74,7 @@ model User {
   notifications    Notification[] 
   filedDiscussionReports      DiscussionReport[] 
   filledCommentReports      CommentReport[]
-  moderatedActions    ModerationLog[]  @relation("Moderator")   
+  moderatedActions    ModerationLog[]  @relation("Admin")   
   actionsOnUser       ModerationLog[]  @relation("AffectedUser") 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -277,15 +277,15 @@ model Bookmark {
 
 model ModerationLog {
   id           Int          @id @default(autoincrement())
-  moderatorId  Int        
+  adminId  Int        
   userId       Int?     
   action       String    
   targetId     Int?      
   createdAt    DateTime     @default(now())
 
-  moderator    User         @relation("Moderator", fields: [moderatorId], references: [id])
+  admin    User         @relation("Admin", fields: [adminId], references: [id])
   user         User?        @relation("AffectedUser", fields: [userId], references: [id])
 
-  @@index([moderatorId])
+  @@index([adminId])
   @@index([userId])
 }

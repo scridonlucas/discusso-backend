@@ -1,4 +1,4 @@
-import { Gender } from '../../../types/userTypes';
+import { Gender, Status } from '../../../types/userTypes';
 import typeValidators from '../typeValidators';
 
 const parseName = (name: unknown): string => {
@@ -52,6 +52,14 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 };
 
+const parseStatus = (status: unknown): Status => {
+  if (!typeValidators.isString(status) || !typeValidators.isStatus(status)) {
+    throw new Error('Incorrect status type/format');
+  }
+
+  return status;
+};
+
 const parseBirthDate = (birthDate: unknown): Date => {
   if (
     !typeValidators.isString(birthDate) ||
@@ -82,6 +90,7 @@ const parsePassword = (password: unknown): string => {
 export default {
   parseName,
   parseUsername,
+  parseStatus,
   parseEmail,
   parseGender,
   parseBirthDate,
