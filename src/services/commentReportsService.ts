@@ -19,7 +19,15 @@ const getReportedComments = async (
     where,
     include: {
       user: { select: { id: true, username: true } },
-      comment: { select: { id: true, content: true, createdAt: true } },
+      comment: {
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          userId: true,
+          user: true,
+        },
+      },
     },
   });
 
@@ -62,8 +70,63 @@ const updateCommentReportStatus = async (
 
   return commentReport;
 };
+
+const closeCommentReport = async (
+  adminId: number,
+  reportId: number,
+  commentId: number,
+  reportedUserId: number,
+  action: 'DISMISS' | 'REMOVE_RESOURCE' | 'REMOVE_AND_BAN',
+  reason: string
+) => {
+  return await prisma.$transaction(async (tx) => {
+    const existingReport = await tx.commentReport.findUnique({
+      where: { id: reportId },
+      select: { status: true },
+    });
+
+    if (!existingReport || existingReport.status !== 'PENDING') {
+      throw new CustomReportError('This ticket is already closed.');
+    }
+
+    const updatedReport = await tx.commentReport.update({
+      where: { id: reportId },
+      data: {
+        status: action === 'DISMISS' ? 'DISMISSED' : 'RESOLVED',
+        reviewedAt: new Date(),
+        notes: reason,
+      },
+    });
+
+    if (action === 'REMOVE_RESOURCE' || action === 'REMOVE_AND_BAN') {
+      await tx.comment.update({
+        where: { id: commentId },
+        data: { isDeleted: true },
+      });
+    }
+
+    if (action === 'REMOVE_AND_BAN') {
+      await tx.user.update({
+        where: { id: reportedUserId },
+        data: { status: 'BANNED' },
+      });
+    }
+
+    await tx.moderationLog.create({
+      data: {
+        adminId,
+        userId: reportedUserId,
+        action,
+        targetId: commentId,
+      },
+    });
+    return updatedReport;
+  });
+};
+
 export default {
   getReportedComments,
   getCommentReportById,
   updateCommentReportStatus,
+  closeCommentReport,
 };

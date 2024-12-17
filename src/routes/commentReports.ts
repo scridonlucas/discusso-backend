@@ -3,7 +3,7 @@ import middleware from '../utils/middleware';
 import { Router, Request, Response } from 'express';
 import { ReportsQueryParams } from '../types/requestTypes';
 import commentReportsService from '../services/commentReportsService';
-
+import { NewCloseReport } from '../types/reportTypes';
 const commentReportsRouter = Router();
 
 commentReportsRouter.get(
@@ -79,4 +79,45 @@ commentReportsRouter.patch(
     return res.status(200).json({ commentReport });
   }
 );
+
+commentReportsRouter.post(
+  '/:reportId/close',
+  middleware.jwtVerify,
+  middleware.checkPermission('CLOSE_TICKET'),
+  async (
+    req: Request<{ reportId: string }, unknown, NewCloseReport>,
+    res: Response
+  ) => {
+    const adminId = req.decodedToken.id;
+    const reportId = Number(req.params.reportId);
+
+    const { targetResourceId, reportedUserId, action, reason } = req.body;
+
+    if (isNaN(adminId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    console.log(adminId, reportId, targetResourceId, reportedUserId, action);
+    if (
+      !reportId ||
+      !targetResourceId ||
+      !reportedUserId ||
+      !action ||
+      !reason
+    ) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const commentReport = await commentReportsService.closeCommentReport(
+      adminId,
+      reportId,
+      targetResourceId,
+      reportedUserId,
+      action,
+      reason
+    );
+
+    return res.status(200).json(commentReport);
+  }
+);
+
 export default commentReportsRouter;

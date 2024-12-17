@@ -43,7 +43,14 @@ const getDiscussionReportById = async (id: number) => {
     where: { id: id },
     include: {
       user: { select: { id: true, username: true, email: true } },
-      discussion: { select: { id: true, title: true, content: true } },
+      discussion: {
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          userId: true,
+        },
+      },
     },
   });
 
@@ -66,8 +73,61 @@ const updateDiscussionReportStatus = async (
   return discussionReport;
 };
 
+const closeDiscussionReport = async (
+  adminId: number,
+  reportId: number,
+  discussionId: number,
+  reportedUserId: number,
+  action: 'DISMISS' | 'REMOVE_RESOURCE' | 'REMOVE_AND_BAN',
+  reason: string
+) => {
+  return await prisma.$transaction(async (tx) => {
+    const existingReport = await tx.discussionReport.findUnique({
+      where: { id: reportId },
+      select: { status: true },
+    });
+
+    if (!existingReport || existingReport.status !== 'PENDING') {
+      throw new CustomReportError('This ticket is already closed.');
+    }
+    const updatedReport = await tx.discussionReport.update({
+      where: { id: reportId },
+      data: {
+        status: action === 'DISMISS' ? 'DISMISSED' : 'RESOLVED',
+        reviewedAt: new Date(),
+        notes: reason,
+      },
+    });
+
+    if (action === 'REMOVE_RESOURCE' || action === 'REMOVE_AND_BAN') {
+      await tx.discussion.update({
+        where: { id: discussionId },
+        data: { isDeleted: true },
+      });
+    }
+
+    if (action === 'REMOVE_AND_BAN') {
+      await tx.user.update({
+        where: { id: reportedUserId },
+        data: { status: 'BANNED' },
+      });
+    }
+
+    await tx.moderationLog.create({
+      data: {
+        adminId,
+        userId: reportedUserId,
+        action,
+        targetId: discussionId,
+      },
+    });
+    return updatedReport;
+  });
+};
+
 export default {
   getDiscussionReports,
   getDiscussionReportById,
   updateDiscussionReportStatus,
+  closeDiscussionReport,
 };

@@ -273,6 +273,14 @@ async function main() {
     },
   });
 
+  const closeTicket = await prisma.permission.upsert({
+    where: { permissionName: 'CLOSE_TICKET' },
+    update: {},
+    create: {
+      permissionName: 'CLOSE_TICKET',
+      description: 'Can close a ticket',
+    },
+  });
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -300,6 +308,7 @@ async function main() {
         updateUserStatus.id,
         createLog.id,
         getLogs.id,
+        closeTicket.id,
       ],
     },
     {
@@ -327,6 +336,7 @@ async function main() {
         changeDiscussionReportStatusPermission.id,
         createLog.id,
         getLogs.id,
+        closeTicket.id,
       ],
     },
     {

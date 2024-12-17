@@ -1,0 +1,8 @@
+POST http://localhost:3001/api/moderation-logs
+Content-Type: application/json
+
+{
+
+    "userId": 1,
+    "action": "REMOVE_COMMENT"
+}

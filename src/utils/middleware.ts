@@ -14,6 +14,7 @@ import {
   CustomTokenError,
   CustomPermissionError,
   CustomDiscussionError,
+  CustomReportError,
   CustomUserStatusError,
 } from './customErrors';
 import { UserToken } from '../types/authTypes';
@@ -201,6 +202,9 @@ const errorHandler: ErrorRequestHandler = (
 
   if (error instanceof CustomUserStatusError) {
     return res.status(403).json({ error: error.message });
+  }
+  if (error instanceof CustomReportError) {
+    return res.status(401).json({ error: error.message });
   }
 
   return next(error);

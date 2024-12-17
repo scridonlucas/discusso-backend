@@ -1,9 +1,9 @@
 import 'express-async-errors';
 import middleware from '../utils/middleware';
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import discussionReportsService from '../services/discussionReportsService';
 import { ReportsQueryParams } from '../types/requestTypes';
-
+import { NewCloseReport } from '../types/reportTypes';
 const discussionReportsRouter = Router();
 
 discussionReportsRouter.get(
@@ -31,39 +31,39 @@ discussionReportsRouter.get(
 );
 
 discussionReportsRouter.get(
-  '/:discussionId',
+  '/:reportId',
   middleware.jwtVerify,
   middleware.checkPermission('GET_DISCUSSION_REPORTS'),
   async (req, res, _next) => {
-    const discussionId = Number(req.params.discussionId);
+    const reportId = Number(req.params.reportId);
 
-    if (isNaN(discussionId) || discussionId <= 0) {
+    if (isNaN(reportId) || reportId <= 0) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
     }
 
     const discussionReport =
-      await discussionReportsService.getDiscussionReportById(discussionId);
+      await discussionReportsService.getDiscussionReportById(reportId);
 
     return res.status(200).json(discussionReport);
   }
 );
 
 discussionReportsRouter.patch(
-  '/:discussionId',
+  '/:reportId',
   middleware.jwtVerify,
   middleware.checkPermission('CHANGE_DISCUSSION_REPORT_STATUS'),
   async (
     req: Request<
-      { discussionId: string },
+      { reportId: string },
       unknown,
       { status?: 'PENDING' | 'RESOLVED' | 'DISMISSED' }
     >,
     res: Response
   ) => {
-    const discussionId = Number(req.params.discussionId);
+    const reportId = Number(req.params.reportId);
     const status = req.body.status;
 
-    if (isNaN(discussionId) || discussionId <= 0) {
+    if (isNaN(reportId) || reportId <= 0) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
     }
 
@@ -73,12 +73,53 @@ discussionReportsRouter.patch(
 
     const discussionReport =
       await discussionReportsService.updateDiscussionReportStatus(
-        discussionId,
+        reportId,
         status
       );
 
-    return res.status(200).json({ discussionReport });
+    return res.status(200).json(discussionReport);
   }
 );
 
+discussionReportsRouter.post(
+  '/:reportId/close',
+  middleware.jwtVerify,
+  middleware.checkPermission('CLOSE_TICKET'),
+  async (
+    req: Request<{ reportId: string }, unknown, NewCloseReport>,
+    res: Response,
+    _next: NextFunction
+  ) => {
+    const adminId = req.decodedToken.id;
+    const reportId = Number(req.params.reportId);
+
+    const { targetResourceId, reportedUserId, action, reason } = req.body;
+
+    if (isNaN(adminId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    console.log(adminId, reportId, targetResourceId, reportedUserId, action);
+    if (
+      !reportId ||
+      !targetResourceId ||
+      !reportedUserId ||
+      !action ||
+      !reason
+    ) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const discussionReport =
+      await discussionReportsService.closeDiscussionReport(
+        adminId,
+        reportId,
+        targetResourceId,
+        reportedUserId,
+        action,
+        reason
+      );
+
+    return res.status(200).json(discussionReport);
+  }
+);
 export default discussionReportsRouter;

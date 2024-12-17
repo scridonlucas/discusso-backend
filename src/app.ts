@@ -9,6 +9,7 @@ import commentsRouter from './routes/comments';
 import communitiesRouter from './routes/communities';
 import discussionReportsRouter from './routes/discussionReports';
 import commentReportsRouter from './routes/commentReports';
+import moderationLogsRouter from './routes/moderationLogs';
 const app = express();
 app.use(
   cors({
@@ -30,6 +31,7 @@ app.use('/api/comments', commentsRouter);
 app.use('/api/discussion-reports', discussionReportsRouter);
 app.use('/api/comment-reports', commentReportsRouter);
 app.use('/api/communities', communitiesRouter);
+app.use('/api/moderation-logs', moderationLogsRouter);
 app.use(middleware.unknownEndPoint);
 app.use(middleware.errorHandler);
 

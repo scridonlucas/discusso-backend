@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/discussion-reports/8/close
+Content-Type: application/json
+
+{
+  "reportId": 8,
+  "targetResourceId": 37,
+  "reportedUserId": 2,
+  "action": "REMOVE_AND_BAN",
+  "reason": "Harassment and violation of community guidelines"
+}
