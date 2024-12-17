@@ -76,39 +76,46 @@ const updateDiscussionReportStatus = async (
 const closeDiscussionReport = async (
   adminId: number,
   reportId: number,
-  discussionId: number,
-  reportedUserId: number,
-  action: 'DISMISS' | 'REMOVE_RESOURCE' | 'REMOVE_AND_BAN',
-  reason: string
+  action: 'DISMISS' | 'REMOVE_RESOURCE' | 'REMOVE_AND_BAN'
 ) => {
   return await prisma.$transaction(async (tx) => {
     const existingReport = await tx.discussionReport.findUnique({
       where: { id: reportId },
-      select: { status: true },
+      select: {
+        status: true,
+        discussionId: true,
+        reason: true,
+        discussion: {
+          select: {
+            userId: true,
+          },
+        },
+      },
     });
 
     if (!existingReport || existingReport.status !== 'PENDING') {
       throw new CustomReportError('This ticket is already closed.');
     }
+
     const updatedReport = await tx.discussionReport.update({
       where: { id: reportId },
       data: {
         status: action === 'DISMISS' ? 'DISMISSED' : 'RESOLVED',
         reviewedAt: new Date(),
-        notes: reason,
+        notes: existingReport.reason,
       },
     });
 
     if (action === 'REMOVE_RESOURCE' || action === 'REMOVE_AND_BAN') {
       await tx.discussion.update({
-        where: { id: discussionId },
+        where: { id: existingReport.discussionId },
         data: { isDeleted: true },
       });
     }
 
     if (action === 'REMOVE_AND_BAN') {
       await tx.user.update({
-        where: { id: reportedUserId },
+        where: { id: existingReport.discussion.userId },
         data: { status: 'BANNED' },
       });
     }
@@ -116,9 +123,9 @@ const closeDiscussionReport = async (
     await tx.moderationLog.create({
       data: {
         adminId,
-        userId: reportedUserId,
+        userId: existingReport.discussion.userId,
         action,
-        targetId: discussionId,
+        targetId: existingReport.discussionId,
       },
     });
     return updatedReport;

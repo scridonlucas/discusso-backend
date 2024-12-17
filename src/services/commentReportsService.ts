@@ -74,15 +74,21 @@ const updateCommentReportStatus = async (
 const closeCommentReport = async (
   adminId: number,
   reportId: number,
-  commentId: number,
-  reportedUserId: number,
-  action: 'DISMISS' | 'REMOVE_RESOURCE' | 'REMOVE_AND_BAN',
-  reason: string
+  action: 'DISMISS' | 'REMOVE_RESOURCE' | 'REMOVE_AND_BAN'
 ) => {
   return await prisma.$transaction(async (tx) => {
     const existingReport = await tx.commentReport.findUnique({
       where: { id: reportId },
-      select: { status: true },
+      select: {
+        status: true,
+        commentId: true,
+        reason: true,
+        comment: {
+          select: {
+            userId: true,
+          },
+        },
+      },
     });
 
     if (!existingReport || existingReport.status !== 'PENDING') {
@@ -94,20 +100,20 @@ const closeCommentReport = async (
       data: {
         status: action === 'DISMISS' ? 'DISMISSED' : 'RESOLVED',
         reviewedAt: new Date(),
-        notes: reason,
+        notes: existingReport.reason,
       },
     });
 
     if (action === 'REMOVE_RESOURCE' || action === 'REMOVE_AND_BAN') {
       await tx.comment.update({
-        where: { id: commentId },
+        where: { id: existingReport.commentId },
         data: { isDeleted: true },
       });
     }
 
     if (action === 'REMOVE_AND_BAN') {
       await tx.user.update({
-        where: { id: reportedUserId },
+        where: { id: existingReport.comment.userId },
         data: { status: 'BANNED' },
       });
     }
@@ -115,9 +121,9 @@ const closeCommentReport = async (
     await tx.moderationLog.create({
       data: {
         adminId,
-        userId: reportedUserId,
+        userId: existingReport.comment.userId,
         action,
-        targetId: commentId,
+        targetId: existingReport.commentId,
       },
     });
     return updatedReport;

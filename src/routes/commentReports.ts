@@ -91,29 +91,19 @@ commentReportsRouter.post(
     const adminId = req.decodedToken.id;
     const reportId = Number(req.params.reportId);
 
-    const { targetResourceId, reportedUserId, action, reason } = req.body;
+    const { action } = req.body;
 
     if (isNaN(adminId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-    console.log(adminId, reportId, targetResourceId, reportedUserId, action);
-    if (
-      !reportId ||
-      !targetResourceId ||
-      !reportedUserId ||
-      !action ||
-      !reason
-    ) {
+    if (!reportId || !action) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const commentReport = await commentReportsService.closeCommentReport(
       adminId,
       reportId,
-      targetResourceId,
-      reportedUserId,
-      action,
-      reason
+      action
     );
 
     return res.status(200).json(commentReport);
