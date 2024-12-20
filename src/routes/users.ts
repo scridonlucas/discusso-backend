@@ -7,10 +7,15 @@ import middleware from '../utils/middleware';
 
 const usersRouter = Router();
 
-usersRouter.get('/', async (_req, res) => {
-  const users = await usersService.getUsers();
-  res.json(users);
-});
+usersRouter.get(
+  '/',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_USERS'),
+  async (_req, res) => {
+    const users = await usersService.getUsers();
+    res.json(users);
+  }
+);
 
 usersRouter.get('/:id', async (req, res) => {
   const id = Number(req.params.id);
@@ -60,6 +65,7 @@ usersRouter.get('/check-email/:email', async (req, res) => {
 
 usersRouter.patch(
   '/:userId',
+  middleware.jwtVerify,
   middleware.checkPermission('UPDATE_USER_STATUS'),
   async (
     req: Request<{ userId: string }, unknown, { status?: 'ACTIVE' | 'BANNED' }>,
@@ -77,6 +83,31 @@ usersRouter.patch(
     }
 
     const updatedUser = await usersService.updateUserStatus(userId, status);
+
+    return res.status(200).json(updatedUser);
+  }
+);
+
+usersRouter.patch(
+  '/:userId',
+  middleware.jwtVerify,
+  middleware.checkPermission('UPDATE_USER_ROLE'),
+  async (
+    req: Request<{ userId: string }, unknown, { roleId?: number }>,
+    res: Response
+  ) => {
+    const userId = Number(req.params.userId);
+    const roleId = req.body.roleId;
+
+    if (isNaN(userId) || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    if (!roleId || isNaN(roleId)) {
+      return res.status(400).json({ error: 'Role is required' });
+    }
+
+    const updatedUser = await usersService.updateUserRole(userId, roleId);
 
     return res.status(200).json(updatedUser);
   }

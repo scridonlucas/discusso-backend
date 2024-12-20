@@ -48,7 +48,15 @@ const getCommentReportById = async (id: number) => {
     where: { id },
     include: {
       user: { select: { id: true, username: true } },
-      comment: { select: { id: true, content: true, createdAt: true } },
+      comment: {
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          userId: true,
+          discussionId: true,
+        },
+      },
     },
   });
 

@@ -40,6 +40,7 @@ const getDiscussions = async (
   const where: Prisma.DiscussionWhereInput = {
     ...getTimeFilterCondition(dateRange),
     ...getFeedCondition(feedType, userId),
+    isDeleted: false,
   };
 
   const discussions = await prisma.discussion.findMany({
@@ -196,6 +197,10 @@ const getDiscussionById = async (discussionId: number) => {
 
   if (!discussion) {
     throw new CustomDiscussionError('Discussion not found');
+  }
+
+  if (discussion.isDeleted) {
+    throw new CustomDiscussionError('This discussion has been deleted.');
   }
 
   return discussion;
@@ -421,6 +426,7 @@ async function getComments(
     orderBy,
     where: {
       discussionId,
+      isDeleted: false,
     },
     include: {
       user: { select: { id: true, username: true } },

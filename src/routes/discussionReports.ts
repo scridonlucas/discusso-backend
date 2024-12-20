@@ -101,6 +101,11 @@ discussionReportsRouter.post(
     if (!reportId || !action) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+
+    if (!['DISMISS', 'REMOVE_RESOURCE', 'REMOVE_AND_BAN'].includes(action)) {
+      return res.status(400).json({ error: 'Invalid action' });
+    }
+
     const discussionReport =
       await discussionReportsService.closeDiscussionReport(
         adminId,

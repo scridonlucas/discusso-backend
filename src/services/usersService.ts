@@ -3,7 +3,11 @@ import bcrypt from 'bcrypt';
 import { NewUser } from '../types/userTypes';
 
 const getUsers = async () => {
-  const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany({
+    include: {
+      role: true,
+    },
+  });
   return users;
 };
 
@@ -71,6 +75,15 @@ const updateUserStatus = async (id: number, status: 'ACTIVE' | 'BANNED') => {
   return updatedUser;
 };
 
+const updateUserRole = async (id: number, roleId: number) => {
+  const updatedUser = await prisma.user.update({
+    where: { id },
+    data: { roleId },
+  });
+
+  return updatedUser;
+};
+
 export default {
   getUsers,
   getUser,
@@ -80,4 +93,5 @@ export default {
   addUser,
   deleteUser,
   updateUserStatus,
+  updateUserRole,
 };

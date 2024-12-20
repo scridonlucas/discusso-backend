@@ -255,6 +255,24 @@ async function main() {
     },
   });
 
+  const updateUserRole = await prisma.permission.upsert({
+    where: { permissionName: 'UPDATE_USER_ROLE' },
+    update: {},
+    create: {
+      permissionName: 'UPDATE_USER_ROLE',
+      description: 'Can update user role',
+    },
+  });
+
+  const getUsers = await prisma.permission.upsert({
+    where: { permissionName: 'GET_USERS' },
+    update: {},
+    create: {
+      permissionName: 'GET_USERS',
+      description: 'Can get a list of users',
+    },
+  });
+
   const createLog = await prisma.permission.upsert({
     where: { permissionName: 'CREATE_LOG' },
     update: {},
@@ -309,6 +327,8 @@ async function main() {
         createLog.id,
         getLogs.id,
         closeTicket.id,
+        getUsers.id,
+        updateUserRole.id,
       ],
     },
     {
@@ -337,6 +357,7 @@ async function main() {
         createLog.id,
         getLogs.id,
         closeTicket.id,
+        getUsers.id,
       ],
     },
     {

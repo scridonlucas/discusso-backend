@@ -5,12 +5,11 @@ const toNewUserEntry = (object: unknown): NewUser => {
   if (!object || typeof object !== 'object') {
     throw new Error('Incorrent or missing data!');
   }
-
+  console.log(object);
   if (
     'firstName' in object &&
     'lastName' in object &&
     'username' in object &&
-    'status' in object &&
     'email' in object &&
     'gender' in object &&
     'birthDate' in object &&
@@ -25,12 +24,11 @@ const toNewUserEntry = (object: unknown): NewUser => {
     if (password !== confirmPassword) {
       throw new Error('Passwords do not match.');
     }
-
     const newUser: NewUser = {
       firstName: fieldsValidator.parseName(object.firstName),
       lastName: fieldsValidator.parseName(object.lastName),
       username: fieldsValidator.parseUsername(object.username),
-      status: fieldsValidator.parseStatus(object.status),
+      status: 'ACTIVE',
       email: fieldsValidator.parseEmail(object.email),
       gender: fieldsValidator.parseGender(object.gender),
       birthDate: fieldsValidator.parseBirthDate(object.birthDate),

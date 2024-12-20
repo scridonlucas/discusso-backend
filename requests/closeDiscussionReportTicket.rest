@@ -1,4 +1,5 @@
 POST http://localhost:3001/api/discussion-reports/8/close
+
 Content-Type: application/json
 
 {
