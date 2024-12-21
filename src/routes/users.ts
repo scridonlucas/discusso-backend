@@ -13,7 +13,31 @@ usersRouter.get(
   middleware.checkPermission('GET_USERS'),
   async (_req, res) => {
     const users = await usersService.getUsers();
-    res.json(users);
+    res.status(200).json(users);
+  }
+);
+
+usersRouter.get(
+  '/count',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_USERS'),
+  async (
+    req: Request<
+      unknown,
+      unknown,
+      unknown,
+      { status?: 'ACTIVE' | 'BANNED'; startDate?: string; endDate?: string }
+    >,
+    res: Response
+  ) => {
+    const { status, startDate, endDate } = req.query;
+    const userCount = await usersService.getUserCount(
+      status,
+      startDate,
+      endDate
+    );
+
+    res.status(200).json(userCount);
   }
 );
 

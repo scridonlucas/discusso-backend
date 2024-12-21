@@ -38,6 +38,18 @@ const getDiscussionReports = async (
   };
 };
 
+const getDiscussionReportsCount = async (
+  status?: 'PENDING' | 'RESOLVED' | 'DISMISSED'
+) => {
+  const where: Prisma.DiscussionReportWhereInput = {
+    status: status,
+  };
+
+  const total = await prisma.discussionReport.count({ where });
+
+  return total;
+};
+
 const getDiscussionReportById = async (id: number) => {
   const discussionReport = await prisma.discussionReport.findUnique({
     where: { id: id },
@@ -137,4 +149,5 @@ export default {
   getDiscussionReportById,
   updateDiscussionReportStatus,
   closeDiscussionReport,
+  getDiscussionReportsCount,
 };

@@ -31,6 +31,27 @@ discussionReportsRouter.get(
 );
 
 discussionReportsRouter.get(
+  '/count',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_DISCUSSION_REPORTS'),
+  async (
+    req: Request<
+      unknown,
+      unknown,
+      unknown,
+      { status?: 'PENDING' | 'RESOLVED' | 'DISMISSED' }
+    >,
+    res: Response
+  ) => {
+    const status = req.query.status;
+
+    const discussionReportsCount =
+      await discussionReportsService.getDiscussionReportsCount(status);
+    return res.status(200).json(discussionReportsCount);
+  }
+);
+
+discussionReportsRouter.get(
   '/:reportId',
   middleware.jwtVerify,
   middleware.checkPermission('GET_DISCUSSION_REPORTS'),

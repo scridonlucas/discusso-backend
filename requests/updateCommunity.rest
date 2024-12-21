@@ -1,0 +1,6 @@
+PATCH http://localhost:3001/api/communities/4/update 
+Content-Type: application/json
+
+{
+    "isDeleted": false
+}

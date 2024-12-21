@@ -43,6 +43,18 @@ const getReportedComments = async (
   };
 };
 
+const getCommentReportsCount = async (
+  status?: 'PENDING' | 'RESOLVED' | 'DISMISSED'
+) => {
+  const where: Prisma.CommentReportWhereInput = {
+    status: status,
+  };
+
+  const count = await prisma.commentReport.count({ where });
+
+  return count;
+};
+
 const getCommentReportById = async (id: number) => {
   const commentReport = await prisma.commentReport.findUnique({
     where: { id },
@@ -143,4 +155,5 @@ export default {
   getCommentReportById,
   updateCommentReportStatus,
   closeCommentReport,
+  getCommentReportsCount,
 };

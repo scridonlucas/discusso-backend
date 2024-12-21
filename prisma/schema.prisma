@@ -88,7 +88,8 @@ model Community {
   id           Int             @id @default(autoincrement())
   name         String          @unique
   description  String?
-  userId       Int        
+  userId       Int 
+  isDeleted    Boolean             @default(false)   
   discussions  Discussion[]
   followers    UserCommunity[] 
   createdAt    DateTime        @default(now())

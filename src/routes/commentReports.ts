@@ -30,6 +30,26 @@ commentReportsRouter.get(
 );
 
 commentReportsRouter.get(
+  '/count',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_COMMENT_REPORTS'),
+  async (
+    req: Request<
+      unknown,
+      unknown,
+      unknown,
+      { status?: 'PENDING' | 'RESOLVED' | 'DISMISSED' }
+    >,
+    res: Response
+  ) => {
+    const status = req.query.status;
+
+    const count = await commentReportsService.getCommentReportsCount(status);
+    return res.status(200).json({ count });
+  }
+);
+
+commentReportsRouter.get(
   '/:commentId',
   middleware.jwtVerify,
   middleware.checkPermission('GET_COMMENT_REPORTS'),

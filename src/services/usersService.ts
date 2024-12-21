@@ -1,4 +1,5 @@
 import prisma from '../utils/prismaClient';
+import { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { NewUser } from '../types/userTypes';
 
@@ -16,6 +17,25 @@ const getUser = async (id: number) => {
     where: { id },
   });
   return user;
+};
+
+const getUserCount = async (
+  status?: 'ACTIVE' | 'BANNED',
+  startDate?: string,
+  endDate?: string
+) => {
+  const whereClause: Prisma.UserWhereInput = {
+    status: status,
+    createdAt: {
+      ...(startDate ? { gte: new Date(startDate) } : {}),
+      ...(endDate ? { lte: new Date(endDate) } : {}),
+    },
+  };
+  const userCount = await prisma.user.count({
+    where: whereClause,
+  });
+
+  return userCount;
 };
 
 export const getUserWithRole = async (userId: number) => {
@@ -102,4 +122,5 @@ export default {
   deleteUser,
   updateUserStatus,
   updateUserRole,
+  getUserCount,
 };
