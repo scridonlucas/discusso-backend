@@ -5,4 +5,19 @@ const getCommunities = async () => {
   return communities;
 };
 
-export default { getCommunities };
+const addCommunity = async (
+  communityName: string,
+  userId: number,
+  description?: string
+) => {
+  const community = await prisma.community.create({
+    data: {
+      name: communityName,
+      userId: userId,
+      description,
+    },
+  });
+  return community;
+};
+
+export default { getCommunities, addCommunity };

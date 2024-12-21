@@ -75,10 +75,18 @@ const updateUserStatus = async (id: number, status: 'ACTIVE' | 'BANNED') => {
   return updatedUser;
 };
 
-const updateUserRole = async (id: number, roleId: number) => {
+const updateUserRole = async (id: number, roleName: 'USER' | 'ADMIN') => {
+  const role = await prisma.role.findUnique({
+    where: { roleName: roleName },
+  });
+
+  if (!role) {
+    throw new Error(`No role found with the name "${roleName}"`);
+  }
+
   const updatedUser = await prisma.user.update({
     where: { id },
-    data: { roleId },
+    data: { roleId: role.id },
   });
 
   return updatedUser;

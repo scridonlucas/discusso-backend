@@ -19,7 +19,20 @@ const addModerationLog = async (
 };
 
 const getModerationLogs = async () => {
-  const logs = await prisma.moderationLog.findMany();
+  const logs = await prisma.moderationLog.findMany({
+    include: {
+      admin: {
+        select: {
+          username: true,
+        },
+      },
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
   return logs;
 };
 

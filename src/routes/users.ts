@@ -64,7 +64,7 @@ usersRouter.get('/check-email/:email', async (req, res) => {
 });
 
 usersRouter.patch(
-  '/:userId',
+  '/:userId/status',
   middleware.jwtVerify,
   middleware.checkPermission('UPDATE_USER_STATUS'),
   async (
@@ -89,25 +89,25 @@ usersRouter.patch(
 );
 
 usersRouter.patch(
-  '/:userId',
+  '/:userId/role',
   middleware.jwtVerify,
   middleware.checkPermission('UPDATE_USER_ROLE'),
   async (
-    req: Request<{ userId: string }, unknown, { roleId?: number }>,
+    req: Request<{ userId: string }, unknown, { roleName?: 'USER' | 'ADMIN' }>,
     res: Response
   ) => {
     const userId = Number(req.params.userId);
-    const roleId = req.body.roleId;
+    const roleName = req.body.roleName;
 
     if (isNaN(userId) || userId <= 0) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
 
-    if (!roleId || isNaN(roleId)) {
+    if (!roleName || !['USER', 'ADMIN'].includes(roleName)) {
       return res.status(400).json({ error: 'Role is required' });
     }
 
-    const updatedUser = await usersService.updateUserRole(userId, roleId);
+    const updatedUser = await usersService.updateUserRole(userId, roleName);
 
     return res.status(200).json(updatedUser);
   }
