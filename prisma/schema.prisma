@@ -112,6 +112,7 @@ model Discussion {
   likes         Like[] 
   comments      Comment[] 
   bookmarks           Bookmark[] 
+  trendingScore Float    @default(0) 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   reports       DiscussionReport[]

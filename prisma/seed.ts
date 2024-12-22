@@ -46,6 +46,15 @@ async function main() {
     },
   });
 
+  const getDiscussionsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_DISCUSSIONS' },
+    update: {},
+    create: {
+      permissionName: 'GET_DISCUSSIONS',
+      description: 'Can get discussions',
+    },
+  });
+
   const updateOwnDiscussionPermission = await prisma.permission.upsert({
     where: { permissionName: 'UPDATE_OWN_DISCUSSION' },
     update: {},
@@ -329,6 +338,7 @@ async function main() {
         closeTicket.id,
         getUsers.id,
         updateUserRole.id,
+        getDiscussionsPermission.id,
       ],
     },
     {
@@ -358,6 +368,7 @@ async function main() {
         getLogs.id,
         closeTicket.id,
         getUsers.id,
+        getDiscussionsPermission.id,
       ],
     },
     {
@@ -376,6 +387,7 @@ async function main() {
         reportCommentPermission.id,
         addBookmarkPermission.id,
         removeBookmarkPermission.id,
+        getDiscussionsPermission.id,
       ],
     },
   ];

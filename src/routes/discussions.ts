@@ -86,6 +86,32 @@ discussionsRouter.post(
 );
 
 discussionsRouter.get(
+  '/count',
+  middleware.jwtVerify,
+  async (
+    req: Request<
+      unknown,
+      unknown,
+      unknown,
+      { startDate?: string; endDate?: string }
+    >,
+    res: Response
+  ) => {
+    const { startDate, endDate } = req.query;
+
+    const decodedStartDate = decodeURIComponent(startDate || '');
+    const decodedEndDate = decodeURIComponent(endDate || '');
+
+    const discussionsCount = await discussionsService.getDiscussionsCount(
+      decodedStartDate,
+      decodedEndDate
+    );
+
+    res.status(200).json(discussionsCount);
+  }
+);
+
+discussionsRouter.get(
   '/',
   async (
     req: Request<

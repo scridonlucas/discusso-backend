@@ -45,7 +45,7 @@ commentReportsRouter.get(
     const status = req.query.status;
 
     const count = await commentReportsService.getCommentReportsCount(status);
-    return res.status(200).json({ count });
+    return res.status(200).json(count);
   }
 );
 

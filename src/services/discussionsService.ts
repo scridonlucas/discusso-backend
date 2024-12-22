@@ -21,6 +21,22 @@ const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
 
   return addedDiscussion;
 };
+
+const getDiscussionsCount = async (startDate?: string, endDate?: string) => {
+  const whereClause: Prisma.DiscussionWhereInput = {
+    createdAt: {
+      ...(startDate ? { gte: new Date(startDate) } : {}),
+      ...(endDate ? { lte: new Date(endDate) } : {}),
+    },
+    isDeleted: false,
+  };
+
+  const discussionCount = await prisma.discussion.count({
+    where: whereClause,
+  });
+
+  return discussionCount;
+};
 const getDiscussions = async (
   userId: number,
   limit: number,
@@ -572,4 +588,5 @@ export default {
   addComment,
   getComments,
   addDiscussionReport,
+  getDiscussionsCount,
 };

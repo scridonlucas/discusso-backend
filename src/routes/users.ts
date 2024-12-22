@@ -31,10 +31,14 @@ usersRouter.get(
     res: Response
   ) => {
     const { status, startDate, endDate } = req.query;
+
+    const decodedStartDate = decodeURIComponent(startDate || '');
+    const decodedEndDate = decodeURIComponent(endDate || '');
+
     const userCount = await usersService.getUserCount(
       status,
-      startDate,
-      endDate
+      decodedStartDate,
+      decodedEndDate
     );
 
     res.status(200).json(userCount);
