@@ -121,6 +121,7 @@ model Discussion {
 
   @@index([userId])
   @@index([communityId])
+  @@index([trendingScore])
 
 }
 
