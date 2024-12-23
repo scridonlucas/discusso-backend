@@ -10,6 +10,8 @@ import communitiesRouter from './routes/communities';
 import discussionReportsRouter from './routes/discussionReports';
 import commentReportsRouter from './routes/commentReports';
 import moderationLogsRouter from './routes/moderationLogs';
+import { initializeTrendingScheduler } from './jobs/scheduleTrendingJob';
+
 const app = express();
 app.use(
   cors({
@@ -34,5 +36,7 @@ app.use('/api/communities', communitiesRouter);
 app.use('/api/moderation-logs', moderationLogsRouter);
 app.use(middleware.unknownEndPoint);
 app.use(middleware.errorHandler);
+
+initializeTrendingScheduler(); // background script that updates trending scores hourly
 
 export default app;
