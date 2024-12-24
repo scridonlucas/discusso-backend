@@ -13,6 +13,7 @@ import {
   DiscussionQueryParams,
   CommentQueryParams,
 } from '../types/requestTypes';
+import { parse } from 'dotenv';
 
 const discussionsRouter = Router();
 
@@ -129,6 +130,10 @@ discussionsRouter.get(
     const sort = req.query.sort ? req.query.sort : 'recent';
     const dateRange = req.query.date_range ? req.query.date_range : 'all';
     const feedType = req.query.feed_type ? req.query.feed_type : 'explore';
+    const communityId = req.query.communityId
+      ? parseInt(req.query.communityId)
+      : null;
+    const saved = req.query.saved ? req.query.saved : false;
 
     const discussions = await discussionsService.getDiscussions(
       userId,
@@ -136,7 +141,9 @@ discussionsRouter.get(
       cursor,
       sort,
       dateRange,
-      feedType
+      feedType,
+      communityId,
+      saved
     );
 
     return res.status(200).json(discussions);
@@ -145,19 +152,8 @@ discussionsRouter.get(
 
 discussionsRouter.get(
   '/trending',
-  async (
-    req: Request<unknown, unknown, NewDiscussion, DiscussionQueryParams>,
-    res: Response,
-    _next
-  ) => {
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
-    const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
-    const dateRange = req.query.date_range;
-    const discussions = await discussionsService.getTrendingDiscussions(
-      limit,
-      cursor,
-      dateRange
-    );
+  async (_req: Request, res: Response, _next) => {
+    const discussions = await discussionsService.getTrendingDiscussions();
 
     return res.status(200).json(discussions);
   }
@@ -251,7 +247,7 @@ discussionsRouter.delete(
       return res.status(400).json({ error: 'Invalid discussion ID' });
     }
 
-    const deletedDiscussion = await discussionsService.deleteDiscussion(
+    const deletedDiscussion = await discussionsService.softDeleteDiscussion(
       discussionId,
       userId
     );

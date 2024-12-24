@@ -48,7 +48,9 @@ const getDiscussions = async (
     | 'last_day'
     | 'last_week'
     | 'last_month' = 'all',
-  feedType: 'explore' | 'following' = 'explore'
+  feedType: 'explore' | 'following' = 'explore',
+  communityId: number | null,
+  saved: boolean
 ) => {
   const orderBy: Prisma.DiscussionOrderByWithRelationInput =
     getOrderByOption(sort);
@@ -57,6 +59,8 @@ const getDiscussions = async (
     ...getTimeFilterCondition(dateRange),
     ...getFeedCondition(feedType, userId),
     isDeleted: false,
+    communityId: communityId || undefined,
+    ...(saved ? { bookmarks: { some: { userId } } } : {}),
   };
 
   const discussions = await prisma.discussion.findMany({
@@ -92,23 +96,12 @@ const getDiscussions = async (
   };
 };
 
-const getTrendingDiscussions = async (
-  limit: number,
-  cursor: number | null,
-  dateRange:
-    | 'last_hour'
-    | 'last_day'
-    | 'last_week'
-    | 'last_month'
-    | 'all' = 'all'
-) => {
-  const where = getTimeFilterCondition(dateRange);
+const getTrendingDiscussions = async () => {
   const discussions = await prisma.discussion.findMany({
-    take: limit,
-    skip: cursor ? 1 : 0,
-    cursor: cursor ? { id: cursor } : undefined,
-    orderBy: { createdAt: 'desc' },
-    where,
+    take: 15,
+    orderBy: {
+      trendingScore: 'desc',
+    },
     include: {
       user: { select: { id: true, username: true } },
       community: { select: { name: true } },
@@ -126,14 +119,7 @@ const getTrendingDiscussions = async (
     },
   });
 
-  const total = await prisma.discussion.count();
-
-  return {
-    discussions,
-    nextCursor:
-      discussions.length > 0 ? discussions[discussions.length - 1].id : null,
-    total,
-  };
+  return { discussions };
 };
 
 const getDiscussionsByUser = async (
@@ -233,6 +219,22 @@ const deleteDiscussion = async (discussionId: number, _userId: number) => {
 
   await prisma.discussion.delete({
     where: { id: discussionId },
+  });
+  return { message: 'Discussion deleted successfully' };
+};
+
+const softDeleteDiscussion = async (discussionId: number, _userId: number) => {
+  const discussion = await prisma.discussion.findUnique({
+    where: { id: discussionId },
+  });
+
+  if (!discussion) {
+    throw new CustomDiscussionError('Discussion not found');
+  }
+
+  await prisma.discussion.update({
+    where: { id: discussionId },
+    data: { isDeleted: true },
   });
   return { message: 'Discussion deleted successfully' };
 };
@@ -577,6 +579,7 @@ export default {
   getDiscussionsByCommunity,
   getDiscussionById,
   deleteDiscussion,
+  softDeleteDiscussion,
   updateDiscussion,
   addLike,
   deleteLike,
