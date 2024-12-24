@@ -41,6 +41,8 @@ const getDiscussions = async (
   userId: number,
   limit: number,
   cursor: number | null,
+  communityId: number | null = null,
+  feedType: 'explore' | 'following' = 'explore',
   sort: 'recent' | 'oldest' | 'most_liked' | 'most_commented' = 'recent',
   dateRange:
     | 'all'
@@ -48,8 +50,6 @@ const getDiscussions = async (
     | 'last_day'
     | 'last_week'
     | 'last_month' = 'all',
-  feedType: 'explore' | 'following' = 'explore',
-  communityId: number | null,
   saved: boolean
 ) => {
   const orderBy: Prisma.DiscussionOrderByWithRelationInput =
@@ -59,7 +59,7 @@ const getDiscussions = async (
     ...getTimeFilterCondition(dateRange),
     ...getFeedCondition(feedType, userId),
     isDeleted: false,
-    communityId: communityId || undefined,
+    communityId: communityId === null ? undefined : communityId,
     ...(saved ? { bookmarks: { some: { userId } } } : {}),
   };
 
@@ -86,12 +86,15 @@ const getDiscussions = async (
     },
   });
 
-  const total = await prisma.discussion.count();
+  const total = await prisma.discussion.count({ where });
 
+  console.log(discussions.length);
   return {
     discussions,
     nextCursor:
-      discussions.length > 0 ? discussions[discussions.length - 1].id : null,
+      discussions.length === limit
+        ? discussions[discussions.length - 1].id
+        : null,
     total,
   };
 };
@@ -102,6 +105,7 @@ const getTrendingDiscussions = async () => {
     orderBy: {
       trendingScore: 'desc',
     },
+    where: { isDeleted: false },
     include: {
       user: { select: { id: true, username: true } },
       community: { select: { name: true } },

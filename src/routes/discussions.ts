@@ -13,7 +13,6 @@ import {
   DiscussionQueryParams,
   CommentQueryParams,
 } from '../types/requestTypes';
-import { parse } from 'dotenv';
 
 const discussionsRouter = Router();
 
@@ -127,22 +126,21 @@ discussionsRouter.get(
     const userId = req.decodedToken.id;
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
+    const communityId = req.query.community_id
+      ? parseInt(req.query.community_id, 10)
+      : null;
+    const feedType = req.query.feed_type ? req.query.feed_type : 'explore';
     const sort = req.query.sort ? req.query.sort : 'recent';
     const dateRange = req.query.date_range ? req.query.date_range : 'all';
-    const feedType = req.query.feed_type ? req.query.feed_type : 'explore';
-    const communityId = req.query.communityId
-      ? parseInt(req.query.communityId)
-      : null;
-    const saved = req.query.saved ? req.query.saved : false;
-
+    const saved = req.query.saved ? true : false;
     const discussions = await discussionsService.getDiscussions(
       userId,
       limit,
       cursor,
+      communityId,
+      feedType,
       sort,
       dateRange,
-      feedType,
-      communityId,
       saved
     );
 

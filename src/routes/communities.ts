@@ -15,6 +15,22 @@ communitiesRouter.get(
   }
 );
 
+communitiesRouter.get(
+  '/:communityId',
+  middleware.jwtVerify,
+  async (req: Request, res: Response, _next) => {
+    const communityId = Number(req.params.communityId);
+
+    if (isNaN(communityId)) {
+      return res.status(400).json({ error: 'Invalid community ID' });
+    }
+
+    const communities = await communitiesService.getCommunityById(communityId);
+
+    return res.status(200).json(communities);
+  }
+);
+
 communitiesRouter.patch(
   '/:communityId/update',
   middleware.jwtVerify,
@@ -89,6 +105,48 @@ communitiesRouter.post(
       description
     );
     return res.status(201).json(community);
+  }
+);
+
+communitiesRouter.post(
+  '/:communityId/follow',
+  middleware.jwtVerify,
+  middleware.checkPermission('FOLLOW_COMMUNITY'),
+  async (req: Request<{ communityId: string }>, res: Response) => {
+    const userId = req.decodedToken.id;
+    const communityId = Number(req.params.communityId);
+
+    if (isNaN(communityId)) {
+      return res.status(400).json({ error: 'Invalid community ID' });
+    }
+
+    const follow = await communitiesService.followCommunity(
+      userId,
+      communityId
+    );
+
+    return res.status(201).json(follow);
+  }
+);
+
+communitiesRouter.delete(
+  '/:communityId/follow',
+  middleware.jwtVerify,
+  middleware.checkPermission('FOLLOW_COMMUNITY'),
+  async (req: Request<{ communityId: string }>, res: Response) => {
+    const userId = req.decodedToken.id;
+    const communityId = Number(req.params.communityId);
+
+    if (isNaN(communityId)) {
+      return res.status(400).json({ error: 'Invalid community ID' });
+    }
+
+    const unfollow = await communitiesService.unfollowCommunity(
+      userId,
+      communityId
+    );
+
+    return res.status(201).json(unfollow);
   }
 );
 export default communitiesRouter;

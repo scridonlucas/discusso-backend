@@ -1,2 +1,2 @@
-GET http://localhost:3001/api/discussions?dateRange=last_month&feed_type=following
+GET http://localhost:3001/api/discussions?dateRange=last_day
 Content-Type: application/json

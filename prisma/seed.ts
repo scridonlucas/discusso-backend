@@ -308,6 +308,15 @@ async function main() {
       description: 'Can close a ticket',
     },
   });
+
+  const followCommunity = await prisma.permission.upsert({
+    where: { permissionName: 'FOLLOW_COMMUNITY' },
+    update: {},
+    create: {
+      permissionName: 'FOLLOW_COMMUNITY',
+      description: 'Can follow a community',
+    },
+  });
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -339,6 +348,7 @@ async function main() {
         getUsers.id,
         updateUserRole.id,
         getDiscussionsPermission.id,
+        followCommunity.id,
       ],
     },
     {
@@ -369,6 +379,7 @@ async function main() {
         closeTicket.id,
         getUsers.id,
         getDiscussionsPermission.id,
+        followCommunity.id,
       ],
     },
     {
@@ -388,6 +399,7 @@ async function main() {
         addBookmarkPermission.id,
         removeBookmarkPermission.id,
         getDiscussionsPermission.id,
+        followCommunity.id,
       ],
     },
   ];

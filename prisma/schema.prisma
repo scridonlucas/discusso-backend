@@ -250,6 +250,9 @@ model UserCommunity {
 
   user         User            @relation(fields: [userId], references: [id])
   community    Community       @relation(fields: [communityId], references: [id])
+
+  @@unique([userId, communityId])
+
 }
 
 model Follow {

@@ -19,6 +19,13 @@ export class CustomDiscussionError extends Error {
   }
 }
 
+export class CustomCommunityError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CommunityError';
+  }
+}
+
 export class CustomReportError extends Error {
   constructor(message: string) {
     super(message);
