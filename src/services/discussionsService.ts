@@ -64,7 +64,7 @@ const getDiscussions = async (
   };
 
   const discussions = await prisma.discussion.findMany({
-    take: limit,
+    take: limit + 1,
     skip: cursor ? 1 : 0,
     cursor: cursor ? { id: cursor } : undefined,
     orderBy,
@@ -88,13 +88,12 @@ const getDiscussions = async (
 
   const total = await prisma.discussion.count({ where });
 
-  console.log(discussions.length);
+  const hasMore = discussions.length > limit;
+  const results = hasMore ? discussions.slice(0, limit) : discussions;
+
   return {
-    discussions,
-    nextCursor:
-      discussions.length === limit
-        ? discussions[discussions.length - 1].id
-        : null,
+    discussions: results,
+    nextCursor: hasMore ? results[results.length - 1].id : null,
     total,
   };
 };
@@ -135,7 +134,7 @@ const getDiscussionsByUser = async (
     where: { userId },
     skip: cursor ? 1 : 0,
     cursor: cursor ? { id: cursor } : undefined,
-    take: limit,
+    take: limit + 1,
     orderBy: { createdAt: 'desc' },
   });
 
@@ -143,10 +142,12 @@ const getDiscussionsByUser = async (
     where: { userId },
   });
 
+  const hasMore = discussions.length > limit;
+  const results = hasMore ? discussions.slice(0, limit) : discussions;
+
   return {
-    discussions,
-    nextCursor:
-      discussions.length > 0 ? discussions[discussions.length - 1].id : null,
+    discussions: results,
+    nextCursor: hasMore ? results[results.length - 1].id : null,
     total,
   };
 };
@@ -461,14 +462,15 @@ async function getComments(
     },
   });
 
-  const nextCursor =
-    comments.length === limit ? comments[comments.length - 1].id : null;
+  const hasMore = comments.length > limit;
+  const results = hasMore ? comments.slice(0, limit) : comments;
+  const nextCursor = hasMore ? comments[comments.length - 1].id : null;
 
   const totalCount = await prisma.comment.count({
     where: { discussionId },
   });
 
-  return { comments, totalCount, nextCursor };
+  return { comments: results, totalCount, nextCursor };
 }
 
 // report logic
