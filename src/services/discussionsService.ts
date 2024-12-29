@@ -3,7 +3,7 @@ import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
 import { CustomDiscussionError } from '../utils/customErrors';
 import { Prisma } from '@prisma/client';
 import { reportReason } from '../types/discussionType';
-import { createNotification } from './notificationService';
+import notificationService from './notificationService';
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
     where: { id: newDiscussion.communityId },
@@ -312,7 +312,7 @@ const addLike = async (userId: number, discussionId: number) => {
     throw new CustomDiscussionError('Discussion not found');
   }
 
-  await createNotification(
+  await notificationService.createNotification(
     discussion.userId,
     'LIKE',
     `User ${like.user.username} liked your discussion #${discussionId}`
@@ -464,7 +464,7 @@ const addComment = async (
     throw new CustomDiscussionError('Discussion not found');
   }
 
-  await createNotification(
+  await notificationService.createNotification(
     discussion.userId,
     'COMMENT',
     `User ${comment.user.username} commented on your discussion #${discussionId}`

@@ -1,0 +1,9 @@
+export { default as discussionsRouter } from './discussions';
+export { default as commentsRouter } from './comments';
+export { default as communitiesRouter } from './communities';
+export { default as discussionReportsRouter } from './discussionReports';
+export { default as commentReportsRouter } from './commentReports';
+export { default as notificationsRouter } from './notifications';
+export { default as moderationLogsRouter } from './moderationLogs';
+export { default as usersRouter } from './users';
+export { default as authRouter } from './auth';

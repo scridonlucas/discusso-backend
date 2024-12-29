@@ -344,6 +344,25 @@ async function main() {
       description: 'Can get public user details',
     },
   });
+
+  const getOwnNotificationsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_OWN_NOTIFICATIONS' },
+    update: {},
+    create: {
+      permissionName: 'GET_OWN_NOTIFICATIONS',
+      description: 'Can get own notifications',
+    },
+  });
+
+  const updateOwnNotificationsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'UPDATE_OWN_NOTIFICATIONS' },
+    update: {},
+    create: {
+      permissionName: 'UPDATE_OWN_NOTIFICATIONS',
+      description: 'Can update own notifications',
+    },
+  });
+
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -378,6 +397,7 @@ async function main() {
         followCommunity.id,
         getAnyUserDetailsPermission.id,
         getPublicUserDetailsPermission.id,
+        updateOwnNotificationsPermission.id,
       ],
     },
     {
@@ -411,6 +431,7 @@ async function main() {
         followCommunity.id,
         getAnyUserDetailsPermission.id,
         getPublicUserDetailsPermission.id,
+        updateOwnNotificationsPermission.id,
       ],
     },
     {
@@ -433,6 +454,8 @@ async function main() {
         followCommunity.id,
         getOwnUserDetailsPermission.id,
         getPublicUserDetailsPermission.id,
+        getOwnNotificationsPermission.id,
+        updateOwnNotificationsPermission.id,
       ],
     },
   ];

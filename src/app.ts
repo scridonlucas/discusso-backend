@@ -1,15 +1,18 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import usersRouter from './routes/users';
-import authRouter from './routes/auth';
 import middleware from './utils/middleware';
-import discussionsRouter from './routes/discussions';
-import commentsRouter from './routes/comments';
-import communitiesRouter from './routes/communities';
-import discussionReportsRouter from './routes/discussionReports';
-import commentReportsRouter from './routes/commentReports';
-import moderationLogsRouter from './routes/moderationLogs';
+import {
+  usersRouter,
+  discussionsRouter,
+  commentsRouter,
+  communitiesRouter,
+  discussionReportsRouter,
+  commentReportsRouter,
+  notificationsRouter,
+  moderationLogsRouter,
+  authRouter,
+} from './routes';
 import { initializeTrendingScheduler } from './jobs/scheduleTrendingJob';
 
 const app = express();
@@ -29,6 +32,7 @@ app.use(
   middleware.checkUserStatus,
   discussionsRouter
 );
+app.use('/api/notifications', notificationsRouter);
 app.use('/api/comments', commentsRouter);
 app.use('/api/discussion-reports', discussionReportsRouter);
 app.use('/api/comment-reports', commentReportsRouter);

@@ -30,6 +30,7 @@ async function isOwner(
       }
 
       return user.id === userId;
+
     default:
       throw new CustomPermissionError(
         `Unsupported resource type: ${resourceType}`

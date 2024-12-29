@@ -1,7 +1,7 @@
 import prisma from '../utils/prismaClient';
 import { CustomDiscussionError } from '../utils/customErrors';
 import { reportReason } from '../types/discussionType';
-import { createNotification } from './notificationService';
+import notificationService from './notificationService';
 
 async function addCommentLike(userId: number, commentId: number) {
   const existingLike = await prisma.commentLike.findUnique({
@@ -31,7 +31,7 @@ async function addCommentLike(userId: number, commentId: number) {
     throw new CustomDiscussionError('Discussion not found');
   }
 
-  await createNotification(
+  await notificationService.createNotification(
     comment.userId,
     'COMMENT LIKE',
     `User ${comment.user.username} commented on your discussion #${commentId}`
