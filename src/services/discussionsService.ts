@@ -280,6 +280,36 @@ const updateDiscussion = async (
   return updatedDiscussion;
 };
 
+const getDailyDiscussionStats = async (
+  startDate?: string,
+  endDate?: string
+) => {
+  const whereClause: Prisma.DiscussionWhereInput = {
+    createdAt: {
+      ...(startDate ? { gte: new Date(startDate) } : {}),
+      ...(endDate ? { lte: new Date(endDate) } : {}),
+    },
+    isDeleted: false,
+  };
+
+  const stats = await prisma.discussion.groupBy({
+    by: ['createdAt'],
+    _count: {
+      id: true,
+    },
+    where: whereClause,
+    orderBy: {
+      createdAt: 'asc',
+    },
+  });
+
+  const parsedStats = stats.map((stat) => ({
+    date: stat.createdAt.toISOString().split('T')[0],
+    count: stat._count.id,
+  }));
+  return parsedStats;
+};
+
 // likes service
 const addLike = async (userId: number, discussionId: number) => {
   const existingLike = await prisma.like.findUnique({
@@ -627,6 +657,7 @@ export default {
   deleteDiscussion,
   softDeleteDiscussion,
   updateDiscussion,
+  getDailyDiscussionStats,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,

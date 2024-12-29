@@ -93,7 +93,6 @@ const getUserCount = async (
   const userCount = await prisma.user.count({
     where: whereClause,
   });
-
   return userCount;
 };
 

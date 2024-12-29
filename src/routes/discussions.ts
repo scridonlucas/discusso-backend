@@ -342,6 +342,32 @@ discussionsRouter.put(
   }
 );
 
+discussionsRouter.get(
+  '/daily-stats',
+  middleware.checkPermission('GET_ADMIN_STATISTICS'),
+  async (
+    req: Request<
+      unknown,
+      unknown,
+      unknown,
+      { startDate?: string; endDate?: string }
+    >,
+    res: Response
+  ) => {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Missing startDate or endDate' });
+    }
+    const stats = await discussionsService.getDailyDiscussionStats(
+      startDate,
+      endDate
+    );
+
+    return res.json(stats);
+  }
+);
+
 // likes functionality
 discussionsRouter.post(
   '/:discussionId/like',

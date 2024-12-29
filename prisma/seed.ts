@@ -372,6 +372,14 @@ async function main() {
     },
   });
 
+  const getAdminStatisticsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_ADMIN_STATISTICS' },
+    update: {},
+    create: {
+      permissionName: 'GET_ADMIN_STATISTICS',
+      description: 'Can get admin statistics',
+    },
+  });
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -408,6 +416,9 @@ async function main() {
         getPublicUserDetailsPermission.id,
         updateOwnNotificationsPermission.id,
         followUserPermission.id,
+        getOwnNotificationsPermission.id,
+        getOwnUserDetailsPermission.id,
+        getAdminStatisticsPermission.id,
       ],
     },
     {
@@ -443,6 +454,8 @@ async function main() {
         getPublicUserDetailsPermission.id,
         updateOwnNotificationsPermission.id,
         followUserPermission.id,
+        getOwnNotificationsPermission.id,
+        getOwnUserDetailsPermission.id,
       ],
     },
     {
