@@ -3,6 +3,7 @@ import { NewDiscussion, UpdatedDiscussion } from '../types/discussionType';
 import { CustomDiscussionError } from '../utils/customErrors';
 import { Prisma } from '@prisma/client';
 import { reportReason } from '../types/discussionType';
+import { createNotification } from './notificationService';
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
     where: { id: newDiscussion.communityId },
@@ -50,7 +51,8 @@ const getDiscussions = async (
     | 'last_day'
     | 'last_week'
     | 'last_month' = 'all',
-  saved: boolean
+  saved: boolean,
+  search: string = ''
 ) => {
   const orderBy: Prisma.DiscussionOrderByWithRelationInput =
     getOrderByOption(sort);
@@ -61,6 +63,14 @@ const getDiscussions = async (
     isDeleted: false,
     communityId: communityId === null ? undefined : communityId,
     ...(saved ? { bookmarks: { some: { userId } } } : {}),
+    ...(search
+      ? {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { content: { contains: search, mode: 'insensitive' } },
+          ],
+        }
+      : {}),
   };
 
   const discussions = await prisma.discussion.findMany({
@@ -293,6 +303,21 @@ const addLike = async (userId: number, discussionId: number) => {
     include: { user: { select: { id: true, username: true } } },
   });
 
+  const discussion = await prisma.discussion.findUnique({
+    where: { id: discussionId },
+    select: { userId: true },
+  });
+
+  if (!discussion) {
+    throw new CustomDiscussionError('Discussion not found');
+  }
+
+  await createNotification(
+    discussion.userId,
+    'LIKE',
+    `User ${like.user.username} liked your discussion #${discussionId}`
+  );
+
   return like;
 };
 
@@ -429,6 +454,21 @@ const addComment = async (
       _count: { select: { likes: true } },
     },
   });
+
+  const discussion = await prisma.discussion.findUnique({
+    where: { id: discussionId },
+    select: { userId: true },
+  });
+
+  if (!discussion) {
+    throw new CustomDiscussionError('Discussion not found');
+  }
+
+  await createNotification(
+    discussion.userId,
+    'COMMENT',
+    `User ${comment.user.username} commented on your discussion #${discussionId}`
+  );
 
   return comment;
 };

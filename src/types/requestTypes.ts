@@ -6,6 +6,7 @@ export interface DiscussionQueryParams {
   sort?: 'recent' | 'oldest' | 'most_liked' | 'most_commented';
   date_range?: 'last_hour' | 'last_day' | 'last_week' | 'last_month';
   saved?: boolean;
+  search?: string;
 }
 
 export interface CommentQueryParams {

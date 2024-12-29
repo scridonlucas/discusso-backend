@@ -45,15 +45,55 @@ usersRouter.get(
   }
 );
 
-usersRouter.get('/:id', async (req, res) => {
-  const id = Number(req.params.id);
-  const user = await usersService.getUser(id);
-  if (user) {
-    res.json(user);
-  } else {
-    res.status(404).send({ error: 'User not found!' });
+usersRouter.get(
+  '/me',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_OWN_USER_DETAILS'),
+  async (req, res) => {
+    const userId = req.decodedToken.id;
+    const user = await usersService.getUser(userId, true);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).send({ error: 'User not found!' });
+    }
   }
-});
+);
+
+usersRouter.get(
+  '/:userId/public',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_PUBLIC_USER_DETAILS'),
+  async (req, res) => {
+    const id = Number(req.params.userId);
+    const user = await usersService.getUser(id, false);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).send({ error: 'User not found!' });
+    }
+  }
+);
+
+usersRouter.get(
+  '/:userId',
+  middleware.jwtVerify,
+  middleware.checkPermissionWithOwnership(
+    'user',
+    'userId',
+    'GET_OWN_USER_DETAILS',
+    'GET_ANY_USER_DETAILS'
+  ),
+  async (req, res) => {
+    const id = Number(req.params.userId);
+    const user = await usersService.getUser(id, true);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).send({ error: 'User not found!' });
+    }
+  }
+);
 
 usersRouter.post('/', async (req, res) => {
   const newUserEntry: NewUser = userValidator.toNewUserEntry(req.body);

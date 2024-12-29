@@ -5,17 +5,72 @@ import { NewUser } from '../types/userTypes';
 
 const getUsers = async () => {
   const users = await prisma.user.findMany({
-    include: {
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      username: true,
+      email: true,
+      gender: true,
+      status: true,
+      credibility: true,
+      createdAt: true,
+      updatedAt: true,
       role: true,
     },
   });
   return users;
 };
 
-const getUser = async (id: number) => {
+const getUser = async (id: number, privateData: boolean) => {
   const user = await prisma.user.findUnique({
     where: { id },
+    select: {
+      id: true,
+      roleId: true,
+      firstName: true,
+      lastName: true,
+      username: true,
+      email: privateData,
+      gender: true,
+      status: true,
+      birthDate: privateData,
+      credibility: true,
+      createdAt: true,
+      updatedAt: true,
+      followedCommunities: true,
+      role: true,
+      discussions: {
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      comments: {
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      notifications: true,
+      bookmarks: true,
+      _count: {
+        select: {
+          followedCommunities: true,
+          bookmarks: true,
+          discussions: true,
+          comments: true,
+          notifications: true,
+        },
+      },
+    },
   });
+
   return user;
 };
 

@@ -317,6 +317,33 @@ async function main() {
       description: 'Can follow a community',
     },
   });
+
+  const getAnyUserDetailsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_ANY_USER_DETAILS' },
+    update: {},
+    create: {
+      permissionName: 'GET_ANY_USER_DETAILS',
+      description: 'Can get any user details',
+    },
+  });
+
+  const getOwnUserDetailsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_OWN_USER_DETAILS' },
+    update: {},
+    create: {
+      permissionName: 'GET_OWN_USER_DETAILS',
+      description: 'Can get own user details',
+    },
+  });
+
+  const getPublicUserDetailsPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_PUBLIC_USER_DETAILS' },
+    update: {},
+    create: {
+      permissionName: 'GET_PUBLIC_USER_DETAILS',
+      description: 'Can get public user details',
+    },
+  });
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -349,6 +376,8 @@ async function main() {
         updateUserRole.id,
         getDiscussionsPermission.id,
         followCommunity.id,
+        getAnyUserDetailsPermission.id,
+        getPublicUserDetailsPermission.id,
       ],
     },
     {
@@ -380,6 +409,8 @@ async function main() {
         getUsers.id,
         getDiscussionsPermission.id,
         followCommunity.id,
+        getAnyUserDetailsPermission.id,
+        getPublicUserDetailsPermission.id,
       ],
     },
     {
@@ -400,6 +431,8 @@ async function main() {
         removeBookmarkPermission.id,
         getDiscussionsPermission.id,
         followCommunity.id,
+        getOwnUserDetailsPermission.id,
+        getPublicUserDetailsPermission.id,
       ],
     },
   ];

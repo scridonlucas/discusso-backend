@@ -1,8 +1,5 @@
 import prisma from '../utils/prismaClient';
-import {
-  CustomPermissionError,
-  CustomDiscussionError,
-} from '../utils/customErrors';
+import { CustomPermissionError } from '../utils/customErrors';
 import { Resource } from '../types/resourceTypes';
 
 async function isOwner(
@@ -17,11 +14,22 @@ async function isOwner(
         select: { userId: true },
       });
       if (!discussion) {
-        throw new CustomDiscussionError('Discussion not found');
+        throw new CustomPermissionError('Discussion not found');
       }
 
       return discussion.userId === userId;
 
+    case 'user':
+      const user = await prisma.user.findUnique({
+        where: { id: resourceId },
+        select: { id: true },
+      });
+
+      if (!user) {
+        throw new CustomPermissionError('User not found');
+      }
+
+      return user.id === userId;
     default:
       throw new CustomPermissionError(
         `Unsupported resource type: ${resourceType}`

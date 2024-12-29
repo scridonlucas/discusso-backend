@@ -54,10 +54,10 @@ const checkPermissionWithOwnership = (
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       const userId = req.decodedToken.id;
-      const discussionId = Number(req.params[resourceIdParam]);
+      const resourceId = Number(req.params[resourceIdParam]);
 
-      if (isNaN(discussionId)) {
-        throw new CustomPermissionError('Invalid discussion ID');
+      if (isNaN(resourceId)) {
+        throw new CustomPermissionError('Invalid resource ID');
       }
 
       const hasAnyPermission = await permissionsService.hasPermission(
@@ -83,7 +83,7 @@ const checkPermissionWithOwnership = (
       const isUserOwner = await ownershipService.isOwner(
         resourceType,
         userId,
-        discussionId
+        resourceId
       );
 
       if (!isUserOwner) {
@@ -116,7 +116,7 @@ const checkUserStatus = async (
 ) => {
   try {
     const userId = req.decodedToken.id;
-    const user = await usersService.getUser(userId);
+    const user = await usersService.getUser(userId, true);
     if (!user) {
       throw new CustomUserStatusError('User not found.');
     }

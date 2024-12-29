@@ -1,6 +1,7 @@
 import prisma from '../utils/prismaClient';
 import { CustomDiscussionError } from '../utils/customErrors';
 import { reportReason } from '../types/discussionType';
+import { createNotification } from './notificationService';
 
 async function addCommentLike(userId: number, commentId: number) {
   const existingLike = await prisma.commentLike.findUnique({
@@ -20,6 +21,21 @@ async function addCommentLike(userId: number, commentId: number) {
     },
     include: { user: { select: { id: true, username: true } } },
   });
+
+  const comment = await prisma.comment.findUnique({
+    where: { id: commentId },
+    select: { userId: true, user: true },
+  });
+
+  if (!comment) {
+    throw new CustomDiscussionError('Discussion not found');
+  }
+
+  await createNotification(
+    comment.userId,
+    'COMMENT LIKE',
+    `User ${comment.user.username} commented on your discussion #${commentId}`
+  );
 
   return like;
 }

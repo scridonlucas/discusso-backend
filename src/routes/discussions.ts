@@ -133,6 +133,7 @@ discussionsRouter.get(
     const sort = req.query.sort ? req.query.sort : 'recent';
     const dateRange = req.query.date_range ? req.query.date_range : 'all';
     const saved = req.query.saved ? true : false;
+    const search = req.query.search ? req.query.search : '';
     const discussions = await discussionsService.getDiscussions(
       userId,
       limit,
@@ -141,7 +142,8 @@ discussionsRouter.get(
       feedType,
       sort,
       dateRange,
-      saved
+      saved,
+      search
     );
 
     return res.status(200).json(discussions);
