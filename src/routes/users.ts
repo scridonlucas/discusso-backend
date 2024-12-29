@@ -181,4 +181,40 @@ usersRouter.patch(
   }
 );
 
+usersRouter.post(
+  '/:userId/follow',
+  middleware.jwtVerify,
+  middleware.checkPermission('FOLLOW_USER'),
+  async (req: Request<{ userId: string }>, res: Response) => {
+    const followerId = req.decodedToken.id;
+    const followeeId = Number(req.params.userId);
+
+    if (isNaN(followeeId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const follow = await usersService.followUser(followerId, followeeId);
+
+    return res.status(201).json(follow);
+  }
+);
+
+usersRouter.delete(
+  '/:userId/follow',
+  middleware.jwtVerify,
+  middleware.checkPermission('FOLLOW_USER'),
+  async (req: Request<{ userId: string }>, res: Response) => {
+    const followerId = req.decodedToken.id;
+    const followeeId = Number(req.params.userId);
+
+    if (isNaN(followeeId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const unfollow = await usersService.unfollowUser(followerId, followeeId);
+
+    return res.status(200).json(unfollow);
+  }
+);
+
 export default usersRouter;

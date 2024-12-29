@@ -2,9 +2,18 @@ import prisma from '../utils/prismaClient';
 
 const getUserNotifications = async (userId: number) => {
   const notifications = await prisma.notification.findMany({
-    where: { userId },
+    where: { userId, isRead: false },
+    orderBy: { createdAt: 'desc' },
   });
   return notifications;
+};
+
+const getUnreadNotificationCount = async (userId: number) => {
+  const count = await prisma.notification.count({
+    where: { userId, isRead: false },
+  });
+
+  return count;
 };
 
 const markNotificationAsRead = async (notificationId: number) => {
@@ -43,4 +52,5 @@ export default {
   getUserNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  getUnreadNotificationCount,
 };

@@ -363,6 +363,15 @@ async function main() {
     },
   });
 
+  const followUserPermission = await prisma.permission.upsert({
+    where: { permissionName: 'FOLLOW_USER' },
+    update: {},
+    create: {
+      permissionName: 'FOLLOW_USER',
+      description: 'Can follow a user',
+    },
+  });
+
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -398,6 +407,7 @@ async function main() {
         getAnyUserDetailsPermission.id,
         getPublicUserDetailsPermission.id,
         updateOwnNotificationsPermission.id,
+        followUserPermission.id,
       ],
     },
     {
@@ -432,6 +442,7 @@ async function main() {
         getAnyUserDetailsPermission.id,
         getPublicUserDetailsPermission.id,
         updateOwnNotificationsPermission.id,
+        followUserPermission.id,
       ],
     },
     {
@@ -456,6 +467,7 @@ async function main() {
         getPublicUserDetailsPermission.id,
         getOwnNotificationsPermission.id,
         updateOwnNotificationsPermission.id,
+        followUserPermission.id,
       ],
     },
   ];

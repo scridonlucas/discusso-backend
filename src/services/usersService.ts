@@ -40,6 +40,8 @@ const getUser = async (id: number, privateData: boolean) => {
       updatedAt: true,
       followedCommunities: true,
       role: true,
+      followers: true,
+      following: true,
       discussions: {
         select: {
           id: true,
@@ -66,6 +68,8 @@ const getUser = async (id: number, privateData: boolean) => {
           discussions: true,
           comments: true,
           notifications: true,
+          followers: true,
+          following: true,
         },
       },
     },
@@ -167,6 +171,52 @@ const updateUserRole = async (id: number, roleName: 'USER' | 'ADMIN') => {
   return updatedUser;
 };
 
+const followUser = async (followerId: number, followedId: number) => {
+  const existingFollow = await prisma.follow.findFirst({
+    where: {
+      followerId,
+      followedId,
+    },
+  });
+
+  if (existingFollow) {
+    throw new Error('User already following this user');
+  }
+
+  const follow = await prisma.follow.create({
+    data: {
+      followerId,
+      followedId,
+    },
+  });
+
+  return follow;
+};
+
+const unfollowUser = async (followerId: number, followedId: number) => {
+  const existingFollow = await prisma.follow.findFirst({
+    where: {
+      followerId,
+      followedId,
+    },
+  });
+
+  if (!existingFollow) {
+    throw new Error('User is not following this user');
+  }
+
+  const unfollow = await prisma.follow.delete({
+    where: {
+      followerId_followedId: {
+        followerId,
+        followedId,
+      },
+    },
+  });
+
+  return unfollow;
+};
+
 export default {
   getUsers,
   getUser,
@@ -178,4 +228,6 @@ export default {
   updateUserStatus,
   updateUserRole,
   getUserCount,
+  followUser,
+  unfollowUser,
 };

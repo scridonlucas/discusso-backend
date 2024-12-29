@@ -28,6 +28,24 @@ notificationsRouter.get(
   }
 );
 
+notificationsRouter.get(
+  '/count',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_OWN_NOTIFICATIONS'),
+  async (req, res) => {
+    const userId = req.decodedToken.id;
+
+    if (!userId || isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const unreadCount = await notificationService.getUnreadNotificationCount(
+      userId
+    );
+
+    return res.status(200).json(unreadCount);
+  }
+);
 notificationsRouter.patch(
   '/read-all',
   middleware.jwtVerify,
