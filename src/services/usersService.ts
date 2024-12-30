@@ -216,6 +216,50 @@ const unfollowUser = async (followerId: number, followedId: number) => {
   return unfollow;
 };
 
+const getUsersWithMostDiscussions = async () => {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      username: true,
+      _count: {
+        select: {
+          discussions: true,
+        },
+      },
+    },
+    orderBy: {
+      discussions: {
+        _count: 'desc',
+      },
+    },
+    take: 5,
+  });
+
+  return users;
+};
+
+const getMostFollowedUsers = async () => {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      username: true,
+      _count: {
+        select: {
+          followers: true,
+        },
+      },
+    },
+    orderBy: {
+      followers: {
+        _count: 'desc',
+      },
+    },
+    take: 5,
+  });
+
+  return users;
+};
+
 export default {
   getUsers,
   getUser,
@@ -229,4 +273,6 @@ export default {
   getUserCount,
   followUser,
   unfollowUser,
+  getUsersWithMostDiscussions,
+  getMostFollowedUsers,
 };

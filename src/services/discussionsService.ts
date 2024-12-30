@@ -280,33 +280,32 @@ const updateDiscussion = async (
   return updatedDiscussion;
 };
 
-const getDailyDiscussionStats = async (
+const getDailyDiscussionsStats = async (
   startDate?: string,
   endDate?: string
 ) => {
-  const whereClause: Prisma.DiscussionWhereInput = {
-    createdAt: {
-      ...(startDate ? { gte: new Date(startDate) } : {}),
-      ...(endDate ? { lte: new Date(endDate) } : {}),
-    },
-    isDeleted: false,
-  };
+  const startDateObj = startDate ? new Date(startDate) : undefined;
+  const endDateObj = endDate ? new Date(endDate) : undefined;
 
-  const stats = await prisma.discussion.groupBy({
-    by: ['createdAt'],
-    _count: {
-      id: true,
-    },
-    where: whereClause,
-    orderBy: {
-      createdAt: 'asc',
-    },
-  });
+  const rawStats = await prisma.$queryRawUnsafe<
+    Array<{ date: Date; count: number }>
+  >(`
+  SELECT
+    DATE("createdAt") AS "date",
+    COUNT(*) AS "count"
+  FROM "Discussion"
+  WHERE "isDeleted" = false
+  ${startDateObj ? `AND "createdAt" >= '${startDateObj.toISOString()}'` : ''}
+  ${endDateObj ? `AND "createdAt" <= '${endDateObj.toISOString()}'` : ''}
+  GROUP BY DATE("createdAt")
+  ORDER BY DATE("createdAt") ASC
+`);
 
-  const parsedStats = stats.map((stat) => ({
-    date: stat.createdAt.toISOString().split('T')[0],
-    count: stat._count.id,
+  const parsedStats = rawStats.map((stat) => ({
+    date: stat.date.toISOString().split('T')[0],
+    count: Number(stat.count),
   }));
+
   return parsedStats;
 };
 
@@ -657,7 +656,7 @@ export default {
   deleteDiscussion,
   softDeleteDiscussion,
   updateDiscussion,
-  getDailyDiscussionStats,
+  getDailyDiscussionsStats,
   addLike,
   deleteLike,
   getTotalLikesForDiscussion,

@@ -49,6 +49,25 @@ const addCommunity = async (
   return community;
 };
 
+const getCommunitiesWithDiscussionCounts = async () => {
+  const count = await prisma.community.findMany({
+    where: {
+      isDeleted: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          discussions: true,
+        },
+      },
+    },
+    take: 5,
+  });
+  return count;
+};
+
 const updateCommunity = async (
   communityId: number,
   data: Partial<Prisma.CommunityUpdateInput>
@@ -113,4 +132,5 @@ export default {
   updateCommunity,
   followCommunity,
   unfollowCommunity,
+  getCommunitiesWithDiscussionCounts,
 };

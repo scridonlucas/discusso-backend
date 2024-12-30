@@ -46,6 +46,26 @@ usersRouter.get(
 );
 
 usersRouter.get(
+  '/most-active',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_ADMIN_STATISTICS'),
+  async (_req: Request, res: Response, _next) => {
+    const count = await usersService.getUsersWithMostDiscussions();
+    return res.status(200).json(count);
+  }
+);
+
+usersRouter.get(
+  '/most-followed',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_ADMIN_STATISTICS'),
+  async (_req: Request, res: Response, _next) => {
+    const count = await usersService.getMostFollowedUsers();
+    return res.status(200).json(count);
+  }
+);
+
+usersRouter.get(
   '/me',
   middleware.jwtVerify,
   middleware.checkPermission('GET_OWN_USER_DETAILS'),

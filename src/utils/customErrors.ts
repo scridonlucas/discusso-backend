@@ -33,6 +33,13 @@ export class CustomReportError extends Error {
   }
 }
 
+export class CustomAPIError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'External API Error';
+  }
+}
+
 export class CustomUserStatusError extends Error {
   constructor(message: string) {
     super(message);

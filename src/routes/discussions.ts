@@ -151,6 +151,29 @@ discussionsRouter.get(
 );
 
 discussionsRouter.get(
+  '/daily-stats',
+  middleware.checkPermission('GET_ADMIN_STATISTICS'),
+  async (
+    req: Request<
+      unknown,
+      unknown,
+      unknown,
+      { startDate?: string; endDate?: string }
+    >,
+    res: Response
+  ) => {
+    const { startDate, endDate } = req.query;
+
+    const stats = await discussionsService.getDailyDiscussionsStats(
+      startDate,
+      endDate
+    );
+
+    return res.json(stats);
+  }
+);
+
+discussionsRouter.get(
   '/trending',
   async (_req: Request, res: Response, _next) => {
     const discussions = await discussionsService.getTrendingDiscussions();
@@ -339,32 +362,6 @@ discussionsRouter.put(
     );
 
     return res.status(200).json({ updatedDiscussion });
-  }
-);
-
-discussionsRouter.get(
-  '/daily-stats',
-  middleware.checkPermission('GET_ADMIN_STATISTICS'),
-  async (
-    req: Request<
-      unknown,
-      unknown,
-      unknown,
-      { startDate?: string; endDate?: string }
-    >,
-    res: Response
-  ) => {
-    const { startDate, endDate } = req.query;
-
-    if (!startDate || !endDate) {
-      return res.status(400).json({ error: 'Missing startDate or endDate' });
-    }
-    const stats = await discussionsService.getDailyDiscussionStats(
-      startDate,
-      endDate
-    );
-
-    return res.json(stats);
   }
 );
 

@@ -7,3 +7,4 @@ export { default as notificationsRouter } from './notifications';
 export { default as moderationLogsRouter } from './moderationLogs';
 export { default as usersRouter } from './users';
 export { default as authRouter } from './auth';
+export { default as stocksRouter } from './stocks';

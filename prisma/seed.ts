@@ -380,6 +380,24 @@ async function main() {
       description: 'Can get admin statistics',
     },
   });
+
+  const manageStockPermission = await prisma.permission.upsert({
+    where: { permissionName: 'MANAGE_STOCKS' },
+    update: {},
+    create: {
+      permissionName: 'MANAGE_STOCKS',
+      description: 'Can manage stocks to favorite list',
+    },
+  });
+
+  const getStocksDataPermission = await prisma.permission.upsert({
+    where: { permissionName: 'GET_STOCKS_DATA' },
+    update: {},
+    create: {
+      permissionName: 'GET_STOCKS_DATA',
+      description: 'Can get stocks data',
+    },
+  });
   const rolePermissions = [
     {
       roleId: adminRole.id,
@@ -419,6 +437,8 @@ async function main() {
         getOwnNotificationsPermission.id,
         getOwnUserDetailsPermission.id,
         getAdminStatisticsPermission.id,
+        manageStockPermission.id,
+        getStocksDataPermission.id,
       ],
     },
     {
@@ -456,6 +476,8 @@ async function main() {
         followUserPermission.id,
         getOwnNotificationsPermission.id,
         getOwnUserDetailsPermission.id,
+        manageStockPermission.id,
+        getStocksDataPermission.id,
       ],
     },
     {
@@ -481,6 +503,8 @@ async function main() {
         getOwnNotificationsPermission.id,
         updateOwnNotificationsPermission.id,
         followUserPermission.id,
+        manageStockPermission.id,
+        getStocksDataPermission.id,
       ],
     },
   ];

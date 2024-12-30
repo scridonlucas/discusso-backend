@@ -12,6 +12,7 @@ import {
   notificationsRouter,
   moderationLogsRouter,
   authRouter,
+  stocksRouter,
 } from './routes';
 import { initializeTrendingScheduler } from './jobs/scheduleTrendingJob';
 
@@ -38,6 +39,7 @@ app.use('/api/discussion-reports', discussionReportsRouter);
 app.use('/api/comment-reports', commentReportsRouter);
 app.use('/api/communities', communitiesRouter);
 app.use('/api/moderation-logs', moderationLogsRouter);
+app.use('/api/stocks', middleware.jwtVerify, stocksRouter);
 app.use(middleware.unknownEndPoint);
 app.use(middleware.errorHandler);
 

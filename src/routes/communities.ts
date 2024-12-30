@@ -16,6 +16,16 @@ communitiesRouter.get(
 );
 
 communitiesRouter.get(
+  '/discussion-counts',
+  middleware.jwtVerify,
+  middleware.checkPermission('GET_ADMIN_STATISTICS'),
+  async (_req: Request, res: Response, _next) => {
+    const count = await communitiesService.getCommunitiesWithDiscussionCounts();
+    return res.status(200).json(count);
+  }
+);
+
+communitiesRouter.get(
   '/:communityId',
   middleware.jwtVerify,
   async (req: Request, res: Response, _next) => {

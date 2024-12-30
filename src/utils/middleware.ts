@@ -16,6 +16,7 @@ import {
   CustomDiscussionError,
   CustomReportError,
   CustomUserStatusError,
+  CustomAPIError,
 } from './customErrors';
 import { UserToken } from '../types/authTypes';
 import { Resource } from '../types/resourceTypes';
@@ -205,6 +206,10 @@ const errorHandler: ErrorRequestHandler = (
   }
   if (error instanceof CustomReportError) {
     return res.status(401).json({ error: error.message });
+  }
+
+  if (error instanceof CustomAPIError) {
+    res.status(502).json({ error: error.message });
   }
 
   return next(error);
