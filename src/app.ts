@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import middleware from './utils/middleware';
+import helmet from 'helmet';
+
 import {
   usersRouter,
   discussionsRouter,
@@ -19,11 +21,18 @@ import { initializeTrendingScheduler } from './jobs/scheduleTrendingJob';
 const app = express();
 
 app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+
+app.use(
   cors({
     origin: true,
     credentials: true,
   })
 );
+
 app.use(express.static('dist'));
 app.use(express.json());
 app.use(cookieParser());

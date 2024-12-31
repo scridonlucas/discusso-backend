@@ -1,0 +1,26 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.stocksRouter = exports.authRouter = exports.usersRouter = exports.moderationLogsRouter = exports.notificationsRouter = exports.commentReportsRouter = exports.discussionReportsRouter = exports.communitiesRouter = exports.commentsRouter = exports.discussionsRouter = void 0;
+var discussions_1 = require("./discussions");
+Object.defineProperty(exports, "discussionsRouter", { enumerable: true, get: function () { return __importDefault(discussions_1).default; } });
+var comments_1 = require("./comments");
+Object.defineProperty(exports, "commentsRouter", { enumerable: true, get: function () { return __importDefault(comments_1).default; } });
+var communities_1 = require("./communities");
+Object.defineProperty(exports, "communitiesRouter", { enumerable: true, get: function () { return __importDefault(communities_1).default; } });
+var discussionReports_1 = require("./discussionReports");
+Object.defineProperty(exports, "discussionReportsRouter", { enumerable: true, get: function () { return __importDefault(discussionReports_1).default; } });
+var commentReports_1 = require("./commentReports");
+Object.defineProperty(exports, "commentReportsRouter", { enumerable: true, get: function () { return __importDefault(commentReports_1).default; } });
+var notifications_1 = require("./notifications");
+Object.defineProperty(exports, "notificationsRouter", { enumerable: true, get: function () { return __importDefault(notifications_1).default; } });
+var moderationLogs_1 = require("./moderationLogs");
+Object.defineProperty(exports, "moderationLogsRouter", { enumerable: true, get: function () { return __importDefault(moderationLogs_1).default; } });
+var users_1 = require("./users");
+Object.defineProperty(exports, "usersRouter", { enumerable: true, get: function () { return __importDefault(users_1).default; } });
+var auth_1 = require("./auth");
+Object.defineProperty(exports, "authRouter", { enumerable: true, get: function () { return __importDefault(auth_1).default; } });
+var stocks_1 = require("./stocks");
+Object.defineProperty(exports, "stocksRouter", { enumerable: true, get: function () { return __importDefault(stocks_1).default; } });
