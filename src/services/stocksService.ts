@@ -1,5 +1,6 @@
 import axios from 'axios';
 import prisma from '../utils/prismaClient';
+import config from '../utils/config';
 import { CustomAPIError, CustomStocksError } from '../utils/customErrors';
 
 interface SymbolSearchResult {
@@ -30,7 +31,7 @@ interface GlobalQuoteResult {
     '10. change percent': string;
   };
 }
-const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
+const ALPHA_VANTAGE_API_KEY = config.ALPHA_VANTAGE_API_KEY;
 
 if (!ALPHA_VANTAGE_API_KEY) {
   throw new CustomAPIError('ALPHA_VANTAGE_API_KEY is not defined');

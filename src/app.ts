@@ -17,6 +17,7 @@ import {
 import { initializeTrendingScheduler } from './jobs/scheduleTrendingJob';
 
 const app = express();
+
 app.use(
   cors({
     origin: true,
