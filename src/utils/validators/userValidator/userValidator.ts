@@ -5,7 +5,7 @@ const toNewUserEntry = (object: unknown): NewUser => {
   if (!object || typeof object !== 'object') {
     throw new Error('Incorrent or missing data!');
   }
-  console.log(object);
+
   if (
     'firstName' in object &&
     'lastName' in object &&

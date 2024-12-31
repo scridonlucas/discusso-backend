@@ -84,13 +84,10 @@ const addFavoriteStock = async (userId: number, ticker: string) => {
   return favoriteStock;
 };
 
-const deleteFavoriteStock = async (userId: number, ticker: string) => {
+const deleteFavoriteStock = async (stockId: number) => {
   const existingFavorite = await prisma.favoriteStock.findUnique({
     where: {
-      userId_ticker: {
-        userId,
-        ticker,
-      },
+      id: stockId,
     },
   });
 
@@ -100,10 +97,7 @@ const deleteFavoriteStock = async (userId: number, ticker: string) => {
 
   const deletedFavoriteStock = await prisma.favoriteStock.delete({
     where: {
-      userId_ticker: {
-        userId,
-        ticker,
-      },
+      id: stockId,
     },
   });
 
@@ -163,6 +157,11 @@ const validateTicker = async (ticker: string) => {
     const response = await axios.get<SymbolSearchResult>(
       SYMBOL_SEARCH_URL(ticker)
     );
+    if (!response.data.bestMatches || response.data.bestMatches.length === 0) {
+      throw new CustomAPIError(
+        'Failed to fetch stock details from Alpha Vantage'
+      );
+    }
 
     const match = response.data.bestMatches.find(
       (match) => match['1. symbol'].toUpperCase() === ticker.toUpperCase()

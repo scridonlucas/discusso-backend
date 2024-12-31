@@ -30,9 +30,7 @@ stocksRouter.get(
     if (!userId || isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-
     const stockList = await stocksService.getFavoriteStocksWithDetails(userId);
-
     return res.status(200).json(stockList);
   }
 );
@@ -62,27 +60,21 @@ stocksRouter.post(
 );
 
 stocksRouter.delete(
-  '/favourites/:ticker',
+  '/favourites/:stockId',
   middleware.checkPermission('MANAGE_STOCKS'),
-  async (
-    req: Request<{ ticker: string }, unknown, unknown, unknown>,
-    res: Response
-  ) => {
+  async (req: Request, res: Response) => {
     const userId = req.decodedToken.id;
-    const { ticker } = req.params;
+    const stockId = Number(req.params.stockId);
 
     if (!userId || isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
 
-    if (!ticker) {
+    if (!stockId || isNaN(stockId)) {
       return res.status(400).json({ error: 'Ticker is required' });
     }
 
-    const deletedStockData = await stocksService.deleteFavoriteStock(
-      userId,
-      ticker
-    );
+    const deletedStockData = await stocksService.deleteFavoriteStock(stockId);
 
     return res.status(200).json(deletedStockData);
   }

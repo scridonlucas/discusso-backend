@@ -1,1 +1,1 @@
-GET http://localhost:3001/api/stocks/real-time
+GET http://localhost:3001/api/stocks/favourites/real-time

@@ -23,6 +23,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(express.static('dist'));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
