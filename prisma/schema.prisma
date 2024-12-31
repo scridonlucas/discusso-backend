@@ -91,9 +91,14 @@ model FavoriteStock {
   id        Int    @id @default(autoincrement())
   userId    Int
   ticker    String
+  name      String?  
+  type      String? 
+  region    String? 
+  currency  String?  
   createdAt DateTime @default(now())
 
   user      User   @relation(fields: [userId], references: [id])
+  
   @@unique([userId, ticker]) 
 }
 

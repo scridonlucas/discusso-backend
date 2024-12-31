@@ -40,6 +40,13 @@ export class CustomAPIError extends Error {
   }
 }
 
+export class CustomStocksError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'Stocks Error';
+  }
+}
+
 export class CustomUserStatusError extends Error {
   constructor(message: string) {
     super(message);
