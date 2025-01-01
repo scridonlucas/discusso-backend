@@ -51,6 +51,9 @@ app.use('/api/comment-reports', commentReportsRouter);
 app.use('/api/communities', communitiesRouter);
 app.use('/api/moderation-logs', moderationLogsRouter);
 app.use('/api/stocks', middleware.jwtVerify, stocksRouter);
+
+app.get('*', middleware.serveReactApp);
+
 app.use(middleware.unknownEndPoint);
 app.use(middleware.errorHandler);
 

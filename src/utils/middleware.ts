@@ -5,6 +5,7 @@ import {
   ErrorRequestHandler,
   RequestHandler,
 } from 'express';
+import path from 'path';
 import { Prisma } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import config from './config';
@@ -133,13 +134,21 @@ const checkUserStatus = async (
   }
 };
 
+const serveReactApp = (_req: Request, res: Response, next: NextFunction) => {
+  res.sendFile(path.resolve('dist', 'index.html'), (err) => {
+    if (err) {
+      next(err);
+    }
+  });
+};
+
 const unknownEndPoint = (
   _req: Request,
   res: Response,
   _next: NextFunction
 ): void => {
   res.status(404).send({
-    error: 'unknown endpoint',
+    error: 'Unknown Endpoint',
   });
 };
 
@@ -225,4 +234,5 @@ export default {
   checkPermission,
   checkPermissionWithOwnership,
   checkUserStatus,
+  serveReactApp,
 };
