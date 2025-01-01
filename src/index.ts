@@ -1,6 +1,6 @@
+import config from './utils/config';
 import 'express-async-errors';
 import app from './app';
-import config from './utils/config';
 import prisma from './utils/prismaClient';
 
 const { PORT } = config;
