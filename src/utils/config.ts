@@ -13,6 +13,12 @@ try {
       'ALPHA_VANTAGE_API_KEY is not defined in the environment variables.'
     );
   }
+
+  if (!process.env.OPEN_AI_API_KEY) {
+    throw new Error(
+      'OPEN_AI_API_KEY is not defined in the environment variables.'
+    );
+  }
 } catch (error) {
   if (error instanceof Error) {
     console.error('Configuration Error:', error.message);
@@ -25,4 +31,5 @@ export default {
   POSTGRES_DB_URL: process.env.POSTGRES_DB_URL,
   JWT: process.env.JWT ?? 'jwttoken',
   ALPHA_VANTAGE_API_KEY: process.env.ALPHA_VANTAGE_API_KEY,
+  OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
 };

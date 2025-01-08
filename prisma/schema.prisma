@@ -37,10 +37,10 @@ enum ReportReason {
   ADVERTISING
   FRAUD
   FINANCIAL_MANIPULATION
-  INAPPROPRIATE
-  HARASSMENT
   MISINFORMATION
-  COPYRIGHT_VIOLATION
+  INAPPROPRIATE_CONTENT
+  HARASSMENT
+  WRONG_COMMUNITY
   OFF_TOPIC
   OTHER
 }
@@ -209,6 +209,8 @@ model DiscussionReport {
   createdAt       DateTime    @default(now())
   reviewedAt      DateTime?  
   notes           String?
+  aiFlagged       Boolean?
+  aiSeverity      Int?
   user            User        @relation(fields: [userId], references: [id])
   discussion      Discussion  @relation(fields: [discussionId], references: [id])
   @@index([userId])

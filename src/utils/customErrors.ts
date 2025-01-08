@@ -40,6 +40,13 @@ export class CustomAPIError extends Error {
   }
 }
 
+export class CustomModerationAIError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'External Moderationn AI Error';
+  }
+}
+
 export class CustomStocksError extends Error {
   constructor(message: string) {
     super(message);
