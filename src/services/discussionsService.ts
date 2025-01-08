@@ -4,6 +4,8 @@ import { CustomDiscussionError } from '../utils/customErrors';
 import { Prisma } from '@prisma/client';
 import { reportReason } from '../types/discussionType';
 import notificationService from './notificationService';
+import aiModerationService from './aiModerationService';
+
 const addDiscussion = async (newDiscussion: NewDiscussion, userId: number) => {
   const community = await prisma.community.findUnique({
     where: { id: newDiscussion.communityId },
@@ -562,6 +564,21 @@ const addDiscussionReport = async (
     );
   }
 
+  const discussionContent = await prisma.discussion.findUnique({
+    where: { id: discussionId },
+    select: { content: true },
+  });
+
+  if (!discussionContent) {
+    throw new CustomDiscussionError('Discussion not found');
+  }
+
+  const moderationResultWithAI = await aiModerationService.analyzeReportWithAI(
+    discussionContent.content,
+    reason
+  );
+
+  console.log(moderationResultWithAI);
   const newReport = await prisma.discussionReport.create({
     data: {
       discussionId,
