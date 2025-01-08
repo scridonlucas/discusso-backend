@@ -17,6 +17,32 @@ type ReportReason =
   | 'HARASSMENT'
   | 'OFF_TOPIC'
   | 'OTHER';
+
+interface ModerationAIResponse {
+  flagged: boolean;
+  severity?: number;
+}
+
+const parseModerationAIResponse = (
+  obj: unknown
+): ModerationAIResponse | null => {
+  if (typeof obj !== 'object' || obj === null) {
+    return null;
+  }
+
+  if (!('flagged' in obj) || !('severity' in obj)) {
+    return null;
+  }
+
+  if (typeof obj.flagged !== 'boolean' || typeof obj.severity !== 'number') {
+    return null;
+  }
+  return {
+    flagged: obj.flagged,
+    severity: obj.severity,
+  };
+};
+
 async function analyzeReportWithAI(
   content: string,
   reportReason: ReportReason
@@ -35,23 +61,40 @@ async function analyzeReportWithAI(
   console.log(CustomModerationAIError);
   const prompt = prompts[reportReason];
 
-  const openai = new OpenAI();
+  const openai = new OpenAI({ apiKey: OPEN_API_API_KEY });
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
+
     messages: [
       {
         role: 'system',
-        content:
-          "You are a content moderation assistant. For every task, respond in JSON format with only the following keys: 'flagged' ('Yes' or 'No') and 'severity' (1 for low, 2 for medium, 3 for high).",
+
+        content: `You are a content moderation assistant. For every task, respond in JSON format with the following keys:
+      - "flagged": a boolean (true if the content violates guidelines, false otherwise),
+      - "severity": a number (0 for not flagged, 1 for low, 2 for medium, 3 for high).`,
       },
       { role: 'user', content: `Content: "${content}"\n\nTask: ${prompt}` },
     ],
   });
 
-  console.log(response);
+  if (!response || !response.choices[0].message) {
+    throw new CustomModerationAIError('No response from OpenAI');
+  }
 
-  return { flagged: true, severity: 1 };
+  const result = response.choices[0].message.content;
+
+  if (!result) {
+    throw new CustomModerationAIError('No response from OpenAI');
+  }
+
+  const parsedResponse = parseModerationAIResponse(JSON.parse(result));
+
+  if (!parsedResponse) {
+    throw new CustomModerationAIError('Invalid response format from OpenAI');
+  }
+
+  return parsedResponse;
 }
 
 export default {

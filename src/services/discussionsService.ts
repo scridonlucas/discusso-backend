@@ -579,6 +579,7 @@ const addDiscussionReport = async (
   );
 
   console.log(moderationResultWithAI);
+
   const newReport = await prisma.discussionReport.create({
     data: {
       discussionId,
