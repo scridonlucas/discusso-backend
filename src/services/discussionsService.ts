@@ -548,7 +548,8 @@ async function getComments(
 const addDiscussionReport = async (
   discussionId: number,
   userId: number,
-  reason: reportReason
+  reason: reportReason,
+  notes: string = ''
 ) => {
   const existingPendingReport = await prisma.discussionReport.findFirst({
     where: {
@@ -585,6 +586,7 @@ const addDiscussionReport = async (
       discussionId,
       userId,
       reason,
+      notes,
     },
   });
 

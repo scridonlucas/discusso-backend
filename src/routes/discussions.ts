@@ -6,7 +6,7 @@ import {
   NewDiscussion,
   UpdatedDiscussion,
   NewComment,
-  ReportReason,
+  ReportData,
 } from '../types/discussionType';
 
 import {
@@ -579,13 +579,13 @@ discussionsRouter.post(
   '/:discussionId/report',
   middleware.checkPermission('REPORT_DISCUSSION'),
   async (
-    req: Request<{ discussionId: string }, unknown, ReportReason>,
+    req: Request<{ discussionId: string }, unknown, ReportData>,
     res: Response,
     _next: NextFunction
   ) => {
     const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
-    const { reportReason } = req.body;
+    const { reportReason, notes = '' } = req.body;
 
     if (isNaN(discussionId)) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
@@ -595,10 +595,17 @@ discussionsRouter.post(
       return res.status(400).json({ message: 'Report reason is required.' });
     }
 
+    if (notes && notes.length > 500) {
+      return res
+        .status(400)
+        .json({ error: 'Notes cannot exceed 500 characters' });
+    }
+
     const newReport = await discussionsService.addDiscussionReport(
       discussionId,
       userId,
-      reportReason
+      reportReason,
+      notes
     );
 
     return res.status(201).json(newReport);

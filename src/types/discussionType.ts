@@ -23,8 +23,9 @@ export interface UpdatedDiscussion {
 
 export interface NewReport {}
 
-export interface ReportReason {
+export interface ReportData {
   reportReason: reportReason;
+  notes?: string;
 }
 
 export type reportReason =

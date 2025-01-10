@@ -69,7 +69,8 @@ const removeCommentLike = async (userId: number, commentId: number) => {
 const addComentReport = async (
   commentId: number,
   userId: number,
-  reason: reportReason
+  reason: reportReason,
+  notes: string = ''
 ) => {
   const existingPendingReport = await prisma.commentReport.findFirst({
     where: {
@@ -90,6 +91,7 @@ const addComentReport = async (
       commentId,
       userId,
       reason,
+      notes,
     },
   });
 
