@@ -210,6 +210,7 @@ model DiscussionReport {
   notes           String?
   aiFlagged       Boolean?
   aiSeverity      Int?
+  
   user            User        @relation(fields: [userId], references: [id])
   discussion      Discussion  @relation(fields: [discussionId], references: [id])
   @@index([userId])
@@ -225,6 +226,8 @@ model CommentReport {
   createdAt   DateTime       @default(now())
   reviewedAt  DateTime?
   notes           String?
+  aiFlagged       Boolean?
+  aiSeverity      Int?
 
   user        User           @relation(fields: [userId], references: [id])
   comment     Comment        @relation(fields: [commentId], references: [id])

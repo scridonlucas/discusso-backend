@@ -549,7 +549,7 @@ const addDiscussionReport = async (
   discussionId: number,
   userId: number,
   reason: reportReason,
-  notes: string = ''
+  reportNote: string = ''
 ) => {
   const existingPendingReport = await prisma.discussionReport.findFirst({
     where: {
@@ -579,14 +579,14 @@ const addDiscussionReport = async (
     reason
   );
 
-  console.log(moderationResultWithAI);
-
   const newReport = await prisma.discussionReport.create({
     data: {
       discussionId,
       userId,
       reason,
-      notes,
+      notes: reportNote,
+      aiFlagged: moderationResultWithAI.flagged,
+      aiSeverity: moderationResultWithAI.severity,
     },
   });
 

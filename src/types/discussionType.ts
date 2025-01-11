@@ -25,7 +25,7 @@ export interface NewReport {}
 
 export interface ReportData {
   reportReason: reportReason;
-  notes?: string;
+  reportNote?: string;
 }
 
 export type reportReason =

@@ -585,7 +585,7 @@ discussionsRouter.post(
   ) => {
     const userId = req.decodedToken.id;
     const discussionId = Number(req.params.discussionId);
-    const { reportReason, notes = '' } = req.body;
+    const { reportReason, reportNote = '' } = req.body;
 
     if (isNaN(discussionId)) {
       return res.status(400).json({ error: 'Invalid discussion ID' });
@@ -595,7 +595,7 @@ discussionsRouter.post(
       return res.status(400).json({ message: 'Report reason is required.' });
     }
 
-    if (notes && notes.length > 500) {
+    if (reportNote && reportNote.length > 500) {
       return res
         .status(400)
         .json({ error: 'Notes cannot exceed 500 characters' });
@@ -605,7 +605,7 @@ discussionsRouter.post(
       discussionId,
       userId,
       reportReason,
-      notes
+      reportNote
     );
 
     return res.status(201).json(newReport);

@@ -2,6 +2,7 @@ import prisma from '../utils/prismaClient';
 import { CustomDiscussionError } from '../utils/customErrors';
 import { reportReason } from '../types/discussionType';
 import notificationService from './notificationService';
+import aiModerationService from './aiModerationService';
 
 async function addCommentLike(userId: number, commentId: number) {
   const existingLike = await prisma.commentLike.findUnique({
@@ -70,7 +71,7 @@ const addComentReport = async (
   commentId: number,
   userId: number,
   reason: reportReason,
-  notes: string = ''
+  reportNote: string = ''
 ) => {
   const existingPendingReport = await prisma.commentReport.findFirst({
     where: {
@@ -86,12 +87,28 @@ const addComentReport = async (
     );
   }
 
+  const commentContent = await prisma.comment.findUnique({
+    where: { id: commentId },
+    select: { content: true },
+  });
+
+  if (!commentContent) {
+    throw new CustomDiscussionError('Comment not found');
+  }
+
+  const moderationResultWithAI = await aiModerationService.analyzeReportWithAI(
+    commentContent.content,
+    reason
+  );
+
   const newReport = await prisma.commentReport.create({
     data: {
       commentId,
       userId,
       reason,
-      notes,
+      notes: reportNote,
+      aiFlagged: moderationResultWithAI.flagged,
+      aiSeverity: moderationResultWithAI.severity,
     },
   });
 

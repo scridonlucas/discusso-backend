@@ -1,5 +1,5 @@
 import config from '../utils/config';
-import { CustomAPIError, CustomModerationAIError } from '../utils/customErrors';
+import { CustomAPIError } from '../utils/customErrors';
 import OpenAI from 'openai';
 
 const OPEN_API_API_KEY = config.OPEN_AI_API_KEY;
@@ -58,7 +58,7 @@ async function analyzeReportWithAI(
     OFF_TOPIC: `Evaluate the content for being off-topic. Is it unrelated to finance, business and economics fields?`,
     OTHER: `Evaluate the content for general moderation issues. Does it violate any community guidelines or standards?`,
   };
-  console.log(CustomModerationAIError);
+
   const prompt = prompts[reportReason];
 
   const openai = new OpenAI({ apiKey: OPEN_API_API_KEY });
@@ -70,7 +70,7 @@ async function analyzeReportWithAI(
       {
         role: 'system',
 
-        content: `You are a content moderation assistant. For every task, respond in JSON format with the following keys:
+        content: `You are a content moderation assistant. Always respond with valid JSON only, without any additional text or explanation. The response must include the following keys:
       - "flagged": a boolean (true if the content violates guidelines, false otherwise),
       - "severity": a number (0 for not flagged, 1 for low, 2 for medium, 3 for high).`,
       },
@@ -79,22 +79,38 @@ async function analyzeReportWithAI(
   });
 
   if (!response || !response.choices[0].message) {
-    throw new CustomModerationAIError('No response from OpenAI');
+    console.warn('No response from OpenAI');
+
+    return { flagged: false, severity: 0 };
   }
 
   const result = response.choices[0].message.content;
 
   if (!result) {
-    throw new CustomModerationAIError('No response from OpenAI');
+    console.warn('Empty response content from OpenAI');
+    return { flagged: false, severity: 0 };
   }
 
-  const parsedResponse = parseModerationAIResponse(JSON.parse(result));
+  const trimmedResponse = result.trim();
 
-  if (!parsedResponse) {
-    throw new CustomModerationAIError('Invalid response format from OpenAI');
+  try {
+    const parsedResponse = parseModerationAIResponse(
+      JSON.parse(trimmedResponse)
+    );
+
+    if (!parsedResponse) {
+      console.warn('Invalid response format from OpenAI');
+      return { flagged: false, severity: 0 };
+    }
+
+    return parsedResponse;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.warn(error.message);
+    }
   }
 
-  return parsedResponse;
+  return { flagged: false, severity: 0 };
 }
 
 export default {
