@@ -13,7 +13,6 @@ const getUsers = async () => {
       email: true,
       gender: true,
       status: true,
-      credibility: true,
       createdAt: true,
       updatedAt: true,
       role: true,
@@ -35,7 +34,6 @@ const getUser = async (id: number, privateData: boolean) => {
       gender: true,
       status: true,
       birthDate: privateData,
-      credibility: true,
       createdAt: true,
       updatedAt: true,
       followedCommunities: true,
@@ -128,7 +126,7 @@ const addUser = async (newUser: NewUser) => {
     ...newUser,
     birthDate: new Date(newUser.birthDate),
     password: passwordHash,
-    roleId: 3,
+    roleId: 2,
   };
 
   const addedUser = await prisma.user.create({

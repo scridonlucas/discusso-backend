@@ -1,6 +1,8 @@
 import prisma from '../utils/prismaClient';
 import { Prisma } from '@prisma/client';
 import { CustomReportError } from '../utils/customErrors';
+import notificationService from './notificationService';
+
 const getDiscussionReports = async (
   limit: number,
   cursor: number | null,
@@ -14,7 +16,7 @@ const getDiscussionReports = async (
     take: limit,
     skip: cursor ? 1 : 0,
     cursor: cursor ? { id: cursor } : undefined,
-    orderBy: { createdAt: 'desc' },
+    orderBy: { aiSeverity: 'desc' },
     where,
     include: {
       user: { select: { id: true, username: true, email: true } },
@@ -97,6 +99,7 @@ const closeDiscussionReport = async (
         status: true,
         discussionId: true,
         reason: true,
+        userId: true,
         discussion: {
           select: {
             userId: true,
@@ -140,6 +143,18 @@ const closeDiscussionReport = async (
         targetId: existingReport.discussionId,
       },
     });
+
+    const test = await notificationService.createNotification(
+      existingReport.userId,
+      'REPORT SOLVED',
+      action === 'DISMISS'
+        ? `Your report on discussion ${existingReport.discussionId} was dismissed. It doesn't seem to violate the rules `
+        : action === 'REMOVE_RESOURCE'
+        ? `Your report on discussion ${existingReport.discussionId} has been solved. The discussion was removed.`
+        : `Your report on discussion ${existingReport.discussionId} has been solved. The discussion was removed, and the user was banned.`
+    );
+
+    console.log(test);
     return updatedReport;
   });
 };

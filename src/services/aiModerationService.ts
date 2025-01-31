@@ -70,7 +70,7 @@ async function analyzeReportWithAI(
       {
         role: 'system',
 
-        content: `You are a content moderation assistant. Always respond with valid JSON only, without any additional text or explanation. The response must include the following keys:
+        content: `You are a content moderation assistant. Always respond with valid JSON only, without any additional text or explanation. The reported content may be in either Romanian or English, so evaluate it accordingly. The response must include the following keys:
       - "flagged": a boolean (true if the content violates guidelines, false otherwise),
       - "severity": a number (0 for not flagged, 1 for low, 2 for medium, 3 for high).`,
       },

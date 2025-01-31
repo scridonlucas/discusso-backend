@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-
+import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -11,14 +11,6 @@ async function main() {
     },
   });
 
-  const moderatorRole = await prisma.role.upsert({
-    where: { roleName: 'MODERATOR' },
-    update: {},
-    create: {
-      roleName: 'MODERATOR',
-    },
-  });
-
   const userRole = await prisma.role.upsert({
     where: { roleName: 'USER' },
     update: {},
@@ -27,15 +19,7 @@ async function main() {
     },
   });
 
-  const premiumRole = await prisma.role.upsert({
-    where: { roleName: 'PREMIUM' },
-    update: {},
-    create: {
-      roleName: 'PREMIUM',
-    },
-  });
-
-  console.log({ adminRole, userRole, premiumRole, moderatorRole });
+  console.log({ adminRole, userRole });
 
   const createDiscussionPermission = await prisma.permission.upsert({
     where: { permissionName: 'CREATE_DISCUSSION' },
@@ -441,45 +425,7 @@ async function main() {
         getStocksDataPermission.id,
       ],
     },
-    {
-      roleId: moderatorRole.id,
-      permissions: [
-        createDiscussionPermission.id,
-        updateAnyDiscussionPermission.id,
-        deleteAnyDiscussionPermission.id,
-        reportDiscussionPermission.id,
-        getDiscussionReportsPermission.id,
-        likeDiscussionPermission.id,
-        removeLikePermission.id,
-        commentDiscussionPermission.id,
-        removeAnyCommentPermission.id,
-        likeCommentPermission.id,
-        removeLikeCommentPermission.id,
-        getCommentReportsPermission.id,
-        reportCommentPermission.id,
-        createCommunityPermission.id,
-        deleteCommunityPermission.id,
-        updateCommunityPermission.id,
-        addBookmarkPermission.id,
-        removeBookmarkPermission.id,
-        changeCommentReportStatusPermission.id,
-        changeDiscussionReportStatusPermission.id,
-        createLog.id,
-        getLogs.id,
-        closeTicket.id,
-        getUsers.id,
-        getDiscussionsPermission.id,
-        followCommunity.id,
-        getAnyUserDetailsPermission.id,
-        getPublicUserDetailsPermission.id,
-        updateOwnNotificationsPermission.id,
-        followUserPermission.id,
-        getOwnNotificationsPermission.id,
-        getOwnUserDetailsPermission.id,
-        manageStockPermission.id,
-        getStocksDataPermission.id,
-      ],
-    },
+
     {
       roleId: userRole.id,
       permissions: [
@@ -522,16 +468,17 @@ async function main() {
   });
 
   // seeding communities
-  const userId = 1; // admin user
+  const userId = 3; // admin user
 
   // Seeding communities
-  const investmentStrategies = await prisma.community.upsert({
-    where: { name: 'Investment Strategies' },
+
+  const economicAnalysis = await prisma.community.upsert({
+    where: { name: 'Analiză Economică' },
     update: {},
     create: {
-      name: 'Investment Strategies',
+      name: 'Analiză Economică',
       description:
-        'A place to discuss different investment strategies, including stocks, bonds, real estate, and alternative assets.',
+        'Un loc pentru a discuta despre indicatorii economici globali, piețele internaționale și tendințele macroeconomice care influențează economia mondială.',
       user: {
         connect: { id: userId },
       },
@@ -539,32 +486,301 @@ async function main() {
   });
 
   const personalFinance = await prisma.community.upsert({
-    where: { name: 'Personal Finance' },
+    where: { name: 'Finanțe Personale' },
     update: {},
     create: {
-      name: 'Personal Finance',
+      name: 'Finanțe Personale',
       description:
-        'A community where members share tips and strategies for budgeting, saving, and managing personal finances.',
+        'Un spațiu pentru a împărtăși sfaturi și strategii pentru gestionarea finanțelor personale, economisire și investiții.',
       user: {
         connect: { id: userId },
       },
     },
   });
 
-  const economicPolicy = await prisma.community.upsert({
-    where: { name: 'Economic Policy & Governance' },
+  const stockMarket = await prisma.community.upsert({
+    where: { name: 'Bursa de Valori' },
     update: {},
     create: {
-      name: 'Economic Policy & Governance',
+      name: 'Bursa de Valori',
       description:
-        'A forum for debating and discussing economic policies, regulations, and governance issues.',
+        'Un loc pentru a analiza și discuta despre acțiuni, ETF-uri și strategii de investiții pe piețele financiare.',
       user: {
-        connect: { id: userId }, // Connect to an existing user
+        connect: { id: userId },
       },
     },
   });
 
-  console.log({ investmentStrategies, personalFinance, economicPolicy });
+  const fiscalMeasures = await prisma.community.upsert({
+    where: { name: 'Măsuri Fiscale' },
+    update: {},
+    create: {
+      name: 'Măsuri Fiscale',
+      description:
+        'O comunitate pentru a analiza și discuta măsurile fiscale actuale, politicile guvernamentale și impactul lor asupra economiei.',
+      user: {
+        connect: { id: userId },
+      },
+    },
+  });
+
+  const studentCorner = await prisma.community.upsert({
+    where: { name: 'Spațiul Studenților' },
+    update: {},
+    create: {
+      name: 'Spațiul Studenților',
+      description:
+        'Un loc unde studenții pot discuta despre teme economice, resurse utile pentru facultate și sfaturi pentru gestionarea bugetului.',
+      user: {
+        connect: { id: userId },
+      },
+    },
+  });
+
+  console.log({
+    economicAnalysis,
+    personalFinance,
+    stockMarket,
+    fiscalMeasures,
+    studentCorner,
+  });
+
+  // users
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash('User123.', saltRounds);
+
+  await prisma.user.createMany({
+    data: [
+      {
+        firstName: 'Alexandru',
+        lastName: 'Popescu',
+        username: 'alex.popescu',
+        email: 'alex.popescu@example.com',
+        gender: 'MALE',
+        birthDate: new Date('1990-03-15'),
+        password: hashedPassword,
+        roleId: 2,
+        status: 'ACTIVE',
+      },
+      {
+        firstName: 'Ioana',
+        lastName: 'Ionescu',
+        username: 'ioana.ionescu',
+        email: 'ioana.ionescu@example.com',
+        gender: 'FEMALE',
+        birthDate: new Date('1987-07-22'),
+        password: hashedPassword,
+        roleId: 2,
+        status: 'ACTIVE',
+      },
+      {
+        firstName: 'Mihai',
+        lastName: 'Dumitru',
+        username: 'mihai.dumitru',
+        email: 'mihai.dumitru@example.com',
+        gender: 'MALE',
+        birthDate: new Date('1995-11-08'),
+        password: hashedPassword,
+        roleId: 2,
+        status: 'ACTIVE',
+      },
+      {
+        firstName: 'Andreea',
+        lastName: 'Marin',
+        username: 'andreea.marin',
+        email: 'andreea.marin@example.com',
+        gender: 'FEMALE',
+        birthDate: new Date('1992-02-14'),
+        password: hashedPassword,
+        roleId: 2,
+        status: 'ACTIVE',
+      },
+      {
+        firstName: 'Gabriel',
+        lastName: 'Constantin',
+        username: 'gabriel.constantin',
+        email: 'gabriel.constantin@example.com',
+        gender: 'MALE',
+        birthDate: new Date('1989-05-03'),
+        password: hashedPassword,
+        roleId: 2,
+        status: 'ACTIVE',
+      },
+      {
+        firstName: 'Elena',
+        lastName: 'Stan',
+        username: 'elena.stan',
+        email: 'elena.stan@example.com',
+        gender: 'FEMALE',
+        birthDate: new Date('1993-09-18'),
+        password: hashedPassword,
+        roleId: 2,
+        status: 'ACTIVE',
+      },
+      {
+        firstName: 'Radu',
+        lastName: 'Mocanu',
+        username: 'radu.mocanu',
+        email: 'radu.mocanu@example.com',
+        gender: 'MALE',
+        birthDate: new Date('1991-12-30'),
+        password: hashedPassword,
+        roleId: 2,
+        status: 'ACTIVE',
+      },
+      {
+        firstName: 'Cristina',
+        lastName: 'Neagu',
+        username: 'cristina.neagu',
+        email: 'cristina.neagu@example.com',
+        gender: 'FEMALE',
+        birthDate: new Date('1988-06-25'),
+        password: hashedPassword,
+        roleId: 2,
+        status: 'ACTIVE',
+      },
+    ],
+  });
+
+  //
+  // discussions
+  const discussions = [
+    {
+      title: 'Impactul inflației asupra economiei globale',
+      content:
+        'Inflația este un subiect de actualitate ce influențează economiile mondiale. Ratele dobânzilor sunt ajustate pentru a controla efectele asupra piețelor financiare și asupra puterii de cumpărare a consumatorilor.',
+      communityId: 1,
+    },
+    {
+      title: 'Strategii eficiente pentru economisire',
+      content:
+        'Economisirea banilor este esențială pentru securitatea financiară. Aplicarea regulii 50/30/20 sau folosirea automatizării poate ajuta la gestionarea eficientă a resurselor financiare.',
+      communityId: 2,
+    },
+    {
+      title: 'Analiza companiilor listate la bursă',
+      content:
+        'Investitorii analizează rapoartele financiare și indicatori precum EBITDA sau P/E Ratio pentru a evalua performanța companiilor listate pe bursă.',
+      communityId: 3,
+    },
+    {
+      title: 'Modificări recente ale codului fiscal',
+      content:
+        'În ultimul an, guvernul a introdus noi reglementări fiscale, incluzând creșteri de taxe și măsuri pentru sprijinirea întreprinderilor mici și mijlocii.',
+      communityId: 4,
+    },
+    {
+      title: 'Oportunități și burse pentru studenți',
+      content:
+        'Studenții au acces la burse naționale și internaționale care acoperă taxe de școlarizare, cazare și alte costuri academice.',
+      communityId: 5,
+    },
+    {
+      title: 'Piața muncii și impactul recesiunilor',
+      content:
+        'Recesiunile economice pot duce la creșterea șomajului și la o scădere a oportunităților de angajare, afectând direct veniturile populației.',
+      communityId: 1,
+    },
+    {
+      title: 'Sfaturi pentru gestionarea bugetului personal',
+      content:
+        'Crearea unui buget lunar și reducerea cheltuielilor inutile sunt pași esențiali pentru a avea un control mai bun asupra finanțelor personale.',
+      communityId: 2,
+    },
+    {
+      title: 'Cum să analizezi o acțiune înainte de a investi',
+      content:
+        'Analiza fundamentală și tehnică sunt metode utilizate de investitori pentru a lua decizii informate pe piața de capital.',
+      communityId: 3,
+    },
+    {
+      title: 'Impozitarea progresivă vs. impozitarea unică',
+      content:
+        'Sistemele de impozitare progresivă pot reduce inegalitățile sociale, dar pot descuraja investițiile mari.',
+      communityId: 4,
+    },
+    {
+      title: 'Surse alternative de venit pentru studenți',
+      content:
+        'Pe lângă burse, studenții pot câștiga bani prin freelancing, internshipuri plătite sau inițierea unor mici afaceri.',
+      communityId: 5,
+    },
+    {
+      title: 'Evoluția criptomonedelor pe piața globală',
+      content:
+        'Piața criptomonedelor a cunoscut creșteri și scăderi masive în ultimii ani, influențate de reglementări și adopția instituțională.',
+      communityId: 1,
+    },
+    {
+      title: 'Investiții în ETF-uri: avantaje și riscuri',
+      content:
+        'ETF-urile oferă diversificare și costuri reduse, dar expun investitorii la fluctuațiile generale ale pieței.',
+      communityId: 2,
+    },
+    {
+      title: 'Rolul băncilor centrale în economia globală',
+      content:
+        'Băncile centrale reglementează politica monetară și gestionează inflația prin ajustarea ratelor dobânzii și a masei monetare.',
+      communityId: 3,
+    },
+    {
+      title: 'Schimbările TVA și efectele asupra consumatorilor',
+      content:
+        'O creștere a TVA-ului poate duce la scumpiri în lanț, afectând puterea de cumpărare a cetățenilor.',
+      communityId: 4,
+    },
+    {
+      title: 'Joburi part-time pentru studenți în domeniul economic',
+      content:
+        'Studenții pot accesa oportunități de angajare în domeniul bancar, consultanță financiară sau asigurări.',
+      communityId: 5,
+    },
+    {
+      title: 'Piața imobiliară: creșteri sau scăderi?',
+      content:
+        'Prețurile locuințelor sunt influențate de factori economici precum dobânzile la credite și cererea de pe piață.',
+      communityId: 1,
+    },
+    {
+      title: 'Cum să îți diversifici portofoliul de investiții',
+      content:
+        'Diversificarea reduce riscurile și ajută la maximizarea randamentului investițiilor.',
+      communityId: 2,
+    },
+    {
+      title: 'Cele mai profitabile sectoare bursiere în 2025',
+      content:
+        'Tehnologia, energia regenerabilă și sănătatea sunt considerate domenii de investiții promițătoare.',
+      communityId: 3,
+    },
+    {
+      title: 'Cum influențează politica fiscală creșterea economică?',
+      content:
+        'Reducerea taxelor poate stimula consumul și investițiile, dar poate duce și la creșterea deficitului bugetar.',
+      communityId: 4,
+    },
+    {
+      title: 'Surse de finanțare pentru proiecte studențești',
+      content:
+        'Studenții pot accesa granturi, crowdfunding și fonduri europene pentru proiectele lor academice.',
+      communityId: 5,
+    },
+  ];
+
+  for (const discussion of discussions) {
+    const users = await prisma.user.findMany();
+    const randomUser = users[Math.floor(Math.random() * users.length)];
+    await prisma.discussion.create({
+      data: {
+        title: discussion.title,
+        content: discussion.content,
+        userId: randomUser.id,
+        communityId: discussion.communityId,
+      },
+    });
+  }
+
+  //
 }
 
 main()

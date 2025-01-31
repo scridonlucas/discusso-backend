@@ -7,6 +7,9 @@
 generator client {
   provider = "prisma-client-js"
 }
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
 
 datasource db {
   provider = "postgresql"
@@ -63,7 +66,6 @@ model User {
   following           Follow[]        @relation("Follower")
   followers           Follow[]        @relation("Followed")
   discussions Discussion[]
-  credibility   Int     @default(0) 
   followedCommunities UserCommunity[] 
   createdCommunities  Community[]
   likes               Like[] 

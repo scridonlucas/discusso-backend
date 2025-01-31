@@ -11,7 +11,6 @@ const start = () => {
   });
 };
 
-// close db connection
 const gracefulShutdown = async () => {
   try {
     await prisma.$disconnect();

@@ -17,7 +17,6 @@ authRouter.post('/login', async (req, res) => {
   const { email, password }: LoginUser = loginValidator.toNewLoginEntry(
     req.body
   );
-
   const user: UserAttributes | null = await usersService.getUserByEmail(email);
   const passwordCorrect = await loginService.comparePasswords(user, password);
 
@@ -30,16 +29,16 @@ authRouter.post('/login', async (req, res) => {
       username: user.username,
       id: user.id,
     };
+
     const token = jwt.sign(userForToken, config.JWT, {
       expiresIn: 60 * 60,
     });
 
     res.cookie('token', token, { httpOnly: true });
 
-    return res.status(200).send({
-      success: true,
-    });
+    return res.status(200).send({ success: true });
   }
+
   return res.status(401).json({ error: 'Invalid username or password!' });
 });
 
