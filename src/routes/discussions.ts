@@ -63,13 +63,17 @@ discussionsRouter.post(
         .json({ error: 'Content cannot exceed 1000 characters' });
     }
 
-    if (!/^[A-Za-z0-9\s]+$/.test(title)) {
+    if (!/^[\p{L}\p{N}\s.,!?-]+$/u.test(title)) {
       return res.status(400).json({
         error: 'Title can only contain letters, numbers, and spaces',
       });
     }
 
-    if (!/^[A-Za-z0-9\s.,?!'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]+$/.test(content)) {
+    if (
+      !/^[\p{L}\p{N}\p{Emoji}\s.,!?'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]+$/u.test(
+        content
+      )
+    ) {
       return res.status(400).json({
         error:
           'Content can only contain letters, numbers, and common punctuation',
@@ -523,7 +527,9 @@ discussionsRouter.post(
     }
 
     if (
-      !/^[\p{L}\p{N}\s.,?!'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]*$/u.test(content)
+      !/^[\p{L}\p{N}\p{Emoji}\s.,!?'"@#$%^&*()[\]{}\-_=+\\|;:<>/~`]+$/u.test(
+        content
+      )
     ) {
       return res.status(400).json({
         error:
